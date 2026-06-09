@@ -1,0 +1,577 @@
+# Global Events Calendar — MENA Fashion Ecommerce Relevance
+# Researched for Namshi (UAE + KSA focus)
+# Tier: 1=Major full campaign  2=Creative activation / hero module  3=Social/feed only
+# Use source: global_calendar when surfaced in the app
+
+events:
+
+  # ── JANUARY ────────────────────────────────────────────────────────────────────
+  - name: "New Year's Day"
+    canonical_key: new_year
+    month: 1
+    day: 1
+    tier: 1
+    event_type: cultural
+    category_focus: "Activewear, New Arrivals, Beauty Reset"
+    geo: "KSA + UAE"
+    campaign_angle: "New Year, New Wardrobe — shop the January edit"
+    suggested_deliverable: "Hero Banner + Landing Page"
+
+  - name: "World Hijab Day"
+    canonical_key: hijab_day
+    month: 1
+    day: 13
+    tier: 2
+    event_type: cultural
+    category_focus: "Modest wear, headscarves, abayas, covered fashion"
+    geo: "KSA + UAE"
+    campaign_angle: "Celebrate modest style — the hijab edit"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "Dubai Shopping Festival"
+    canonical_key: dsf
+    month: 1
+    tier: 1
+    event_type: sale
+    category_focus: "Platform-wide"
+    geo: "UAE"
+    campaign_angle: "Dubai Shopping Festival — biggest deals of the year"
+    suggested_deliverable: "Hero Banner + Dedicated Landing Page"
+    notes: "Dates vary annually — check official DSF announcement"
+
+  # ── FEBRUARY ───────────────────────────────────────────────────────────────────
+  - name: "Valentine's Day"
+    canonical_key: valentines_day
+    month: 2
+    day: 14
+    tier: 1
+    event_type: cultural
+    category_focus: "Gifting, Fragrances, Accessories, Lingerie, Swimwear"
+    geo: "KSA + UAE"
+    campaign_angle: "The Valentine's Edit — gifts they'll love"
+    suggested_deliverable: "Hero Banner + Gift Guide Module"
+
+  - name: "International Women's Day (preview)"
+    canonical_key: womens_day_preview
+    month: 2
+    day: 28
+    tier: 2
+    event_type: cultural
+    category_focus: "Women's wear, empowerment edit"
+    geo: "KSA + UAE"
+    campaign_angle: "Celebrate her — early Women's Day drop"
+    suggested_deliverable: "Feed Module"
+
+  # ── MARCH ──────────────────────────────────────────────────────────────────────
+  - name: "International Women's Day"
+    canonical_key: womens_day
+    month: 3
+    day: 8
+    tier: 1
+    event_type: cultural
+    category_focus: "Women's fashion, power dressing, streetwear, beauty"
+    geo: "KSA + UAE"
+    campaign_angle: "She Leads — the Women's Day power edit"
+    suggested_deliverable: "Hero Banner + Social Campaign + Feed Module"
+
+  - name: "Nowruz (Persian New Year)"
+    canonical_key: nowruz
+    month: 3
+    day: 21
+    tier: 2
+    event_type: cultural
+    category_focus: "Occasion wear, new arrivals, spring collections"
+    geo: "UAE"
+    campaign_angle: "Nowruz Mubarak — fresh looks for the new year"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "Earth Hour"
+    canonical_key: earth_hour
+    month: 3
+    day: 22
+    tier: 3
+    event_type: cultural
+    category_focus: "Sustainable fashion, eco-conscious brands"
+    geo: "KSA + UAE"
+    campaign_angle: "Wear it consciously — our sustainable edit"
+    suggested_deliverable: "Social Content"
+
+  - name: "Ramadan (if applicable)"
+    canonical_key: ramadan
+    month: 3
+    tier: 1
+    event_type: cultural
+    category_focus: "Modest wear, abayas, kaftans, gifting, beauty"
+    geo: "KSA + UAE"
+    campaign_angle: "Ramadan Kareem — the Ramadan collection"
+    suggested_deliverable: "Full Landing Page + Hero Banner"
+    notes: "Lunar date — check calendar_config.yaml for exact dates"
+
+  # ── APRIL ──────────────────────────────────────────────────────────────────────
+  - name: "Eid al-Fitr"
+    canonical_key: eid_al_fitr
+    month: 4
+    tier: 1
+    event_type: cultural
+    category_focus: "Occasion wear, abayas, thobes, beauty, gifting"
+    geo: "KSA + UAE"
+    campaign_angle: "Eid Mubarak — dress your best this Eid"
+    suggested_deliverable: "Full Landing Page + Hero Banner + Social Campaign"
+    notes: "Lunar date — check calendar_config.yaml for exact dates"
+
+  - name: "Earth Day"
+    canonical_key: earth_day
+    month: 4
+    day: 22
+    tier: 2
+    event_type: cultural
+    category_focus: "Sustainable fashion, eco brands, organic fibres"
+    geo: "KSA + UAE"
+    campaign_angle: "Fashion for the planet — shop our sustainable edit"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "World Book Day"
+    canonical_key: world_book_day
+    month: 4
+    day: 23
+    tier: 3
+    event_type: cultural
+    category_focus: "Lifestyle accessories, tote bags, reading glasses"
+    geo: "KSA + UAE"
+    campaign_angle: "Read in style — bookish fashion edit"
+    suggested_deliverable: "Social Content"
+
+  # ── MAY ────────────────────────────────────────────────────────────────────────
+  - name: "Mother's Day"
+    canonical_key: mothers_day
+    month: 5
+    tier: 1
+    event_type: cultural
+    category_focus: "Gifting, Fragrances, Accessories, Occasion wear"
+    geo: "KSA + UAE"
+    campaign_angle: "The Ultimate Mother's Day Gift Guide"
+    suggested_deliverable: "Hero Banner + Gift Guide + Landing Page"
+    notes: "2nd Sunday of May in most markets"
+
+  - name: "World Bee Day"
+    canonical_key: world_bee_day
+    month: 5
+    day: 20
+    tier: 3
+    event_type: cultural
+    category_focus: "Yellow fashion, honey & bee motifs, sustainable collections"
+    geo: "KSA + UAE"
+    campaign_angle: "Wear yellow — our bee-day edit"
+    suggested_deliverable: "Social Content"
+
+  - name: "Start of Summer Campaign"
+    canonical_key: summer_launch
+    month: 5
+    tier: 2
+    event_type: seasonal
+    category_focus: "Swimwear, sunglasses, summer dresses, sandals"
+    geo: "KSA + UAE"
+    campaign_angle: "Summer is here — shop the season"
+    suggested_deliverable: "Hero Banner + Feed Module"
+
+  # ── JUNE ───────────────────────────────────────────────────────────────────────
+  - name: "World Environment Day"
+    canonical_key: world_environment_day
+    month: 6
+    day: 5
+    tier: 2
+    event_type: cultural
+    category_focus: "Sustainable fashion, eco-friendly brands, recycled materials"
+    geo: "KSA + UAE"
+    campaign_angle: "Wear the change — shop sustainably"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "Eid al-Adha"
+    canonical_key: eid_al_adha
+    month: 6
+    tier: 1
+    event_type: cultural
+    category_focus: "Occasion wear, abayas, thobes, beauty, gifting"
+    geo: "KSA + UAE"
+    campaign_angle: "Eid al-Adha Mubarak — the premium occasion edit"
+    suggested_deliverable: "Full Landing Page + Hero Banner"
+    notes: "Lunar date — check calendar_config.yaml for exact dates"
+
+  - name: "Father's Day"
+    canonical_key: fathers_day
+    month: 6
+    tier: 2
+    event_type: cultural
+    category_focus: "Menswear, grooming, accessories, gifting"
+    geo: "KSA + UAE"
+    campaign_angle: "The Father's Day Gift Guide — for every kind of dad"
+    suggested_deliverable: "Hero Banner + Gift Guide Module"
+    notes: "3rd Sunday of June"
+
+  - name: "International Yoga Day"
+    canonical_key: yoga_day
+    month: 6
+    day: 21
+    tier: 2
+    event_type: cultural
+    category_focus: "Activewear, yoga pants, sports bras, trainers"
+    geo: "KSA + UAE"
+    campaign_angle: "Find your flow — the yoga & activewear edit"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "Midsummer / Solstice"
+    canonical_key: midsummer
+    month: 6
+    day: 21
+    tier: 3
+    event_type: cultural
+    category_focus: "Summer fashion, beach, vacation wear"
+    geo: "KSA + UAE"
+    campaign_angle: "The longest day — our summer solstice picks"
+    suggested_deliverable: "Social Content"
+
+  # ── JULY ───────────────────────────────────────────────────────────────────────
+  - name: "Dubai Summer Surprises"
+    canonical_key: dubai_summer_surprises
+    month: 7
+    tier: 1
+    event_type: national
+    category_focus: "Platform-wide summer deals, staycation, resort wear"
+    geo: "UAE"
+    campaign_angle: "Dubai Summer Surprises — shop the season's best deals"
+    suggested_deliverable: "Hero Banner + Landing Page + Feed Module"
+    notes: "Runs July–August. Check official DSS dates annually."
+
+  - name: "National Bikini Day"
+    canonical_key: bikini_day
+    month: 7
+    day: 5
+    tier: 2
+    event_type: cultural
+    category_focus: "Swimwear, bikinis, beach cover-ups, flip flops, beach bags"
+    geo: "KSA + UAE"
+    campaign_angle: "Happy National Bikini Day — shop our swimwear edit"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "Fashion Day"
+    canonical_key: fashion_day_july
+    month: 7
+    day: 9
+    tier: 2
+    event_type: cultural
+    category_focus: "New arrivals, SS collections, hero brands"
+    geo: "KSA + UAE"
+    campaign_angle: "It's Fashion Day — discover what's new"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "World Emoji Day"
+    canonical_key: world_emoji_day
+    month: 7
+    day: 17
+    tier: 2
+    event_type: cultural
+    category_focus: "Colourful collections, prints, playful fashion, graphic tees"
+    geo: "KSA + UAE"
+    campaign_angle: "Express yourself 🎨 — our most colourful pieces"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "National Lipstick Day"
+    canonical_key: lipstick_day
+    month: 7
+    day: 29
+    tier: 2
+    event_type: beauty
+    category_focus: "Lip products, makeup, beauty, cosmetics"
+    geo: "KSA + UAE"
+    campaign_angle: "Pucker up — National Lipstick Day beauty edit"
+    suggested_deliverable: "Feed Module + Beauty Banner"
+
+  - name: "International Day of Friendship"
+    canonical_key: friendship_day
+    month: 7
+    day: 30
+    tier: 2
+    event_type: cultural
+    category_focus: "Gifting, matching sets, friendship bracelets, accessories"
+    geo: "KSA + UAE"
+    campaign_angle: "Shop for your BFF — the friendship day gift edit"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  # ── AUGUST ─────────────────────────────────────────────────────────────────────
+  - name: "Dubai Summer Surprises (August leg)"
+    canonical_key: dubai_summer_surprises_aug
+    month: 8
+    tier: 1
+    event_type: national
+    category_focus: "Summer deals, resort wear, staycation"
+    geo: "UAE"
+    campaign_angle: "Dubai Summer Surprises continues — final weeks"
+    suggested_deliverable: "Hero Banner"
+    notes: "Continuation of July DSS"
+
+  - name: "International Cat Day"
+    canonical_key: cat_day
+    month: 8
+    day: 8
+    tier: 3
+    event_type: cultural
+    category_focus: "Animal prints, leopard print, playful fashion, accessories"
+    geo: "KSA + UAE"
+    campaign_angle: "Purrfect style — our cat day edit 🐱"
+    suggested_deliverable: "Social Content"
+
+  - name: "International Youth Day"
+    canonical_key: youth_day
+    month: 8
+    day: 12
+    tier: 2
+    event_type: cultural
+    category_focus: "Gen Z fashion, streetwear, sneakers, trending styles"
+    geo: "KSA + UAE"
+    campaign_angle: "For the next generation — shop the youth edit"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "World Photography Day"
+    canonical_key: photography_day
+    month: 8
+    day: 19
+    tier: 3
+    event_type: cultural
+    category_focus: "Camera bags, lifestyle accessories, look-book fashion"
+    geo: "KSA + UAE"
+    campaign_angle: "Dress for the 'gram — our most photogenic pieces"
+    suggested_deliverable: "Social Content"
+
+  - name: "Back to School Season"
+    canonical_key: bts_aug
+    month: 8
+    tier: 1
+    event_type: seasonal
+    category_focus: "Kids, teens, sneakers, backpacks, casual wear, uniform basics"
+    geo: "KSA + UAE"
+    campaign_angle: "Back to school ready — shop the BTS edit"
+    suggested_deliverable: "Hero Banner + Landing Page"
+
+  # ── SEPTEMBER ──────────────────────────────────────────────────────────────────
+  - name: "Saudi National Day"
+    canonical_key: ksa_national_day
+    month: 9
+    day: 23
+    tier: 1
+    event_type: national
+    category_focus: "Modest wear, green palette, Saudi fashion brands, occasions"
+    geo: "KSA"
+    campaign_angle: "Celebrating Saudi Arabia — National Day special"
+    suggested_deliverable: "Hero Banner + Landing Page + Social Campaign"
+
+  - name: "International Day of Peace"
+    canonical_key: peace_day
+    month: 9
+    day: 21
+    tier: 3
+    event_type: cultural
+    category_focus: "White fashion edit, minimalist style"
+    geo: "KSA + UAE"
+    campaign_angle: "Dressed in peace — our white edit"
+    suggested_deliverable: "Social Content"
+
+  - name: "World Alzheimer's Day"
+    canonical_key: alzheimers_day
+    month: 9
+    day: 21
+    tier: 3
+    event_type: cultural
+    category_focus: "Purple collections (Alzheimer's awareness colour)"
+    geo: "KSA + UAE"
+    campaign_angle: "Wear purple for awareness"
+    suggested_deliverable: "Social Content"
+
+  - name: "SS Fashion Week Season"
+    canonical_key: fashion_week_ss
+    month: 9
+    tier: 2
+    event_type: cultural
+    category_focus: "Designer brands, SS runway-inspired, new arrivals"
+    geo: "KSA + UAE"
+    campaign_angle: "Runway to real life — fashion week inspired"
+    suggested_deliverable: "Feed Module + Editorial Content"
+
+  # ── OCTOBER ────────────────────────────────────────────────────────────────────
+  - name: "World Animal Day"
+    canonical_key: animal_day
+    month: 10
+    day: 4
+    tier: 3
+    event_type: cultural
+    category_focus: "Animal prints, sustainable/vegan fashion, accessories"
+    geo: "KSA + UAE"
+    campaign_angle: "For the love of animals — our animal print edit"
+    suggested_deliverable: "Social Content"
+
+  - name: "World Mental Health Day"
+    canonical_key: mental_health_day
+    month: 10
+    day: 10
+    tier: 2
+    event_type: cultural
+    category_focus: "Comfort wear, loungewear, self-care beauty"
+    geo: "KSA + UAE"
+    campaign_angle: "Dress for your mood — comfort-first fashion"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "Dubai Fitness Challenge"
+    canonical_key: dubai_fitness
+    month: 10
+    tier: 2
+    event_type: national
+    category_focus: "Activewear, running shoes, gym wear, sports equipment"
+    geo: "UAE"
+    campaign_angle: "Dubai moves — shop the activewear edit for DFC"
+    suggested_deliverable: "Hero Banner + Feed Module"
+    notes: "Dubai Fitness Challenge runs Oct–Nov. Check official dates."
+
+  - name: "Breast Cancer Awareness Month"
+    canonical_key: pink_october
+    month: 10
+    day: 1
+    tier: 2
+    event_type: cultural
+    category_focus: "Pink collections, charity collabs, awareness"
+    geo: "KSA + UAE"
+    campaign_angle: "Pink October — wear pink with purpose"
+    suggested_deliverable: "Feed Module + Social Campaign"
+
+  - name: "Halloween"
+    canonical_key: halloween
+    month: 10
+    day: 31
+    tier: 2
+    event_type: cultural
+    category_focus: "Costumes, party wear, dark collections, accessories"
+    geo: "UAE"
+    campaign_angle: "Boo! Shop our Halloween edit 🎃"
+    suggested_deliverable: "Feed Module + Social Content"
+    notes: "More relevant in UAE due to expat population"
+
+  # ── NOVEMBER ───────────────────────────────────────────────────────────────────
+  - name: "Singles' Day (11.11)"
+    canonical_key: singles_day
+    month: 11
+    day: 11
+    tier: 1
+    event_type: sale
+    category_focus: "Platform-wide deals"
+    geo: "KSA + UAE"
+    campaign_angle: "11.11 — Treat yourself today"
+    suggested_deliverable: "Hero Banner + Landing Page + Flash Sale Module"
+
+  - name: "International Men's Day"
+    canonical_key: mens_day
+    month: 11
+    day: 19
+    tier: 2
+    event_type: cultural
+    category_focus: "Menswear, grooming, accessories, gifting"
+    geo: "KSA + UAE"
+    campaign_angle: "The Men's Day Edit — shop menswear essentials"
+    suggested_deliverable: "Feed Module + Social Content"
+
+  - name: "Black Friday"
+    canonical_key: black_friday
+    month: 11
+    tier: 1
+    event_type: sale
+    category_focus: "Platform-wide deals"
+    geo: "KSA + UAE"
+    campaign_angle: "Black Friday is here — biggest discounts of the year"
+    suggested_deliverable: "Hero Banner + Full Landing Page + Countdown Timer"
+    notes: "4th Friday of November"
+
+  - name: "Cyber Monday"
+    canonical_key: cyber_monday
+    month: 11
+    tier: 1
+    event_type: sale
+    category_focus: "Platform-wide online deals"
+    geo: "KSA + UAE"
+    campaign_angle: "Cyber Monday — last chance for Black Friday prices"
+    suggested_deliverable: "Hero Banner + Flash Sale"
+    notes: "Monday after Black Friday"
+
+  - name: "White Friday (MENA Black Friday)"
+    canonical_key: white_friday
+    month: 11
+    tier: 1
+    event_type: sale
+    category_focus: "Platform-wide deals"
+    geo: "KSA + UAE"
+    campaign_angle: "White Friday — MENA's biggest sale day"
+    suggested_deliverable: "Hero Banner + Full Landing Page"
+
+  # ── DECEMBER ───────────────────────────────────────────────────────────────────
+  - name: "UAE National Day"
+    canonical_key: uae_national_day
+    month: 12
+    day: 2
+    tier: 1
+    event_type: national
+    category_focus: "UAE colours, national pride collections, modest wear, occasion"
+    geo: "UAE"
+    campaign_angle: "Happy 54th National Day, UAE 🇦🇪 — shop the national day edit"
+    suggested_deliverable: "Hero Banner + Landing Page + Social Campaign"
+
+  - name: "UAE National Day (extended)"
+    canonical_key: uae_national_day_ext
+    month: 12
+    day: 3
+    tier: 2
+    event_type: national
+    category_focus: "UAE collections, accessories, gifting"
+    geo: "UAE"
+    campaign_angle: "Celebrating the UAE — day 2 national day deals"
+    suggested_deliverable: "Feed Module"
+
+  - name: "Hanukkah"
+    canonical_key: hanukkah
+    month: 12
+    tier: 3
+    event_type: cultural
+    category_focus: "Blue + silver palette, gifting, jewellery"
+    geo: "UAE"
+    campaign_angle: "Festival of lights — gift ideas for Hanukkah"
+    suggested_deliverable: "Social Content"
+    notes: "More relevant for UAE expat market. Dates vary."
+
+  - name: "Christmas"
+    canonical_key: christmas
+    month: 12
+    day: 25
+    tier: 2
+    event_type: cultural
+    category_focus: "Gifting, party wear, red + gold palette, beauty sets"
+    geo: "UAE"
+    campaign_angle: "Merry Christmas — the ultimate gift guide 🎄"
+    suggested_deliverable: "Hero Banner + Gift Guide"
+    notes: "UAE expat market; lower relevance in KSA"
+
+  - name: "New Year's Eve"
+    canonical_key: nye
+    month: 12
+    day: 31
+    tier: 2
+    event_type: cultural
+    category_focus: "Party wear, sequins, glam, accessories, beauty"
+    geo: "KSA + UAE"
+    campaign_angle: "Ring in 2027 — shop the NYE party edit ✨"
+    suggested_deliverable: "Hero Banner + Feed Module"
+
+  - name: "Dubai Shopping Festival (Pre-launch)"
+    canonical_key: dsf_pre
+    month: 12
+    tier: 2
+    event_type: sale
+    category_focus: "Platform-wide teasers, countdown"
+    geo: "UAE"
+    campaign_angle: "DSF is coming — sign up for early access"
+    suggested_deliverable: "Teaser Banner"
+    notes: "DSF typically starts late December or early January"

@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Namshi Campaign Planner</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root {
+  --ns-black: #000;
+  --ns-green: #00e600;
+  --ns-green-dim: #00b300;
+  --ns-dark: #111;
+  --ns-card: #1a1a1a;
+  --ns-border: #2a2a2a;
+  --row-sale: #fff0f0;
+  --row-seasonal: #f3f0ff;
+  --row-anchor: #f0f8ff;
+  --row-cultural: #fff8f0;
+  --row-national: #f0fff4;
+  --row-sports: #f0f4ff;
+  --row-beauty: #fff0f8;
+  --row-trend: #f8f8f8;
+  --row-global: #fffbf0;
+}
+* { box-sizing: border-box; }
+body { background: #f5f5f5; font-family: 'Calibri', 'Segoe UI', sans-serif; margin: 0; }
+
+/* ── Navbar ── */
+.navbar-ns {
+  background: var(--ns-black);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 1000;
+  border-bottom: 2px solid var(--ns-green);
+}
+.navbar-ns .brand {
+  color: var(--ns-green);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 8px;
+}
+.navbar-ns .brand span.dot { width: 10px; height: 10px; background: var(--ns-green); border-radius: 50%; display: inline-block; }
+.navbar-ns .controls { display: flex; align-items: center; gap: 10px; }
+.navbar-ns select, .navbar-ns input[type=number] {
+  background: #1a1a1a; color: #fff; border: 1px solid #444;
+  padding: 6px 10px; border-radius: 6px; font-size: 0.9rem; cursor: pointer;
+}
+.navbar-ns select:focus, .navbar-ns input[type=number]:focus { outline: 1px solid var(--ns-green); }
+.btn-ns-primary {
+  background: var(--ns-green); color: #000; border: none;
+  padding: 7px 18px; border-radius: 6px; font-weight: 700;
+  cursor: pointer; font-size: 0.9rem; transition: 0.15s;
+}
+.btn-ns-primary:hover { background: #00ff00; }
+.btn-ns-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-ns-outline {
+  background: transparent; color: #bbb; border: 1px solid #444;
+  padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.88rem; transition: 0.15s;
+}
+.btn-ns-outline:hover { border-color: var(--ns-green); color: var(--ns-green); }
+
+/* ── Stats bar ── */
+.stats-bar {
+  background: var(--ns-dark);
+  padding: 8px 24px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--ns-border);
+}
+.stat-chip {
+  color: #aaa; font-size: 0.82rem;
+  display: flex; align-items: center; gap: 5px;
+}
+.stat-chip .val { color: #fff; font-weight: 700; font-size: 1rem; }
+.stat-chip.green .val { color: var(--ns-green); }
+.stat-chip.amber .val { color: #ffc107; }
+.stat-chip.red   .val { color: #ff5252; }
+
+/* ── Content area ── */
+.main-wrap { padding: 16px 24px; max-width: 1600px; margin: 0 auto; }
+
+/* ── Tab bar ── */
+.tab-bar { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.tab-btn {
+  padding: 5px 14px; border-radius: 20px; border: 1px solid #ccc;
+  background: #fff; cursor: pointer; font-size: 0.83rem; font-weight: 500; transition: 0.15s;
+}
+.tab-btn.active { background: var(--ns-black); color: var(--ns-green); border-color: var(--ns-black); }
+.tab-btn:hover:not(.active) { border-color: #888; }
+.tab-spacer { flex: 1; }
+.action-btn {
+  padding: 6px 14px; border-radius: 6px; border: 1px solid #ccc;
+  background: #fff; cursor: pointer; font-size: 0.83rem; transition: 0.15s;
+  display: flex; align-items: center; gap: 5px;
+}
+.action-btn:hover { border-color: #333; background: #f0f0f0; }
+.action-btn.export { background: var(--ns-black); color: var(--ns-green); border-color: var(--ns-black); font-weight: 700; }
+.action-btn.export:hover { background: #1a1a1a; }
+.action-btn.search { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+.action-btn.search:hover { background: #1557b0; }
+
+/* ── Empty / loading state ── */
+.empty-state {
+  text-align: center; padding: 80px 20px; color: #999;
+}
+.empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-state h5 { color: #555; }
+.spinner-ns {
+  width: 36px; height: 36px;
+  border: 3px solid #ddd; border-top-color: var(--ns-green);
+  border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Campaign Table ── */
+.campaign-table-wrap { background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.08); overflow: hidden; }
+.campaign-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.campaign-table thead th {
+  background: var(--ns-black); color: var(--ns-green);
+  font-weight: 700; padding: 10px 12px; text-align: left;
+  white-space: nowrap; position: sticky; top: 60px; z-index: 10;
+}
+.campaign-table tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.1s; cursor: pointer; }
+.campaign-table tbody tr:hover { filter: brightness(0.97); }
+.campaign-table tbody tr.selected { outline: 2px solid var(--ns-green); outline-offset: -2px; }
+.campaign-table tbody tr.rejected { opacity: 0.4; }
+.campaign-table tbody tr.accepted { }
+.campaign-table td { padding: 9px 12px; vertical-align: middle; }
+.campaign-table td.name-col { font-weight: 600; max-width: 200px; }
+.campaign-table td.name-col small { display: block; color: #888; font-weight: 400; font-size: 0.76rem; }
+
+/* Row colour-coding */
+tr[data-type="sale"]           td { background: var(--row-sale); }
+tr[data-type="seasonal"]       td { background: var(--row-seasonal); }
+tr[data-type="monthly_anchor"] td { background: var(--row-anchor); }
+tr[data-type="cultural"]       td { background: var(--row-cultural); }
+tr[data-type="national"]       td { background: var(--row-national); }
+tr[data-type="sports"]         td { background: var(--row-sports); }
+tr[data-type="beauty"]         td { background: var(--row-beauty); }
+tr[data-type="trend_edit"]     td { background: var(--row-trend); }
+tr[data-source="global_calendar"] td { background: var(--row-global); }
+
+/* Type badge */
+.badge-type {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; white-space: nowrap;
+}
+.badge-type.sale           { background: #ffd7d7; color: #c0392b; }
+.badge-type.seasonal       { background: #e8d8ff; color: #6f42c1; }
+.badge-type.monthly_anchor { background: #d0efff; color: #0077b6; }
+.badge-type.cultural       { background: #fde8cc; color: #e07b00; }
+.badge-type.national       { background: #d1f5e5; color: #1a7a4a; }
+.badge-type.sports         { background: #d6e4ff; color: #0043a4; }
+.badge-type.beauty         { background: #ffd6ee; color: #b5006a; }
+.badge-type.trend_edit     { background: #e8e8e8; color: #555; }
+.badge-type.global_calendar{ background: #fff3cd; color: #856404; }
+
+/* Review flag */
+.review-dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+  background: #ffc107; margin-right: 4px; vertical-align: middle;
+}
+.confirmed-dot {
+  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+  background: #00c853; margin-right: 4px; vertical-align: middle;
+}
+
+/* Action buttons in table */
+.row-actions { display: flex; gap: 4px; white-space: nowrap; }
+.btn-accept, .btn-reject, .btn-edit, .btn-history {
+  width: 28px; height: 28px; border: none; border-radius: 5px;
+  cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center;
+  transition: 0.15s;
+}
+.btn-accept  { background: #e8fff0; color: #1a7a4a; }
+.btn-accept:hover  { background: #00c853; color: #fff; }
+.btn-accept.active  { background: #00c853; color: #fff; }
+.btn-reject  { background: #fff0f0; color: #c0392b; }
+.btn-reject:hover  { background: #ff5252; color: #fff; }
+.btn-reject.active  { background: #ff5252; color: #fff; }
+.btn-edit    { background: #f0f4ff; color: #0043a4; }
+.btn-edit:hover    { background: #1a73e8; color: #fff; }
+.btn-history { background: #f8f0ff; color: #6f42c1; }
+.btn-history:hover { background: #6f42c1; color: #fff; }
+
+/* Source badge */
+.src-badge {
+  font-size: 0.7rem; padding: 1px 6px; border-radius: 8px; font-weight: 600;
+  background: #eee; color: #666;
+}
+.src-badge.both    { background: #e8f5e9; color: #2e7d32; }
+.src-badge.config  { background: #e3f2fd; color: #1565c0; }
+.src-badge.history { background: #f3e5f5; color: #6a1b9a; }
+.src-badge.global  { background: #fff8e1; color: #f57f17; }
+
+/* ── Side panel ── */
+.side-panel {
+  position: fixed; top: 0; right: -480px; width: 470px; height: 100vh;
+  background: #fff; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+  z-index: 2000; transition: right 0.3s ease; overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.side-panel.open { right: 0; }
+.side-panel-header {
+  background: var(--ns-black); color: var(--ns-green);
+  padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 1;
+}
+.side-panel-header h5 { margin: 0; font-size: 1rem; font-weight: 700; }
+.side-panel-body { padding: 20px; flex: 1; }
+.hist-entry {
+  border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 10px;
+  background: #fafafa;
+}
+.hist-entry .sheet-lbl {
+  font-size: 0.75rem; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 6px;
+}
+.hist-kv { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.hist-kv .kv { font-size: 0.8rem; }
+.hist-kv .kv span { color: #888; }
+.hist-kv .kv strong { color: #222; }
+.no-hist { text-align: center; padding: 30px 0; color: #aaa; font-size: 0.9rem; }
+
+/* ── Edit Modal ── */
+.modal-ns .modal-content {
+  border-radius: 12px; border: none;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+}
+.modal-ns .modal-header {
+  background: var(--ns-black); color: var(--ns-green); border-radius: 12px 12px 0 0;
+  border-bottom: none;
+}
+.modal-ns .modal-header .btn-close { filter: invert(1); }
+.modal-ns label { font-size: 0.82rem; font-weight: 600; color: #444; margin-bottom: 3px; }
+.modal-ns .form-control, .modal-ns .form-select {
+  font-size: 0.85rem; border-radius: 6px;
+}
+.modal-footer-ns { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid #eee; }
+
+/* ── Config Modal ── */
+.config-event-block {
+  border: 1px solid #e0e0e0; border-radius: 8px; padding: 14px; margin-bottom: 14px;
+}
+.config-event-block h6 { font-weight: 700; color: #222; margin-bottom: 10px; }
+.config-event-block .date-row { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
+.config-event-block .date-row label { font-size: 0.78rem; color: #666; min-width: 60px; }
+.config-event-block .date-row input { flex: 1; font-size: 0.82rem; }
+
+/* ── Search results panel ── */
+.search-panel {
+  background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  margin-top: 16px; overflow: hidden;
+}
+.search-panel-header {
+  background: #1a73e8; color: #fff; padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.search-panel-header h6 { margin: 0; font-weight: 700; }
+.search-result-item {
+  padding: 10px 18px; border-bottom: 1px solid #f0f0f0;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item .title { font-size: 0.85rem; font-weight: 500; color: #222; }
+.search-result-item .meta  { font-size: 0.75rem; color: #999; }
+.search-result-item a { color: #1a73e8; text-decoration: none; }
+.search-result-item a:hover { text-decoration: underline; }
+
+/* ── Legend ── */
+.legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #666; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* ── Misc ── */
+.date-range { font-size: 0.78rem; color: #444; white-space: nowrap; }
+.tier-badge { font-size: 0.78rem; font-weight: 700; color: #555; }
+.geo-badge  { font-size: 0.78rem; color: #777; }
+.toast-wrap {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.ns-toast {
+  background: var(--ns-black); color: var(--ns-green);
+  padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  animation: fadeInUp 0.3s ease, fadeOut 0.4s ease 2.6s forwards;
+}
+.ns-toast.err { color: #ff5252; }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeOut  { to   { opacity:0; transform:translateY(-8px); } }
+
+@media (max-width: 900px) {
+  .navbar-ns { flex-wrap: wrap; height: auto; padding: 10px 14px; gap: 8px; }
+  .side-panel { width: 100vw; right: -100vw; }
+  .main-wrap { padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
+<nav class="navbar-ns">
+  <div class="brand">
+    <span class="dot"></span>
+    Namshi Campaign Planner
+  </div>
+
+  <div class="controls">
+    <select id="selMonth">
+      <option value="1">January</option><option value="2">February</option>
+      <option value="3">March</option><option value="4">April</option>
+      <option value="5">May</option><option value="6">June</option>
+      <option value="7" selected>July</option><option value="8">August</option>
+      <option value="9">September</option><option value="10">October</option>
+      <option value="11">November</option><option value="12">December</option>
+    </select>
+    <input type="number" id="selYear" value="2026" min="2024" max="2030" style="width:80px">
+    <button class="btn-ns-primary" id="btnGenerate" onclick="App.generate()">
+      <i class="bi bi-play-fill"></i> Generate
+    </button>
+    <button class="btn-ns-outline" onclick="App.openConfig()" title="Edit lunar/sports dates">
+      <i class="bi bi-sliders"></i> Config
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════ STATS BAR ═══════════════════════════ -->
+<div class="stats-bar">
+  <div class="stat-chip"><span class="val" id="statTotal">0</span> campaigns</div>
+  <div class="stat-chip amber"><span class="val" id="statReview">0</span> need review</div>
+  <div class="stat-chip green"><span class="val" id="statAccepted">0</span> accepted</div>
+  <div class="stat-chip red"><span class="val" id="statRejected">0</span> rejected</div>
+  <div class="stat-chip" style="margin-left:auto;color:#555;" id="statLabel">
+    No draft yet — pick a month &amp; click Generate
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+<div class="main-wrap">
+
+  <!-- Legend -->
+  <div class="legend" id="legend" style="display:none">
+    <div class="legend-item"><div class="legend-dot" style="background:#ffd7d7"></div> Sale</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e8d8ff"></div> Seasonal</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d0efff"></div> Monthly Anchor</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fde8cc"></div> Cultural</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d1f5e5"></div> National</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d6e4ff"></div> Sports</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffd6ee"></div> Beauty</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e8e8e8"></div> Trend Edit</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fff3cd"></div> 🌍 Global Event</div>
+    <div class="legend-item" style="margin-left:12px"><span class="review-dot"></span> Needs review</div>
+    <div class="legend-item"><span class="confirmed-dot"></span> Confirmed</div>
+  </div>
+
+  <!-- Tab bar + actions -->
+  <div class="tab-bar" id="tabBar" style="display:none">
+    <button class="tab-btn active" onclick="App.setFilter('all')"        data-f="all">All</button>
+    <button class="tab-btn"       onclick="App.setFilter('pipeline')"    data-f="pipeline">Pipeline</button>
+    <button class="tab-btn"       onclick="App.setFilter('global')"      data-f="global">🌍 Global Events</button>
+    <button class="tab-btn"       onclick="App.setFilter('review')"      data-f="review">⚠ Needs Review</button>
+    <button class="tab-btn"       onclick="App.setFilter('accepted')"    data-f="accepted">✓ Accepted</button>
+    <div class="tab-spacer"></div>
+    <button class="action-btn"    onclick="App.acceptAll()"><i class="bi bi-check-all"></i> Accept All Visible</button>
+    <button class="action-btn"    onclick="App.rejectTrends()"><i class="bi bi-x"></i> Reject All Trend Edits</button>
+    <button class="action-btn search" onclick="App.searchWeb()"><i class="bi bi-search"></i> Search Web</button>
+    <button class="action-btn export" onclick="App.exportXlsx()"><i class="bi bi-file-earmark-spreadsheet"></i> Export XLSX</button>
+  </div>
+
+  <!-- Campaign table -->
+  <div id="tableWrap">
+    <div class="empty-state" id="emptyState">
+      <div class="icon">📅</div>
+      <h5>No draft generated yet</h5>
+      <p>Select a month and year above, then click <strong>Generate</strong> to build your campaign plan.</p>
+    </div>
+    <div id="loadingState" style="display:none;text-align:center;padding:60px 20px">
+      <div class="spinner-ns"></div>
+      <p style="color:#888">Generating campaign plan…</p>
+    </div>
+  </div>
+
+  <!-- Web search results -->
+  <div id="searchPanel" style="display:none" class="search-panel">
+    <div class="search-panel-header">
+      <h6><i class="bi bi-globe2"></i> Live Web Results — <span id="searchLabel"></span></h6>
+      <button class="btn-ns-outline" style="color:#fff;border-color:rgba(255,255,255,0.3)" onclick="App.closeSearch()">✕</button>
+    </div>
+    <div id="searchResults"></div>
+  </div>
+
+</div><!-- /main-wrap -->
+
+<!-- ═══════════════════════════ SIDE PANEL (history) ═══════════════════════════ -->
+<div class="side-panel" id="sidePanel">
+  <div class="side-panel-header">
+    <h5 id="sidePanelTitle">Campaign History</h5>
+    <button style="background:none;border:none;color:#aaa;font-size:1.3rem;cursor:pointer" onclick="App.closePanel()">✕</button>
+  </div>
+  <div class="side-panel-body" id="sidePanelBody">
+    <div class="no-hist">Loading…</div>
+  </div>
+</div>
+<div id="panelOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:1999" onclick="App.closePanel()"></div>
+
+<!-- ═══════════════════════════ EDIT MODAL ═══════════════════════════ -->
+<div class="modal fade modal-ns" id="editModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Edit Campaign Row</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:20px">
+        <div class="row g-3" id="editFormFields">
+          <!-- dynamically populated -->
+        </div>
+      </div>
+      <div class="modal-footer-ns">
+        <button class="action-btn" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn-ns-primary" onclick="App.saveEdit()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ CONFIG MODAL ═══════════════════════════ -->
+<div class="modal fade modal-ns" id="configModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-sliders"></i> Update Campaign Dates</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:20px">
+        <p style="font-size:0.85rem;color:#666;margin-bottom:16px">
+          Update confirmed dates for lunar and sports events. These are saved to
+          <code>calendar_config.yaml</code> and used in the next Generate run.
+        </p>
+        <div id="configFields">Loading…</div>
+      </div>
+      <div class="modal-footer-ns">
+        <button class="action-btn" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn-ns-primary" onclick="App.saveConfig()">Save to config</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   Namshi Campaign Planner — Frontend
+   ═══════════════════════════════════════════════════════════════════ */
+const App = (() => {
+  // ── State ──────────────────────────────────────────────────────────
+  let state = {
+    campaigns: [],      // pipeline rows
+    globalEvents: [],   // global_events.yaml rows
+    month: 7, year: 2026,
+    monthName: 'July',
+    filter: 'all',
+    editingId: null,
+    configData: {},
+  };
+
+  // ── Helpers ────────────────────────────────────────────────────────
+  function allRows() { return [...state.campaigns, ...state.globalEvents]; }
+
+  function filteredRows() {
+    const all = allRows();
+    switch (state.filter) {
+      case 'pipeline':  return all.filter(r => r.source_type === 'pipeline');
+      case 'global':    return all.filter(r => r.source_type === 'global_calendar');
+      case 'review':    return all.filter(r => r.needs_review === true || r.needs_review === 'true' || r.needs_review === 'TRUE');
+      case 'accepted':  return all.filter(r => r.status === 'accepted');
+      default:          return all;
+    }
+  }
+
+  function getRow(id) { return allRows().find(r => r.id === id); }
+  function updateRow(id, patch) {
+    let arr = state.campaigns.find(r => r.id === id) ? state.campaigns : state.globalEvents;
+    const idx = arr.findIndex(r => r.id === id);
+    if (idx >= 0) arr[idx] = { ...arr[idx], ...patch };
+  }
+
+  function toast(msg, err=false) {
+    const div = document.createElement('div');
+    div.className = 'ns-toast' + (err ? ' err' : '');
+    div.textContent = msg;
+    document.getElementById('toastWrap').appendChild(div);
+    setTimeout(() => div.remove(), 3100);
+  }
+
+  function updateStats() {
+    const all = allRows();
+    document.getElementById('statTotal').textContent    = all.length;
+    document.getElementById('statReview').textContent   = all.filter(r => r.needs_review === true || r.needs_review === 'true' || r.needs_review === 'TRUE').length;
+    document.getElementById('statAccepted').textContent = all.filter(r => r.status === 'accepted').length;
+    document.getElementById('statRejected').textContent = all.filter(r => r.status === 'rejected').length;
+  }
+
+  function badgeHtml(type) {
+    return `<span class="badge-type ${type}">${type.replace('_',' ')}</span>`;
+  }
+
+  function srcBadge(src) {
+    const cls = src === 'both' ? 'both' : src === 'config' ? 'config' : src === 'history' ? 'history' : 'global';
+    const lbl = src === 'global_calendar' ? '🌍 global' : src;
+    return `<span class="src-badge ${cls}">${lbl}</span>`;
+  }
+
+  function reviewDot(r) {
+    const nr = r.needs_review;
+    const isReview = nr === true || nr === 'true' || nr === 'TRUE';
+    return isReview
+      ? '<span class="review-dot" title="Needs review"></span>'
+      : '<span class="confirmed-dot" title="Confirmed"></span>';
+  }
+
+  function fmtDate(d) {
+    if (!d || d === 'TBD' || d === '') return '<span style="color:#bbb">TBD</span>';
+    try {
+      const [y,m,day] = d.split('-');
+      const mo = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m];
+      return `${mo} ${+day}`;
+    } catch(e) { return d; }
+  }
+
+  // ── Render table ───────────────────────────────────────────────────
+  function renderTable() {
+    const rows = filteredRows();
+    const wrap = document.getElementById('tableWrap');
+
+    if (rows.length === 0 && allRows().length > 0) {
+      wrap.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h5>No campaigns match this filter</h5></div>`;
+      return;
+    }
+
+    let html = `<div class="campaign-table-wrap"><table class="campaign-table">
+      <thead>
+        <tr>
+          <th style="width:36px">#</th>
+          <th>Campaign</th>
+          <th>Type</th>
+          <th>Tier</th>
+          <th>Geo</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Category Focus</th>
+          <th>Source</th>
+          <th>Review</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    rows.forEach((r, i) => {
+      const typeClass = r.source_type === 'global_calendar' ? 'global_calendar' : (r.event_type || 'trend_edit');
+      const rejClass  = r.status === 'rejected' ? ' rejected' : (r.status === 'accepted' ? ' accepted' : '');
+      html += `<tr data-id="${r.id}" data-type="${r.event_type || ''}" data-source="${r.source_type || ''}"
+                   class="${rejClass}" onclick="App.handleRowClick(event,'${r.id}')">
+        <td style="color:#aaa;font-size:0.78rem">${i+1}</td>
+        <td class="name-col">
+          ${reviewDot(r)}${r.campaign_name || ''}
+          <small>${r.canonical_key || ''}</small>
+        </td>
+        <td>${badgeHtml(typeClass)}</td>
+        <td class="tier-badge">${r.tier || '-'}</td>
+        <td class="geo-badge">${r.geography || '-'}</td>
+        <td class="date-range">${fmtDate(r.start_date)}</td>
+        <td class="date-range">${fmtDate(r.end_date)}</td>
+        <td style="max-width:180px;font-size:0.78rem;color:#555">${(r.category_focus||'').slice(0,70)}${(r.category_focus||'').length>70?'…':''}</td>
+        <td>${srcBadge(r.source || r.source_type)}</td>
+        <td style="font-size:0.75rem;color:#777">${(r.needs_review===true||r.needs_review==='TRUE'||r.needs_review==='true') ? '⚠ review' : '✓ ok'}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-accept ${r.status==='accepted'?'active':''}" title="Accept"
+                    onclick="event.stopPropagation();App.setStatus('${r.id}','accepted')">✓</button>
+            <button class="btn-reject ${r.status==='rejected'?'active':''}" title="Reject"
+                    onclick="event.stopPropagation();App.setStatus('${r.id}','rejected')">✕</button>
+            <button class="btn-edit"    title="Edit"
+                    onclick="event.stopPropagation();App.openEdit('${r.id}')"><i class="bi bi-pencil"></i></button>
+            <button class="btn-history" title="View history"
+                    onclick="event.stopPropagation();App.showHistory('${r.id}')"><i class="bi bi-clock-history"></i></button>
+          </div>
+        </td>
+      </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    wrap.innerHTML = html;
+    updateStats();
+  }
+
+  // ── API calls ──────────────────────────────────────────────────────
+  async function generate() {
+    const month = +document.getElementById('selMonth').value;
+    const year  = +document.getElementById('selYear').value;
+    state.month = month; state.year = year;
+
+    // Replace table area with spinner (works on every click, not just the first)
+    document.getElementById('tableWrap').innerHTML =
+      '<div style="text-align:center;padding:60px 20px">' +
+      '<div class="spinner-ns"></div>' +
+      '<p style="color:#888;margin-top:8px">Generating campaign plan…</p></div>';
+    document.getElementById('btnGenerate').disabled = true;
+
+    try {
+      const res  = await fetch('/api/generate', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({month, year}),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Unknown error');
+
+      state.campaigns   = data.campaigns || [];
+      state.globalEvents = data.global_events || [];
+      state.monthName   = data.month_name || '';
+      state.filter      = 'all';
+
+      document.getElementById('legend').style.display  = 'flex';
+      document.getElementById('tabBar').style.display  = 'flex';
+      document.getElementById('statLabel').textContent = `${state.monthName} ${state.year}`;
+      renderTable();
+      toast(`✓ Generated ${allRows().length} campaigns for ${state.monthName} ${year}`);
+    } catch(e) {
+      document.getElementById('tableWrap').innerHTML =
+        `<div class="empty-state"><div class="icon">⚠️</div><h5>Error</h5><p style="color:#c00">${e.message}</p></div>`;
+      toast('Generate failed: ' + e.message, true);
+    } finally {
+      document.getElementById('btnGenerate').disabled = false;
+    }
+  }
+
+  function setStatus(id, status) {
+    const r = getRow(id);
+    if (!r) return;
+    const newStatus = r.status === status ? 'pending' : status;  // toggle
+    updateRow(id, { status: newStatus });
+    renderTable();
+  }
+
+  function setFilter(f) {
+    state.filter = f;
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.f === f);
+    });
+    renderTable();
+  }
+
+  function acceptAll() {
+    filteredRows().forEach(r => updateRow(r.id, { status: 'accepted' }));
+    renderTable();
+    toast('✓ All visible rows accepted');
+  }
+
+  function rejectTrends() {
+    allRows().filter(r => r.event_type === 'trend_edit').forEach(r => updateRow(r.id, { status: 'rejected' }));
+    renderTable();
+    toast('Trend edits rejected');
+  }
+
+  function handleRowClick(evt, id) {
+    // click anywhere on row = select it; buttons stop propagation
+    document.querySelectorAll('.campaign-table tbody tr').forEach(tr =>
+      tr.classList.toggle('selected', tr.dataset.id === id));
+  }
+
+  // ── History panel ──────────────────────────────────────────────────
+  async function showHistory(id) {
+    const r = getRow(id);
+    if (!r) return;
+    document.getElementById('sidePanelTitle').textContent = r.campaign_name;
+    document.getElementById('sidePanelBody').innerHTML = '<div class="no-hist"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading history…</div>';
+    openPanel();
+    try {
+      const res  = await fetch(`/api/history/${encodeURIComponent(r.canonical_key)}`);
+      const data = await res.json();
+      const hist = data.history || [];
+
+      let html = `<div style="margin-bottom:14px">
+        <div style="font-size:0.8rem;color:#888;margin-bottom:6px">Canonical key: <code>${r.canonical_key}</code></div>`;
+
+      // Show current row details first
+      html += `<div style="background:#f0fff4;border:1px solid #c8f5d8;border-radius:8px;padding:12px;margin-bottom:12px">
+        <div style="font-size:0.72rem;font-weight:700;color:#2e7d32;margin-bottom:8px">CURRENT DRAFT — ${state.monthName} ${state.year}</div>
+        <div class="hist-kv">
+          <div class="kv"><span>Start </span><strong>${r.start_date||'TBD'}</strong></div>
+          <div class="kv"><span>End </span><strong>${r.end_date||'TBD'}</strong></div>
+          <div class="kv"><span>Tier </span><strong>${r.tier||'-'}</strong></div>
+          <div class="kv"><span>Geo </span><strong>${r.geography||'-'}</strong></div>
+        </div>
+        ${r.raw_notes ? `<div style="margin-top:8px;font-size:0.77rem;color:#555;font-style:italic">${r.raw_notes}</div>` : ''}
+      </div>`;
+
+      if (hist.length === 0) {
+        html += `<div class="no-hist" style="padding:20px 0">No historical data for this campaign</div>`;
+      } else {
+        html += `<div style="font-size:0.8rem;font-weight:700;color:#444;margin-bottom:8px">Historical Runs (${hist.length})</div>`;
+        hist.forEach(h => {
+          html += `<div class="hist-entry">
+            <div class="sheet-lbl">📋 ${h.sheet_name || ''}</div>
+            <div class="hist-kv">
+              <div class="kv"><span>Name </span><strong>${h.campaign_name||'-'}</strong></div>
+              <div class="kv"><span>Start </span><strong>${h.start_date||'TBD'}</strong></div>
+              <div class="kv"><span>End </span><strong>${h.end_date||'TBD'}</strong></div>
+              <div class="kv"><span>Tier </span><strong>${h.tier||'-'}</strong></div>
+              <div class="kv"><span>Geo </span><strong>${h.geography||'-'}</strong></div>
+            </div>
+            ${h.category_focus ? `<div style="margin-top:6px;font-size:0.78rem;color:#666">${h.category_focus}</div>` : ''}
+            ${h.raw_notes && h.raw_notes !== 'nan' ? `<div style="margin-top:4px;font-size:0.75rem;color:#999;font-style:italic">${h.raw_notes}</div>` : ''}
+          </div>`;
+        });
+      }
+      html += '</div>';
+      document.getElementById('sidePanelBody').innerHTML = html;
+    } catch(e) {
+      document.getElementById('sidePanelBody').innerHTML = `<div class="no-hist">Error loading history: ${e.message}</div>`;
+    }
+  }
+
+  function openPanel()  {
+    document.getElementById('sidePanel').classList.add('open');
+    document.getElementById('panelOverlay').style.display = 'block';
+  }
+  function closePanel() {
+    document.getElementById('sidePanel').classList.remove('open');
+    document.getElementById('panelOverlay').style.display = 'none';
+  }
+
+  // ── Edit modal ──────────────────────────────────────────────────────
+  function openEdit(id) {
+    const r = getRow(id);
+    if (!r) return;
+    state.editingId = id;
+
+    const EDITABLE = [
+      { k:'campaign_name',      label:'Campaign Name',       type:'text' },
+      { k:'tier',               label:'Tier',                type:'select', opts:['Tier 1','Tier 2','Tier 3','-'] },
+      { k:'geography',          label:'Geography',           type:'select', opts:['KSA + UAE','KSA','UAE','All'] },
+      { k:'start_date',         label:'Start Date',          type:'date' },
+      { k:'end_date',           label:'End Date',            type:'date' },
+      { k:'promos_coupons',     label:'Promos / Coupons',    type:'text' },
+      { k:'category_focus',     label:'Category Focus',      type:'text' },
+      { k:'onsite_deliverables',label:'Onsite Deliverables', type:'textarea' },
+      { k:'wireframes',         label:'Wireframes',          type:'text' },
+      { k:'raw_notes',          label:'Notes',               type:'textarea' },
+    ];
+
+    let html = '';
+    EDITABLE.forEach(f => {
+      const val = r[f.k] !== undefined ? r[f.k] : '';
+      const safeVal = String(val).replace(/"/g, '&quot;');
+      let input;
+      if (f.type === 'textarea') {
+        input = `<textarea class="form-control form-control-sm" id="ef_${f.k}" rows="2">${safeVal}</textarea>`;
+      } else if (f.type === 'select') {
+        const opts = f.opts.map(o => `<option ${o===val?'selected':''}>${o}</option>`).join('');
+        input = `<select class="form-select form-select-sm" id="ef_${f.k}">${opts}</select>`;
+      } else if (f.type === 'date') {
+        const dVal = /^\d{4}-\d{2}-\d{2}$/.test(val) ? val : '';
+        input = `<input type="date" class="form-control form-control-sm" id="ef_${f.k}" value="${dVal}">`;
+      } else {
+        input = `<input type="text" class="form-control form-control-sm" id="ef_${f.k}" value="${safeVal}">`;
+      }
+      html += `<div class="col-md-6"><label>${f.label}</label>${input}</div>`;
+    });
+
+    document.getElementById('editFormFields').innerHTML = html;
+    new bootstrap.Modal(document.getElementById('editModal')).show();
+  }
+
+  function saveEdit() {
+    const id = state.editingId;
+    const r  = getRow(id);
+    if (!r) return;
+
+    const KEYS = ['campaign_name','tier','geography','start_date','end_date',
+                  'promos_coupons','category_focus','onsite_deliverables','wireframes','raw_notes'];
+    const patch = {};
+    KEYS.forEach(k => {
+      const el = document.getElementById('ef_' + k);
+      if (el) patch[k] = el.value;
+    });
+
+    // Recalc duration
+    if (patch.start_date && patch.end_date &&
+        /^\d{4}-\d{2}-\d{2}$/.test(patch.start_date) &&
+        /^\d{4}-\d{2}-\d{2}$/.test(patch.end_date)) {
+      const s = new Date(patch.start_date), e = new Date(patch.end_date);
+      patch.duration_days = Math.round((e - s) / 86400000) + 1;
+    }
+
+    updateRow(id, patch);
+    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+    renderTable();
+    toast('Row updated');
+  }
+
+  // ── Export ──────────────────────────────────────────────────────────
+  async function exportXlsx() {
+    const toExport = allRows().filter(r => r.status !== 'rejected');
+    if (toExport.length === 0) { toast('Nothing to export (all rejected)', true); return; }
+
+    toast(`Exporting ${toExport.length} rows…`);
+    try {
+      const res = await fetch('/api/export', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ rows: toExport, month: state.month, year: state.year }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || res.statusText);
+      }
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = `draft_calendar_${state.month}_${state.year}.xlsx`;
+      a.click(); URL.revokeObjectURL(url);
+      toast('✓ Excel downloaded');
+    } catch(e) {
+      toast('Export failed: ' + e.message, true);
+    }
+  }
+
+  // ── Web search ──────────────────────────────────────────────────────
+  async function searchWeb() {
+    const panel = document.getElementById('searchPanel');
+    const res_div = document.getElementById('searchResults');
+    document.getElementById('searchLabel').textContent = `${state.monthName} ${state.year}`;
+    panel.style.display = 'block';
+    res_div.innerHTML = '<div style="padding:16px;color:#888;text-align:center"><div class="spinner-ns" style="margin:0 auto 8px"></div>Searching…</div>';
+    panel.scrollIntoView({behavior:'smooth'});
+
+    try {
+      const r = await fetch(`/api/search?month=${state.month}&year=${state.year}`);
+      const d = await r.json();
+      const results = d.results || [];
+      if (results.length === 0) {
+        res_div.innerHTML = '<div style="padding:16px;color:#888;text-align:center">No results found — check internet connection</div>';
+        return;
+      }
+      res_div.innerHTML = results.map(item => `
+        <div class="search-result-item">
+          <div style="flex:1">
+            <div class="title">
+              ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener">${item.title}</a>` : item.title}
+            </div>
+            ${item.date ? `<div class="meta">${item.date}</div>` : ''}
+          </div>
+        </div>`).join('');
+    } catch(e) {
+      res_div.innerHTML = `<div style="padding:16px;color:#c00;text-align:center">Search error: ${e.message}</div>`;
+    }
+  }
+
+  function closeSearch() { document.getElementById('searchPanel').style.display = 'none'; }
+
+  // ── Config modal ────────────────────────────────────────────────────
+  async function openConfig() {
+    document.getElementById('configFields').innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading…</div>';
+    new bootstrap.Modal(document.getElementById('configModal')).show();
+
+    try {
+      const res  = await fetch('/api/config/dates');
+      const data = await res.json();
+      state.configData = data;
+
+      let html = '';
+      Object.entries(data).forEach(([ck, ev]) => {
+        html += `<div class="config-event-block">
+          <h6>${ev.name} <small style="font-weight:400;color:#888;font-size:0.75rem">(${ck})</small></h6>`;
+        const datesObj = ev.dates || {};
+        const years = Object.keys(datesObj).length > 0 ? Object.keys(datesObj) : [state.year];
+        years.forEach(yr => {
+          const d = datesObj[yr] || {};
+          html += `<div class="date-row">
+            <label>${yr}</label>
+            <input type="date" class="form-control form-control-sm"
+                   id="cfg_${ck}_${yr}_start" value="${d.start||''}" placeholder="Start date">
+            <span style="color:#aaa;font-size:0.8rem">→</span>
+            <input type="date" class="form-control form-control-sm"
+                   id="cfg_${ck}_${yr}_end" value="${d.end||''}" placeholder="End date">
+          </div>`;
+        });
+        // Add next year row if only current year shown
+        const nextYr = state.year + 1;
+        if (!years.includes(String(nextYr)) && !years.includes(nextYr)) {
+          const d2 = {};
+          html += `<div class="date-row">
+            <label>${nextYr}</label>
+            <input type="date" class="form-control form-control-sm"
+                   id="cfg_${ck}_${nextYr}_start" value="" placeholder="Start date">
+            <span style="color:#aaa;font-size:0.8rem">→</span>
+            <input type="date" class="form-control form-control-sm"
+                   id="cfg_${ck}_${nextYr}_end" value="" placeholder="End date">
+          </div>`;
+        }
+        html += `</div>`;
+      });
+      document.getElementById('configFields').innerHTML = html || '<p style="color:#888">No configurable dates found.</p>';
+    } catch(e) {
+      document.getElementById('configFields').innerHTML = `<p style="color:#c00">Error loading config: ${e.message}</p>`;
+    }
+  }
+
+  async function saveConfig() {
+    const payload = {};
+    Object.entries(state.configData).forEach(([ck, ev]) => {
+      const datesObj = ev.dates || {};
+      const years = [...new Set([...Object.keys(datesObj).map(Number), state.year, state.year+1])];
+      years.forEach(yr => {
+        const sEl = document.getElementById(`cfg_${ck}_${yr}_start`);
+        const eEl = document.getElementById(`cfg_${ck}_${yr}_end`);
+        if (sEl || eEl) {
+          if (!payload[ck]) payload[ck] = {};
+          payload[ck][yr] = { start: sEl?.value||'', end: eEl?.value||'' };
+        }
+      });
+    });
+
+    try {
+      const res  = await fetch('/api/config/dates', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        bootstrap.Modal.getInstance(document.getElementById('configModal')).hide();
+        toast('✓ Config saved — regenerate to apply');
+      } else {
+        toast('Save failed: ' + (data.error||'unknown'), true);
+      }
+    } catch(e) {
+      toast('Save failed: ' + e.message, true);
+    }
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────
+  function init() {
+    // Set month selector to current month
+    const now = new Date();
+    document.getElementById('selMonth').value = now.getMonth() + 1;
+    document.getElementById('selYear').value  = now.getFullYear();
+  }
+
+  // Expose public API
+  return {
+    generate, setStatus, setFilter, acceptAll, rejectTrends,
+    handleRowClick, showHistory, openPanel, closePanel,
+    openEdit, saveEdit, exportXlsx, searchWeb, closeSearch,
+    openConfig, saveConfig, init,
+  };
+})();
+
+document.addEventListener('DOMContentLoaded', App.init);
+</script>
+</body>
+</html>

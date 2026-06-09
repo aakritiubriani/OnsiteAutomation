@@ -1,0 +1,556 @@
+# ============================================================================
+# calendar_config.yaml  —  Stage 1 / Layer 1 campaign generation engine
+# ----------------------------------------------------------------------------
+# OWNED BY: Onsite Strategy Specialist, Namshi
+# PURPOSE : Defines the recurring, calendar-predictable campaigns the engine
+#           maps onto a target month. This is a SEED derived from 15 months of
+#           history — review and confirm before every real run.
+#
+# HOW DATES WORK (important):
+#   - fixed_date_events  -> recur every year on the same date/rule. Safe.
+#   - seasonal_windows   -> approximate month ranges. Refine to taste.
+#   - monthly_anchors    -> appear (almost) every month. Safe.
+#   - lunar_events       -> SHIFT EVERY YEAR. dates listed per year. VERIFY.
+#   - sports_events      -> fixture-driven. dates listed per year. VERIFY.
+#
+# RULE: anything with `needs_date_confirmation: true` MUST be checked against a
+#       confirmed source before you trust the generated calendar. Getting a
+#       lunar/sports date wrong silently corrupts the whole month's draft.
+# ============================================================================
+
+meta:
+  schema_version: 1
+  source: "Master_Campaign_Calendr.xlsx (Mar 2025 - Jun 2026)"
+  default_geography: "KSA + UAE"
+  notes: "Tiers/categories are typical values from history; the engine marks generated rows needs_review=TRUE so the specialist can adjust."
+
+# ----------------------------------------------------------------------------
+# NORMALIZATION TABLES  (used by standardize.py)
+# All keys are lowercase; values are the canonical form.
+# ----------------------------------------------------------------------------
+geography_normalization:
+  "ksa + uae":  "KSA + UAE"
+  "ksa+uae":    "KSA + UAE"
+  "ksa + uae ": "KSA + UAE"
+  "ksa":        "KSA"
+  "uae":        "UAE"
+  "all":        "All"
+  "ae + gcc":   "UAE"
+  "ae+gcc":     "UAE"
+  "gcc":        "UAE"
+
+tier_normalization:
+  "tier 1": "Tier 1"
+  "t1":     "Tier 1"
+  "tier 2": "Tier 2"
+  "t2":     "Tier 2"
+  "tier 3": "Tier 3"
+  "t3":     "Tier 3"
+  "-":      "-"
+  "":       "-"
+  "na":     "-"
+
+# Campaign name variants → canonical_key (lowercase keys, case-insensitive match)
+campaign_name_map:
+  "eoss":                                         "eoss"
+  "clearance sale":                               "eoss"
+  "payday":                                       "payday"
+  "payday sale":                                  "payday"
+  "payday (september)":                           "payday"
+  "feed monthly refresh":                         "feed_refresh"
+  "feed refresh":                                 "feed_refresh"
+  "feed  module refresh (m/w/k/b)":               "feed_refresh"
+  "feed module refresh (m/w/k/b)":                "feed_refresh"
+  "feed  module refresh (m/w/k/b)\nsans trends":  "feed_refresh"
+  "july feed refresh":                            "feed_refresh"
+  "june feed refresh":                            "feed_refresh"
+  "bts soft launch":                              "bts"
+  "bts soft push (kids)":                         "bts"
+  "bts takeover":                                 "bts"
+  "bts last chance":                              "bts"
+  "last chance bts":                              "bts"
+  "back to school":                               "bts"
+  "back to school (kids)":                        "bts"
+  "ramadan":                                      "ramadan"
+  "ramadan (incl. ramadan sale)":                 "ramadan"
+  "together in ramadan (i)":                      "ramadan"
+  "get ready for ramadan":                        "ramadan"
+  "eid sale":                                     "eid_fitr"
+  "get ready for eid (adha)":                     "eid_adha"
+  "spring/ summer trends":                        "spring_summer"
+  "spring summer refresh":                        "spring_summer"
+  "summer rerun":                                 "summer_store"
+  "summer store - extension/ refresh":            "summer_store"
+  "summer/ travel edits (refreshed)":             "travel_edit"
+  "travel in comfort":                            "travel_edit"
+  "travel ":                                      "travel_edit"
+  "travel":                                       "travel_edit"
+  "ksa national day (promo)":                     "ksa_national_day"
+  "aw 2025/2026":                                 "aw"
+  "f1":                                           "f1"
+  "black november":                               "black_november"
+  "international beauty day":                     "beauty_week"
+  "lipstick day":                                 "beauty_week"
+  # Name variants discovered in history
+  "mother's day (gifting)":                       "mothers_day"
+  "mothers' day":                                 "mothers_day"
+  "pantone color of the year":                    "pantone_coty"
+  "running/ marathon edit":                       "marathon"
+  "winter sale":                                  "eoss"
+  "performance edit (dubai active/ dubai fitness)": "dubai_fitness"
+  "trends/ edits":                                "trend_edit_aw"
+  "riyadh fashion week (tbc)":                    "fashion_week"
+  "wedding edit":                                 "wedding_edit"
+  "wardrobe refresh":                             "wardrobe_refresh"
+  "fitness edit":                                 "fitness_edit"
+  "destination dresses (w)":                      "spring_summer"
+  "the love edit (valentine's day)":              "valentines"
+  "father's day":                                 "fathers_day"
+  "fathers' day":                                 "fathers_day"
+  "saudi vision 2030 - 10th anniversary (pif commitment)": "vision_2030"
+  "world cup":                                    "world_cup"
+  "wellness edit (int. yoga day)":                "yoga_day"
+  # Trend edit names
+  "summer store (w)":     "summer_store"
+  "summer store (m)":     "summer_store"
+  "summer store (m/w)":   "summer_store"
+  "soft girl summer (w)":        "spring_summer"
+  "resort wear (w)":             "spring_summer"
+  "resort wear (m)":             "spring_summer"
+  "coastal core (m)":            "spring_summer"
+  "the essentials shop":         "spring_summer"
+  "romanticism (w)":             "spring_summer"
+  "minimalism (m)":              "spring_summer"
+  "wellness girl/boy (m/w)":     "spring_summer"
+  "sports style (w)":            "spring_summer"
+  "preppy (m)":                  "aw"
+
+# ----------------------------------------------------------------------------
+# 1. FIXED-DATE EVENTS  (same date every year — low risk)
+#    `day` = day of month, OR `rule` = human-readable rule the code resolves.
+# ----------------------------------------------------------------------------
+fixed_date_events:
+  - name: "Pantone Colour of the Year"
+    canonical_key: pantone_coty
+    event_type: cultural
+    month: 1
+    rule: "first full week of January"
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "platform-wide, themed around the announced shade"
+    onsite_deliverables: "Hero banner + landing page"
+    needs_date_confirmation: false
+
+  - name: "Dubai Shopping Festival"
+    canonical_key: dsf
+    event_type: seasonal
+    month: 1
+    window: "late Dec - late Jan"
+    geography: "UAE"
+    default_tier: "Tier 2"
+    category_focus: "platform-wide"
+    onsite_deliverables: "Roundel + landing page"
+    needs_date_confirmation: true
+
+  - name: "Valentine's Day (Love Edit)"
+    canonical_key: valentines
+    event_type: cultural
+    month: 2
+    day: 14
+    geography: "UAE"
+    default_tier: "Tier 2"
+    category_focus: "fashion, beauty, gifting (EJW focus)"
+    onsite_deliverables: "Feed banner + landing pages (women/men)"
+    needs_date_confirmation: false
+
+  - name: "International Women's Day"
+    canonical_key: iwd
+    event_type: cultural
+    month: 3
+    day: 8
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "women's fashion (clothing + FAB), beauty"
+    onsite_deliverables: "Feed module + landing page"
+    needs_date_confirmation: false
+
+  - name: "Mother's Day (Middle East)"
+    canonical_key: mothers_day
+    event_type: cultural
+    month: 3
+    day: 21
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "gifting-relevant categories"
+    onsite_deliverables: "Feed module + landing page; carousel on 90min page"
+    needs_date_confirmation: false
+
+  - name: "Saudi Vision 2030 Anniversary"
+    canonical_key: vision_2030
+    event_type: national
+    month: 4
+    rule: "mid-to-late April (PIF-linked)"
+    geography: "KSA"
+    default_tier: "Tier 2"
+    category_focus: "local brands, arabian wear, streetwear, beauty"
+    onsite_deliverables: "Feed module + landing page"
+    needs_date_confirmation: true
+
+  - name: "Father's Day"
+    canonical_key: fathers_day
+    event_type: cultural
+    month: 6
+    rule: "third Sunday of June"
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "gifting-relevant categories (FAB, grooming)"
+    onsite_deliverables: "Feed module + landing page (Men's feed)"
+    needs_date_confirmation: false
+
+  - name: "International Yoga Day (Wellness Edit)"
+    canonical_key: yoga_day
+    event_type: cultural
+    month: 6
+    day: 21
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "athleisure and yoga-specific categories"
+    onsite_deliverables: "Feed module (Fashion + Sports feed)"
+    needs_date_confirmation: false
+
+  - name: "International Coffee Day"
+    canonical_key: coffee_day
+    event_type: cultural
+    month: 10
+    day: 1
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "fashion + beauty + sports (shades of brown), home"
+    onsite_deliverables: "Hero banner"
+    needs_date_confirmation: false
+
+  - name: "Halloween"
+    canonical_key: halloween
+    event_type: cultural
+    month: 10
+    day: 31
+    geography: "UAE"
+    default_tier: "Tier 2"
+    category_focus: "beauty + kids"
+    onsite_deliverables: "Feed module + hero banner + elevated PLP"
+    needs_date_confirmation: false
+
+  - name: "KSA National Day"
+    canonical_key: ksa_national_day
+    event_type: national
+    month: 9
+    day: 23
+    geography: "KSA"
+    default_tier: "Tier 1"
+    category_focus: "arabian wear, accessories, beauty, arabian home decor, gift sets"
+    onsite_deliverables: "Banner + landing page"
+    needs_date_confirmation: false
+
+  - name: "UAE National Day"
+    canonical_key: uae_national_day
+    event_type: national
+    month: 12
+    day: 2
+    geography: "UAE"
+    default_tier: "Tier 1"
+    category_focus: "flag-colour fashion, modestwear, streetwear/casual (W/M/K)"
+    onsite_deliverables: "Hero banner + landing page"
+    needs_date_confirmation: false
+
+# ----------------------------------------------------------------------------
+# 2. SEASONAL WINDOWS  (approximate month ranges — refine per year)
+# ----------------------------------------------------------------------------
+seasonal_windows:
+  - name: "Spring/Summer Trends"
+    canonical_key: spring_summer
+    event_type: seasonal
+    start_month: 4
+    end_month: 6
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "dresses, sets, swimwear & beachwear, tops & tees, sun care & hydration"
+    onsite_deliverables: "Hero/feed module showcasing trends"
+
+  - name: "Summer Store / Rerun"
+    canonical_key: summer_store
+    event_type: seasonal
+    start_month: 5
+    end_month: 7
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "summer-relevant categories, comfort wear, travel"
+    onsite_deliverables: "Feed module + landing page"
+
+  - name: "EOSS (Summer)"
+    canonical_key: eoss
+    event_type: sale
+    start_month: 6
+    end_month: 7
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "platform-wide (deal-code based)"
+    onsite_deliverables: "Hero banner + feed module + landing page (all feeds)"
+
+  - name: "EOSS (Winter)"
+    canonical_key: eoss
+    event_type: sale
+    start_month: 12
+    end_month: 1
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "platform-wide (deal-code based)"
+    onsite_deliverables: "Hero banner + feed module"
+
+  - name: "Back to School"
+    canonical_key: bts
+    event_type: seasonal
+    start_month: 7
+    end_month: 9
+    phased:
+      - name: "BTS Soft Launch"
+        typical_start_day: 15
+        typical_end_day: 25
+        tier: "Tier 2"
+      - name: "BTS Takeover (KSA)"
+        typical_start_day: 25
+        typical_duration: 18
+        geography_override: "KSA"
+        tier: "Tier 2"
+      - name: "BTS Takeover (UAE)"
+        typical_start_day: 25
+        typical_duration: 26
+        geography_override: "UAE"
+        tier: "Tier 2"
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "kidswear, footwear, bags, stationery, lunch boxes/water bottles"
+    onsite_deliverables: "Hero banner + roundel; feed takeover"
+
+  - name: "Autumn/Winter (AW)"
+    canonical_key: aw
+    event_type: seasonal
+    start_month: 9
+    end_month: 9
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "fashion"
+    onsite_deliverables: "Banner + feed module"
+
+  - name: "Travel Edit"
+    canonical_key: travel_edit
+    event_type: seasonal
+    start_month: 5
+    end_month: 8
+    recurs_also: "winter variant Dec-Jan"
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "bags & luggage, comfort/travel wear, beauty minis"
+    onsite_deliverables: "Feed module + landing page"
+
+  - name: "Holiday Season / Gifting"
+    canonical_key: holiday_gifting
+    event_type: seasonal
+    start_month: 12
+    end_month: 12
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "FAB, beauty giftsets, sports, kids (toys/merch), home"
+    onsite_deliverables: "Hero banner + landing page; feed module post-15th"
+
+  - name: "Party Edit"
+    canonical_key: party_edit
+    event_type: seasonal
+    start_month: 12
+    end_month: 12
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "party dresses, occasion footwear, blazers, statement bags, beauty"
+    onsite_deliverables: "Hero banner + landing page; trend banner post-27th"
+
+# ----------------------------------------------------------------------------
+# 3. MONTHLY ANCHORS  (appear almost every month)
+# ----------------------------------------------------------------------------
+monthly_anchors:
+  - name: "Payday Sale"
+    canonical_key: payday
+    event_type: monthly_anchor
+    rule: "salary cycle — typically ~25th of month into early next month"
+    typical_start_day: 25
+    typical_duration_days: 9
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "platform-wide (deal-code based)"
+    onsite_deliverables: "Hero/Tier banner + feed module + landing page"
+    needs_date_confirmation: false
+
+  - name: "Feed Monthly Refresh"
+    canonical_key: feed_refresh
+    event_type: monthly_anchor
+    rule: "once per month (M/W/K/B feeds)"
+    typical_start_day: 7
+    geography: "KSA + UAE"
+    default_tier: "-"
+    category_focus: "platform-wide"
+    onsite_deliverables: "Full feed refresh"
+    typical_duration_days: null
+    needs_date_confirmation: false
+
+  - name: "Beauty Week"
+    canonical_key: beauty_week
+    event_type: beauty
+    rule: "recurs several times/year — confirm if active in target month"
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "beauty (brands on discount, GWPs)"
+    onsite_deliverables: "Beauty feed + entry points on other feeds"
+    typical_duration_days: 7
+    needs_date_confirmation: true
+
+# ----------------------------------------------------------------------------
+# 4. LUNAR EVENTS  (SHIFT EVERY YEAR — dates are estimates, VERIFY each year)
+#    Listed per calendar year. Add new years as you plan ahead.
+# ----------------------------------------------------------------------------
+lunar_events:
+  - name: "Ramadan"
+    canonical_key: ramadan
+    event_type: cultural
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "arabian & modest wear, beauty, FAB, gifting"
+    onsite_deliverables: "Feed takeover; pre-Ramadan hero banner + landing page"
+    needs_date_confirmation: true
+    dates:
+      2026: { start: "2026-02-18", end: "2026-03-19" }
+      2027: { start: "2027-02-08", end: "2027-03-09" }
+
+  - name: "Eid al-Fitr (Eid Sale)"
+    canonical_key: eid_fitr
+    event_type: sale
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "platform-wide; fashion (arabian wear), beauty, sports"
+    onsite_deliverables: "Hero banner + landing page across feeds"
+    needs_date_confirmation: true
+    dates:
+      2026: { start: "2026-03-20", end: "2026-03-28" }
+      2027: { start: "2027-03-10", end: "2027-03-18" }
+
+  - name: "Eid al-Adha (Eid Sale)"
+    canonical_key: eid_adha
+    event_type: sale
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "fashion (arabian wear, dresses), beauty & grooming, sports"
+    onsite_deliverables: "Hero module + landing page (Fashion/Beauty/Sports feeds)"
+    needs_date_confirmation: true
+    dates:
+      2026: { start: "2026-05-26", end: "2026-06-02" }
+      2027: { start: "2027-05-16", end: "2027-05-23" }
+
+  - name: "Diwali"
+    canonical_key: diwali
+    event_type: cultural
+    geography: "UAE"
+    default_tier: "Tier 1"
+    category_focus: "fashion + beauty + home + sports; gifting"
+    onsite_deliverables: "Hero banner (Indian nationals) + gifting roundel"
+    needs_date_confirmation: true
+    dates:
+      2026: { start: "2026-11-08", end: "2026-11-12" }
+
+  - name: "Holi"
+    canonical_key: holi
+    event_type: cultural
+    geography: "UAE"
+    default_tier: "Tier 2"
+    category_focus: "fashion & sports (white & Indian clothing), beauty"
+    onsite_deliverables: "Roundel"
+    needs_date_confirmation: true
+    dates:
+      2027: { start: "2027-03-22", end: "2027-03-22" }
+
+# ----------------------------------------------------------------------------
+# 5. SPORTS EVENTS  (fixture-driven — VERIFY fixtures each year)
+# ----------------------------------------------------------------------------
+sports_events:
+  - name: "FIFA World Cup 2026"
+    canonical_key: world_cup
+    event_type: sports
+    geography: "KSA + UAE"
+    default_tier: "Tier 1"
+    category_focus: "World Cup jerseys & related apparel, footwear, accessories"
+    onsite_deliverables: "Sports feed + fashion feed entry points"
+    needs_date_confirmation: true
+    dates:
+      2026: { start: "2026-06-11", end: "2026-07-19" }
+
+  - name: "F1 (Abu Dhabi GP + season)"
+    canonical_key: f1
+    event_type: sports
+    geography: "KSA + UAE"
+    default_tier: "Tier 2"
+    category_focus: "F1 assortment / merch (fashion + sports)"
+    onsite_deliverables: "Module/carousel on Sports + Fashion feed"
+    needs_date_confirmation: true
+    dates:
+      2026: { start: "2026-11-27", end: "2026-11-29" }
+
+  - name: "Marathons (Dubai / Riyadh)"
+    canonical_key: marathon
+    event_type: sports
+    geography: "KSA + UAE"
+    default_tier: "Tier 3"
+    category_focus: "running apparel, shoes, accessories"
+    onsite_deliverables: "Feed module"
+    needs_date_confirmation: true
+    dates:
+      2027: { start: "2027-01-10", end: "2027-02-08" }
+
+  - name: "Dubai Fitness Challenge / Dubai Active"
+    canonical_key: dubai_fitness
+    event_type: sports
+    geography: "UAE"
+    default_tier: "Tier 1"
+    category_focus: "sports + fashion (athleisure)"
+    onsite_deliverables: "Feed module / hero banner"
+    needs_date_confirmation: true
+    dates:
+      2026: { start: "2026-10-25", end: "2026-11-22" }
+
+# ----------------------------------------------------------------------------
+# 6. TREND-EDIT POOL  (gender-split style edits — SUGGESTIONS only)
+#    Engine surfaces all spring_summer options for summer months and marks
+#    them needs_review=TRUE. Specialist selects and rewrites.
+# ----------------------------------------------------------------------------
+trend_edit_pool:
+  spring_summer:
+    - name: "City to Beach (M/W)"
+      focus: "swimwear, beachwear, summer dresses, sandals, sunglasses"
+    - name: "High Summer (M/W)"
+      focus: "linen, bright colours, crochet, sequins, embroidery"
+    - name: "Soft Girl Summer (W)"
+      focus: "soft/romantic summer fashion"
+    - name: "Resort Wear (M/W)"
+      focus: "holiday/resort styling"
+    - name: "Coastal Core (M)"
+      focus: "coastal/relaxed menswear"
+    - name: "90's Off Duty Style (W)"
+      focus: "crop tops, baggy jeans, converse, checks"
+    - name: "Court Sports (M)"
+      focus: "polo shirts, golf/padel/tennis styles"
+    - name: "Graphic Content (M)"
+      focus: "graphic tees + clothing"
+  autumn_winter:
+    - name: "Preppy (M)"
+      focus: "preppy menswear"
+    - name: "Minimalism (M)"
+      focus: "minimalist styling"
+    - name: "Romanticism (W)"
+      focus: "romantic womenswear"
+    - name: "Wellness Girl/Boy (M/W)"
+      focus: "fashion + sports crossover"

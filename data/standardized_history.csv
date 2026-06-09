@@ -1,0 +1,293 @@
+﻿campaign_name,canonical_key,tier,geography,start_date,end_date,duration_days,promos_coupons,category_focus,onsite_deliverables,wireframes,event_type,source,needs_review,raw_notes,sheet_name,table_type
+"Feed  Module Refresh (m/w/k/b)
+Sans Trends",feed_refresh,-,KSA + UAE,2026-06-05,2026-06-30,26.0,NA,,Fashion Feed,June Onsite Wireframes'26,monthly_anchor,history,False,,june2026,primary
+Summer Rerun,summer_store,Tier 2,KSA + UAE,2026-06-05,2026-06-30,26.0,NA,"Summer-relevant categories (dresses, sets, swimwear & beachwear, tops & tees, sun care & hydration essentials, etc.)","Feed module + landing page
+Fashion Feed",June Onsite Wireframes'26,seasonal,history,True,"tier_raw: Tier1
+Tier 2 - Post Eoss",june2026,primary
+EOSS,eoss,Tier 1,KSA + UAE,2026-06-26,2026-07-06,11.0,TBD,Platform-wide (deal code based),"Hero Module + Landing Page
+Fashion Feed + Sports Feed + Outlet Feed + Premium Feed",TBD,sale,history,False,,june2026,primary
+Father's Day,fathers_day,Tier 2,KSA + UAE,2026-06-12,2026-06-21,10.0,NA,Gifting Relevant Categories,"Feed Module + Landing Page
+Men's Fashion Feed",June Onsite Wireframes'26,cultural,history,False,,june2026,primary
+Wellness Edit (Int. Yoga Day),yoga_day,Tier 2,KSA + UAE,2026-06-12,2026-06-21,10.0,NA,Athleisure and Yoga specific Categories,"TBD
+Fashion Feed + Sports Feed",TBD,cultural,history,False,,june2026,primary
+World Cup,world_cup,Tier 1,KSA + UAE,2026-06-05,2026-06-30,26.0,NA,World Cup specific Catgeories,"Sports Feed
+Fashion feed Entry Points",To be shared separately,sports,history,True,tier_raw: Tier 1 (sports feed),june2026,primary
+F1,f1,Tier 2,KSA + UAE,2026-04-24,2026-05-03,10.0,NA,F1 Assortment,"Module/Carousel
+Sports + Fashion Feed",May 26 Onsite WFs,sports,history,True,"tier_raw: Tier 2 on Men
+Tier 3 Women & Kids",may 2026,primary
+Feed  Module Refresh (m/w/k/b),feed_refresh,-,KSA + UAE,2026-05-04,2026-05-31,28.0,NA,,Fashion Feed,May 26 Onsite WFs,monthly_anchor,history,False,,may 2026,primary
+Spring Summer Refresh,spring_summer,Tier 1,KSA + UAE,2026-05-04,2026-05-31,28.0,NA,"Summer-relevant categories (dresses, sets, swimwear & beachwear, tops & tees, sun care & hydration essentials, etc.)","Feed module + landing page
+Fashion Feed",May 26 Onsite WFs,seasonal,history,True,"tier_raw: Tier 2 on Women & Kids
+Tier 1 Men",may 2026,primary
+Get Ready for Eid (Adha),eid_adha,Tier 1,KSA + UAE,2026-05-04,2026-05-18,15.0,NA,"Fashion (arabian wear, dresses,etc) beauty & grooming, Sports","Hero Module + Landing Page
+Fashion Feed + Beauty Feed + Sports Feed",May 26 Onsite WFs,sale,history,True,"tier_raw: Tier 1 on Women & Kids
+Tier 2 - Men",may 2026,primary
+Travel,travel_edit,Tier 2,KSA + UAE,2026-05-14,2026-05-21,8.0,NA,Travel summer + winter categories for travel,"Feed Module + Landing Page
+Fashion Feed",TBD,seasonal,history,False,,may 2026,primary
+Eid Sale,eid_fitr,Tier 1,KSA + UAE,2026-05-18,2026-05-26,9.0,TBD,Platform-wide (deal code based),"Hero banner + feed module
+Fashion Feed + Beauty Feed + Sports Feed",TBD,sale,history,False,,may 2026,primary
+Beauty Week,beauty_week,Tier 1,KSA + UAE,2026-05-20,2026-05-26,7.0,,Beauty,Beauty Feed + EP on diff feeds,NA,beauty,history,False,,may 2026,primary
+Saudi Vision 2030 - 10th Anniversary (PIF commitment),vision_2030,Tier 2,KSA,TBD,TBD,,,"Local brands, arabian wear, streetwear, beauty","Feed module + landing page
+Fashion Feed",,national,history,False,start_raw: TBD | end_raw: TBD,may 2026,primary
+BTS Soft Push (kids),bts,Tier 2,KSA,2026-03-26,2026-04-06,12.0,NA,"BTS-relevant categories (kidswear, stationery, backpacks, etc.)",Feed module + landing page,April Onsite WF'26,seasonal,history,False,,april 2026,primary
+Feed Refresh (m/w/k/b),feed_refresh,-,KSA + UAE,2026-04-06,TBD,,NA,,,April Onsite WF'26,monthly_anchor,history,False,,april 2026,primary
+Spring/ Summer Trends,spring_summer,Tier 1,KSA + UAE,2026-04-06,2026-05-04,29.0,NA,"Summer-relevant categories (dresses, sets, swimwear & beachwear, tops & tees, sun care & hydration essentials, etc.)",Hero module + feed module showcasing trends,Spring Summer 2026 | M/W/K,seasonal,history,False,,april 2026,primary
+Saudi Vision 2030 - 10th Anniversary (PIF commitment),vision_2030,Tier 2,KSA,2026-04-06,2026-04-25,20.0,Coupon to run from 16th to 25th - details TBD,"Local brands, arabian wear, streetwear, beauty",Feed module + landing page,April Onsite WF'26,national,history,False,,april 2026,primary
+World Cup Soft Launch,world_cup,Tier 2,KSA + UAE,2026-04-06,2026-04-30,25.0,NA,"World cup jerseys & related apparel, footwear, accessories",Banner on sports feed/ module,TBD,sports,history,False,,april 2026,primary
+Payday,payday,Tier 1,KSA + UAE,2026-04-24,2026-05-01,8.0,TBD,Platform-wide (deal code based),Hero banner + feed module,TBD,monthly_anchor,history,False,,april 2026,primary
+International Women's Day,iwd,Tier 2,KSA + UAE,2026-03-02,2026-03-08,7.0,NA,"Fashion, sports, beauty",Feed module + landing page,,cultural,history,False,,march 2026,primary
+Mother's Day (Gifting),mothers_day,Tier 2,KSA + UAE,2026-03-06,2026-03-21,16.0,NA,Gifting-relevant categories + USPs,"Feed module + landing page
+Carousel on 90min page
+VPLPs on EJW pages",,cultural,history,False,,march 2026,primary
+World Cup (TBC),world_cup,Tier 2,KSA + UAE,2026-03-20,2026-03-27,8.0,NA,"adidas away kits launch (Mar 20)
+Finalissima: Argentina v. Spain (Mar 27)",TBD,,sports,history,False,,march 2026,primary
+Spring Summer Rerun,summer_store,Tier 2,KSA + UAE,2026-03-23,2026-04-06,15.0,NA,Spring summer relevant categories + trends,Feed module,,seasonal,history,False,,march 2026,primary
+F1 Fan Merch Store,f1,Tier 3,KSA + UAE,2026-03-23,2026-04-20,29.0,NA,F1 merch (fashion + sports),Feed module,,sports,history,False,,march 2026,primary
+Payday,payday,Tier 1,KSA + UAE,2026-03-25,2026-04-02,9.0,TBD,Platform-wide (deal code based),Hero banner + feed module,,monthly_anchor,history,False,,march 2026,primary
+Get Ready for Ramadan,ramadan,Tier 1,KSA + UAE,2026-01-19,2026-02-19,32.0,NA,"Fashion (arabian/ modest wear)
+Sports (modest/ low-impact activewear)
+Beauty (skincare/ hair care)",Hero banner module + landing page (across feeds),Ramadan'2026 Onsite WFs,cultural,history,False,,feb 2026,primary
+The Love Edit (Valentine's Day),valentines,Tier 2,UAE,2026-02-02,2026-02-14,13.0,NA,"Fashion, beauty, gifting (EJW focus)",Feed banner + landing pages (women/ men),Spring Summer 2026 | M/W/K,cultural,history,False,,feb 2026,primary
+Ramadan (incl. Ramadan Sale),ramadan,Tier 1,KSA + UAE,2026-02-19,2026-03-19,29.0,"Cashback coupon in line with payday (Feb 26 - Mar 12)
+TBC","Fashion (arabian/ modest wear)
+Sports (modest/ low-impact activewear)
+Beauty",Feed takeover,Ramadan'2026 Onsite WFs,cultural,history,False,,feb 2026,primary
+Holi (targeted to Indian nationals),holi,Tier 2,UAE,2026-02-23,2026-03-04,10.0,NA,"Fashion & sports (focus on white & indian clothing categories), beauty",Roundel,,cultural,history,False,,feb 2026,primary
+EOSS,eoss,Tier 1,KSA + UAE,2025-12-26,2026-01-05,11.0,"Up to 80% off +
+5% cashback at min value 400
+15% cashback at min value 700
+Max cashback of 150",Platform-wide,Hero banner + feed module,EOSS  SALE MAIN PROMO | Up to 80% off + Up to 15% Cashback | 26TH DEC'25,sale,history,False,,jan 2026,primary
+Back to School (kids),bts,Tier 2,KSA + UAE,2025-12-26,2026-01-05,11.0,NA,"Kids school essentials (shoes, bags, clothing essentials, stationery, water bottles/ lunch bags)",Feed module + landing page,JanOnsiteWFs'26,seasonal,history,False,,jan 2026,primary
+Shopping Festival (in line with Dubai Shopping Festival),dsf,Tier 2,UAE,2026-01-05,2026-01-11,7.0,NA,Platform-wide,Roundel + landing page,JanOnsiteWFs'26,seasonal,history,False,,jan 2026,primary
+Feed Monthly Refresh,feed_refresh,-,KSA + UAE,2026-01-05,2026-01-05,1.0,,,,JanOnsiteWFs'26,monthly_anchor,history,False,,jan 2026,primary
+Wardrobe Refresh,wardrobe_refresh,Tier 1,KSA + UAE,2026-01-05,2026-01-12,8.0,NA,New arrivals across categories,Hero banner + landing page,JanOnsiteWFs'26,,history,False,,jan 2026,primary
+Fitness Edit,fitness_edit,Tier 2,KSA + UAE,2026-01-05,2026-01-19,15.0,NA,Sports performance,Feed module + inclusion in wardrobre refresh landing page,JanOnsiteWFs'26,,history,False,,jan 2026,primary
+Pantone Color of the Year,pantone_coty,Tier 1,KSA + UAE,2026-01-12,2026-01-19,8.0,NA,"Platform-wide, focus on shades of white in cline with Pantone shade 2026 (cloud dancer)",Hero banner + landing page,JanOnsiteWFs'26,cultural,history,False,,jan 2026,primary
+Pre-Ramadan,ramadan,Tier 1,KSA + UAE,2026-01-19,2026-02-16,29.0,NA,"Platform-wide, with focus on arabian/ modest clothing (new arrivals), activewear, beauty",Hero banner + landing page,,cultural,history,False,,jan 2026,primary
+Running/ Marathon Edit,marathon,Tier 3,KSA + UAE,2026-01-19,TBD,,NA,"Running apparel, shoes and accessories in line with Dubai/ Riyadh marathons",Feed module,,sports,history,True,"end_raw: Sunday, February 1, 2026 (UAE)
+Sunday, February 8, 2026 (KSA)",jan 2026,primary
+Payday Sale,payday,Tier 1,KSA + UAE,2026-01-23,2026-02-02,11.0,TBD,Platform-wide,Hero banner + feed module,RAMADAN READY MAIN PROMO | Up to 15% Cashback | 23rd JAN'26,monthly_anchor,history,False,,jan 2026,primary
+Winter Sale,eoss,-,,TBD,TBD,,,,,,sale,history,False,,jan 2026,primary
+UAE National Day,uae_national_day,Tier 1,UAE,2025-11-25,2025-12-02,8.0,NA,"Women, men, kids
+Fashion (flag colors, modestwear, streetwear/ casual)",Hero banner + landing page,NovemberOnsiteWFs'25,national,history,False,,december 2025,primary
+Clearance Sale,eoss,Tier 1,KSA + UAE,2025-12-01,2025-12-03,3.0,Up to 90% Off,"All feeds
+Platform-wide",Hero banner + feed module,NovemberOnsiteWFs'25,sale,history,False,,december 2025,primary
+Feed Monthly Refresh,feed_refresh,-,KSA + UAE,2025-12-03,2025-12-03,1.0,NA,Platform-wide,Feed refresh,DecemberOnsiteWfs,monthly_anchor,history,False,,december 2025,primary
+Holiday Season/ Gifting,holi,Tier 1,KSA + UAE,2025-12-03,2026-12-26,389.0,NA,"FAB, beauty (giftsets), sports, kids (fashion, toys, character merch), home (hosting essentials, decor)","Hero banner + landing page
+Feed module (post-15th)",DecemberOnsiteWfs,cultural,history,False,,december 2025,primary
+Party Edit,party_edit,Tier 2,KSA + UAE,2025-12-15,2026-01-01,18.0,NA,"Fashion (party dresses, heels & occasion footwear, smart shirts & blazers, statement bags & jewelry), beauty","Hero banner + landing page
+Trend banner (post-27th)",DecemberOnsiteWfs,seasonal,history,False,,december 2025,primary
+Travel Edit,travel_edit,Tier 2,KSA + UAE,2025-12-03,2026-01-05,34.0,NA,"Comfort wear, winter/ summer wear, travel essentials, beauty minis",Feed module,DecemberOnsiteWfs,seasonal,history,False,,december 2025,primary
+End of Season Sale (EOSS),eoss,Tier 1,KSA + UAE,2025-12-26,2026-01-05,11.0,TBD,Platform-wide,Hero banner + feed module,EOSS  SALE MAIN PROMO | 30-80% off + Up to 15% Cashback | 26TH DEC'25,sale,history,False,,december 2025,primary
+Payday Sale,payday,-,All,2025-10-26,2025-11-03,9.0,"30-70% Off | beauty_callout: Up to 50% Off | cashback_coupons: 5% cashback at min. 400 spend
+15% cashback at min. 700 spend
+Up to 150 aed/ sar
+Code: Payday | deal_codes: TBD",,"- App logo (Namshi x BN)
+- PDP/ cart banners
+- Category page entrypoint
+- Tier 1 banner / feed
+- Offers module",,monthly_anchor,history,False,,november 2025,primary
+Black November,black_november,-,All,2025-11-03,2025-11-07,5.0,Up to 70% Off | beauty_callout: up to 30 | deal_codes: TBD,,"- Logo unit
+- Splashscreen
+- PDP/ cart banners
+- Category page entrypoint
+- Tier 1 banner / feed
+- Offers module",,,history,False,,november 2025,primary
+"Black November
+11.11 Sale",black_november,-,All,2025-11-07,2025-11-13,7.0,"40-80% Off | beauty_callout: up to 70 | cashback_coupons: 11% cashback at min. 400 spend
+Up to 111
+Code: 11sale | coupon_change: 11% cashback on spends above 400 aed 
+22% cashback on spends above 1000 aed
+Max cap 300 | deal_codes: TBD",,"- Splashscreen
+- Logo unit
+- PDP/ cart banners
+- Category page entrypoint
+- Tier 1 banner/ feed
+- Feed takeover / feed",,,history,False,,november 2025,primary
+Black November,black_november,-,All,2025-11-13,2025-11-20,8.0,Up to 80% Off | beauty_callout: up to 30 | deal_codes: TBD,,"- PDP/ cart banners
+- Category page entrypoint
+- Tier 1 banner / feed
+- Offers module",,,history,False,,november 2025,primary
+Black November,black_november,-,All,2025-11-20,2025-11-27,8.0,"40-90% Off | beauty_callout: up to 70 | cashback_coupons: 40 aed/ sar cashback at min. 400 spend
+100 aed/ sar cashback at min. 700 spend
+200 aed/ sar cashback at min. 1000 spend
+Code: bn200 | deal_codes: TBD",,"- Splashscreen
+- Logo unit
+- PDP/ cart banners
+- Category page entrypoint
+- Tier 1 banner/ feed
+- Feed takeover / feed",,,history,False,,november 2025,primary
+"Black November
+Namshi Friday",black_november,-,All,2025-11-27,2025-12-01,5.0,"40-90% Off | cashback_coupons: 40aed/ sar cashback at min. 400 spend
+100 aed/ sar cashback at min. 700 spend
+250 aed/ sar cashback at min. 1000 spend
+Code: friday | deal_codes: TBD",,"- Splashscreen
+- Logo unit
+- PDP/ cart banners
+- Category page entrypoint
+- Tier 1 banner/ feed
+- Feed takeover / feed",,,history,False,,november 2025,primary
+Clearance Sale,eoss,-,All,2025-12-01,2025-12-03,3.0,Up to 90% Off | cashback_coupons: TBD reactively based on performance | deal_codes: TBD,,"- PDP/ cart banners
+- Category page entrypoint
+- Tier 1 banner / feed
+- Offers module",,sale,history,False,,november 2025,primary
+UAE National Day,uae_national_day,-,UAE,2025-11-25,2025-12-02,8.0,,,,,national,history,False,,november 2025,primary
+Payday (September),payday,Tier 1,KSA + UAE,2025-09-25,2025-10-05,11.0,30-80% Off + Up to 15% Cashback,Platform-wide,Hero banner + offers module,,monthly_anchor,history,False,,October 2025,primary
+International Coffee Day,coffee_day,Tier 2,KSA + UAE,2025-09-25,2025-10-01,7.0,,"Fashion + Beauty + Sports (shades of brown)
+Home",Hero Banner,OctoberOnsiteWFs,cultural,history,False,,October 2025,primary
+Diwali (incl. gifting),diwali,Tier 1,UAE,2025-10-09,2025-10-20,12.0,,Fashion + Beauty + Home + Sports,"Hero Banner (indian nationals) + Gifting roundel (all)
+OR Feed module",OctoberOnsiteWFs,cultural,history,True,tier_raw: Tier 1 (Indian Nationals),October 2025,primary
+Halloween,halloween,Tier 2,UAE,2025-10-20,2025-10-31,12.0,,Beauty + Kids,Module on feed + hero banner and elevated plp + halloween essentials + 90 mins carousel last 2 days,OctoberOnsiteWFs,cultural,history,False,,October 2025,primary
+Performance Edit (Dubai Active/ Dubai Fitness),dubai_fitness,Tier 1,UAE,2025-10-20,2025-11-30,42.0,,Sports + Fashion (athleisure),,OctoberOnsiteWFs,sports,history,True,"tier_raw: Tier 1 at launch
+Tier 2 starting payday",October 2025,primary
+Payday Sale,payday,Tier 1,KSA + UAE,2025-10-26,2025-11-03,9.0,"30-80% off + up to 20% cashback as follows:
+10% for 300-500 spend
+20% for 500+ spend
+Max cap 150",Platform-wide,,OctoberOnsiteWFs,monthly_anchor,history,False,,October 2025,primary
+Trends/ Edits,trend_edit_aw,-,,TBD,TBD,,,,,,,history,False,,October 2025,primary
+Riyadh Fashion Week (TBC),fashion_week,-,KSA,2017-10-21,TBD,,,Fashion + Sports,Trend banner,,,history,True,start_raw: 17th - 21st October,October 2025,primary
+Wedding Edit,wedding_edit,-,KSA + UAE,2025-10-10,2025-10-31,22.0,,Fashion (occasionwear),Banner + Module+ hub+ category tree,,,history,False,,October 2025,primary
+Last Chance BTS,bts,-,KSA + UAE,2025-08-25,2025-09-04,11.0,"40-80% Off + Up to 10% Cashback*
+Beauty : 20-50% Off + Up to 10% Cashback
+
+5% cashback for 2+ items added to cart
+10% cashback for 5+ items added to cart
+max cap 150 aed/ sar",Platform-wide,"Hero banner + roundel
+Sale feed takeover (UAE)",BTS PHASE 3 SALE PROMO(ALL FEEDS) | 40-80% off + Up to 15% Cashback | 12TH AUG'25,seasonal,history,False,,september 2025,primary
+Feed Monthly Refresh,feed_refresh,-,KSA + UAE,2025-09-04,TBD,,,Platform-wide,Feed refresh,September Onsite Plan,monthly_anchor,history,False,,september 2025,primary
+AW 2025/2026,aw,-,KSA + UAE,2025-09-05,2025-09-19,15.0,,Fashion,Banner + feed module,September 25,seasonal,history,False,,september 2025,primary
+International Beauty Day,beauty_week,-,KSA + UAE,2025-09-04,2025-09-10,7.0,TBD,Beauty,Banner,International Beauty Day,beauty,history,False,,september 2025,primary
+KSA National Day,ksa_national_day,-,KSA,2025-09-09,2025-09-23,15.0,,"Arabian wear, accessories, beauty, arabian home decor, gift sets",Banner + landing page,KSA National Day 25 - Onsite,national,history,False,,september 2025,primary
+KSA National Day (Promo),ksa_national_day,-,KSA,2026-09-18,2026-09-23,6.0,Coupon to be confirmed,Platform-wide,Banner,KSA National Day 25 - Onsite,national,history,True,start_raw: September 18 (TBC) | end_raw: September 23 (TBC),september 2025,primary
+Payday,payday,-,KSA + UAE,2025-09-25,2025-10-05,11.0,"30-80% + Up to 15% cashback
+5% cashback for 350+ aed/ sar
+15% cashback for 700+ aed/ sar
+max cap 150 aed/ sar",Platform-wide,T2 banner + categories on discount,,monthly_anchor,history,False,,september 2025,primary
+Beauty Week,beauty_week,-,KSA + UAE,2025-09-25,2025-10-03,9.0,Up to 70% Off,Beauty,"Banner
+Feed",Beauty Week Plan | Sept '25,beauty,history,False,,september 2025,primary
+Payday,payday,-,All,2025-07-25,2025-08-04,11.0,"30-80% Off + Up to 15% Cashback
+Coupon code: BTS
+5% Cashback | Min Order Value 350 AED / SAR
+15% Cashback | Min Order Value 700 AED / SAR
+
+T&Cs
+Maximum cashback limit is 150 AED / SAR.
+Cashback is applicable on noon & Namshi, no minimum spend required.
+Cashback will be credited 14 days after delivery.
+Cashback is valid for 60 days.",Platform-wide,"- Tier 2 banner (under HB) + roundel across feeds + landing page
+- Middle nav",,monthly_anchor,history,False,,august 2025,primary
+BTS Takeover,bts,-,UAE,2025-07-25,2025-08-20,27.0,NA,"BTS-relevant categories (e.g., footwear, bags, winter wear, stationery, lunch boxes/ water bottles)","- Hero banner + roundel 
+- Feed takeover",,seasonal,history,False,,august 2025,primary
+BTS Takeover,bts,-,KSA,2025-07-25,2025-08-12,19.0,NA,"BTS-relevant categories (e.g., footwear, bags, winter wear, stationery, lunch boxes/ water bottles)","- Hero banner + roundel 
+- Feed takeover",,seasonal,history,False,,august 2025,primary
+BTS Last Chance,bts,-,KSA,2025-08-12,2025-08-25,14.0,TBD,"BTS-relevant categories (e.g., footwear, bags, winter wear, stationery, lunch boxes/ water bottles)","- Hero banner + roundel 
+- Feed takeover",,seasonal,history,False,,august 2025,primary
+BTS Last Chance,bts,-,UAE,2025-08-20,2025-09-04,16.0,TBD,"BTS-relevant categories (e.g., footwear, bags, winter wear, stationery, lunch boxes/ water bottles)","- Hero banner + roundel 
+- Feed takeover",,seasonal,history,False,,august 2025,primary
+Payday,payday,-,KSA,2025-08-25,2025-09-04,11.0,TBD,Platform-wide,"- Hero banner + roundel
+- Landing page",,monthly_anchor,history,False,,august 2025,primary
+EOSS,eoss,-,KSA + UAE,2025-06-20,2025-07-07,18.0,30-70% off + up to 20% cashback,Platform-wide,"- Hero banner + roundel across feeds + landing page
+- Middle nav",EOSS | W/M/K | 20th June 2025,sale,history,False,,july 2025,primary
+July Feed Refresh,feed_refresh,-,KSA + UAE,2025-07-07,2025-07-30,24.0,NA,Platform-wide,- Full feed refresh,July Feed 2025,monthly_anchor,history,False,,july 2025,primary
+Summer Store - Extension/ Refresh,summer_store,-,KSA + UAE,2025-07-08,2025-07-15,8.0,NA,Platform-wide,"- Hero banner + roundel across feeds + landing page
+- Middle nav",July Trends/Hero Banners,seasonal,history,False,,july 2025,primary
+BTS Soft Launch,bts,-,KSA + UAE,2025-07-15,2025-07-25,11.0,NA,"BTS-relevant categories (footwear, bags, winter wear, stationery, lunch boxes/ water bottles)",- Hero banner + roundel across feeds + landing page,July Feed 2025,seasonal,history,False,,july 2025,primary
+Lipstick Day,beauty_week,-,KSA + UAE,2025-07-25,2025-07-29,5.0,NA,Beauty,TBD,"July Plan | Beauty
+Lip Moment - Soft Launch (15th July-25 July) | Beauty | 2025",beauty,history,False,,july 2025,primary
+BTS Takeover,bts,-,KSA,2025-07-25,2025-08-12,19.0,NA,"BTS-relevant categories (footwear, bags, winter wear, stationery, lunch boxes/ water bottles)","-Hero banner + roundel 
+- Feed takeover",,seasonal,history,False,,july 2025,primary
+BTS Takeover,bts,-,UAE,2025-07-25,2025-08-20,27.0,NA,"BTS-relevant categories (footwear, bags, winter wear, stationery, lunch boxes/ water bottles)","-Hero banner + roundel 
+- Feed takeover",,seasonal,history,False,,july 2025,primary
+Payday,payday,-,KSA + UAE,2025-07-25,2025-08-04,11.0,"30-80% Off + Up to 15% Cashback
+Coupon code: BTS
+5% Cashback | Min Order Value 350 AED / SAR
+15% Cashback | Min Order Value 700 AED / SAR
+
+T&Cs
+Maximum cashback limit is 150 AED / SAR.
+Cashback is applicable on noon & Namshi, no minimum spend required.
+Cashback will be credited 14 days after delivery.
+Cashback is valid for 60 days.
+
+For GCC the construct will be the same - converted to local currency.",Platform-wide,"- Tier 2 banner (under HB) + roundel across feeds + landing page
+- Middle nav",,monthly_anchor,history,False,,july 2025,primary
+Summer Store (W),summer_store,-,KSA + UAE,2025-07-07,2025-07-14,8.0,,Platform-wide,"- Hero Banner with trend entry point
+- Landing page
+- Middle Nav
+- Calling out summer trends - Floaty Dresses, Seaside Chic, Elevated Accessories, Summer Tailoring","Central Nav: https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=0#gid=0
+
+Hero: https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=945566179#gid=945566179",seasonal,history,False,,july 2025,trend
+Summer Store (M),summer_store,-,KSA + UAE,2025-07-07,2025-07-14,8.0,,Platform-wide,"- Hero Banner with trend entry point
+- Landing page
+- Middle Nav","Central Nav: https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=2000873559#gid=2000873559
+
+Hero: https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=280602229#gid=280602229",seasonal,history,False,,july 2025,trend
+The Essentials Shop,spring_summer,-,KSA + UAE,2025-07-18,2025-07-31,14.0,,Platform-wide,- Feed module,https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=379718639#gid=379718639,seasonal,history,False,,july 2025,trend
+The Essentials Shop,spring_summer,-,KSA + UAE,2025-07-18,2025-07-31,14.0,,Platform-wide,- Feed module,https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=792172573#gid=792172573,seasonal,history,False,,july 2025,trend
+Soft Girl Summer (W),spring_summer,-,KSA + UAE,2025-07-14,2025-07-31,18.0,,Platform-wide,- Hero Banner,https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=604858772#gid=604858772,trend_edit,history,False,,july 2025,trend
+Resort Wear (W),spring_summer,-,KSA + UAE,2025-07-14,2025-07-31,18.0,,Platform-wide,- Hero Banner,https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=604858772#gid=604858773,seasonal,history,False,,july 2025,trend
+Resort Wear (M),spring_summer,-,KSA + UAE,2025-07-14,2025-07-31,18.0,,Platform-wide,- Hero Banner,https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=604858772#gid=604858774,seasonal,history,False,,july 2025,trend
+Coastal Core (M),spring_summer,-,KSA + UAE,2025-07-14,2025-07-31,18.0,,Platform-wide,- Hero Banner,https://docs.google.com/spreadsheets/d/1WDERN9EQbU9PibZHORM4HobgU3rsrjxQ-fo2TkaQ1As/edit?gid=604858772#gid=604858775,trend_edit,history,False,,july 2025,trend
+Eid Sale,eid_fitr,-,KSA + UAE,2025-05-26,2025-06-05,11.0,30-80% off + Up to 15% cashback,Platform-wide,"- Hero banner + roundel across feeds
+- Middle nav",,sale,history,False,,june 2025,primary
+June Feed Refresh,feed_refresh,-,KSA + UAE,2025-06-09,TBD,,,Platform-wide,- Full feed refresh,JUNE FASHION FEED REFRESH | WOMEN & MEN | 5TH JUNE'25,monthly_anchor,history,False,,june 2025,primary
+Summer/ Travel Edits (refreshed),travel_edit,-,KSA + UAE,2025-06-09,2025-06-30,22.0,NA,"Summer + comfort wear, beauty summer essentials (e.g., suncare/ skincare), bags & luggage, outdoors decor, travel accessories","- Hero banner
+- Middle nav
+- Inclusion in feed modules",,seasonal,history,False,,june 2025,primary
+Fathers' Day,fathers_day,-,KSA + UAE,2025-06-09,2025-06-21,13.0,NA,"Gifting-related categories (e.g., FAB, grooming) + giftcards/ gifting at checkout/ N90 pushes","- Hero banner
+- Middle nav
+- Inclusion in feed modules",Father's Day,cultural,history,False,,june 2025,primary
+EOSS,eoss,-,KSA + UAE,2025-06-20,2025-07-07,18.0,"40-80% off + up to 20% cashback
+5% Cashback | Min Order Value 350 AED / SAR
+15% Cashback | Min Order Value 700 AED / SAR
+20% Cashback | Min Order Value 1,000 AED / SAR",Platform-wide,"- Hero banner + roundel across feeds + landing page
+- Middle nav",EOSS | W/M/K | 20th June 2025,sale,history,False,,june 2025,primary
+Summer Store (M/W),summer_store,-,KSA + UAE,2025-06-09,TBD,,,Fashion,Central Nav Static Page,,seasonal,history,False,,june 2025,trend
+Romanticism (W),autumn_winter,-,KSA + UAE,2025-06-09,2025-06-16,8.0,,Fashion,Hero Banner,,trend_edit,history,False,,june 2025,trend
+Minimalism (M),autumn_winter,-,KSA + UAE,2025-06-09,2025-06-16,8.0,,Fashion,Hero Banner,,trend_edit,history,False,,june 2025,trend
+Wellness Girl/Boy (M/W),autumn_winter,-,KSA + UAE,2025-06-16,2025-06-23,8.0,,Fashion + Sports,Hero Banner + PLP,,trend_edit,history,False,,june 2025,trend
+Sports Style (W),spring_summer,-,KSA + UAE,2025-06-23,2025-06-30,8.0,,Fashion + Sports,Hero Banner,,seasonal,history,False,,june 2025,trend
+Preppy (M),autumn_winter,-,KSA + UAE,2025-06-23,2025-06-30,8.0,,Fashion + Sports,Hero Banner,,trend_edit,history,False,,june 2025,trend
+Payday Sale,payday,-,KSA + UAE,2025-04-25,2025-05-05,11.0,30-80% off + Up to 15% cashback,Platform-wide,"- Hero banner + roundel across feeds
+- Middle nav",,monthly_anchor,history,False,,may 2025,primary
+Get Ready for Eid (Adha),eid_adha,-,KSA + UAE,2025-05-14,2026-06-05,388.0,NA,"Fashion (arabian wear, prayer essentials), gifting, beauty & grooming, home & decor","- Hero banner (+ LP) + roundel across feeds
+- Middle nav",,sale,history,True,end_raw: Jun 5 (TBC),may 2025,primary
+Travel in Comfort,travel_edit,-,KSA + UAE,2026-05-14,2026-06-09,27.0,NA,"Fashion (bags & luggage, comfort/ travel clothing and shoes), beauty (minis, skincare), home","- Hero banner across feeds
+- Middle nav",,seasonal,history,True,start_raw: May 14 (TBC) | end_raw: Jun 9 (TBC),may 2025,primary
+Beauty Week,beauty_week,-,KSA + UAE,2025-05-26,2025-06-02,8.0,TBD,"Beauty (brands on discount, GWPs)","- Hero banner + roundel on beauty and fashion feeds
+- Middle nav",,beauty,history,False,,may 2025,primary
+Eid Sale,eid_fitr,-,KSA + UAE,2025-05-26,2025-06-05,11.0,30-80% off + Up to 15% cashback,Platform-wide,"'- Hero banner + roundel across feeds
+- Middle nav
+-WF: EID MAIN SALE PROMO(ALL FEEDS) | 30-80% off + Up to 15% Cashback | 26TH MAY'25",,sale,history,False,,may 2025,primary
+City To Beach (M/W),spring_summer,-,KSA + UAE,2025-05-05,2025-05-15,11.0,"Summer Outfits/Holiday Outfits
+Swimwear, Beachwear, Summer Dresses/Sets, Crop Tops, Shorts/Skirts, Sandals, Flip Flops, Slides, Sunglasses",- Hero Banner,,,trend_edit,history,False,,may 2025,primary
+90's Off Duty Style (W),spring_summer,-,KSA + UAE,2025-05-09,2025-05-22,14.0,"90's Fashion + Beauty
+Crop Tops, Baggy Jeans, Converse, Checks,","- Hero Banner
+- Hub",,,trend_edit,history,False,,may 2025,primary
+Destination Dresses (W),spring_summer,-,KSA + UAE,2025-05-09,2025-05-22,14.0,Occasion dresses to wear on holiday,- Hero Banner,,,seasonal,history,False,,may 2025,primary
+High Summer (M/W),spring_summer,-,KSA + UAE,2025-05-22,2025-06-02,12.0,"Summer Dresses, Denim Shorts, Slides, Flip Flops, Linen, Bright Colours, Crochet, Sequins, Embrodiery",- Hero Banner,,,trend_edit,history,False,,may 2025,primary
+Court Sports (M),spring_summer,-,KSA + UAE,2025-05-05,2025-05-15,11.0,"Polo Shirts, Gold/Padel/Tennis Styles",- Hero Banner,,,trend_edit,history,False,,may 2025,primary
+Graphic Content (M),spring_summer,-,KSA + UAE,2025-05-09,2025-05-22,14.0,Graphic Tees + Clothing,- Hero Banner,,,trend_edit,history,False,,may 2025,primary
+Together in Ramadan (I),ramadan,-,KSA + UAE,2025-03-03,2025-03-10,8.0,"20-60% off + 10% cashback*
+On 2-4 items - 5% 
+5 and above - 10%
+Use code: EXTRA
+
+* Max 100 aed/ sar","Clothing (arabian/ modest wear), FAB, beauty - focus on full-price + semi-discounting","- Hero banner + roundel by feed
+- App theme
+- Feed takeover across fashion, beauty, home",,cultural,history,False,,march 2025,primary
+International Women's Day,iwd,-,KSA + UAE,2025-03-03,2025-03-08,6.0,NA,"Female fashion (clothing + FAB), beauty",- Hero banner + roundel on women fashion + beauty,https://docs.google.com/spreadsheets/d/1ZhWAeRkAz6sKuVonrZQ0vAFf8oNwWUNHohjwELAQFEc/edit?gid=0#gid=0,cultural,history,False,,march 2025,primary
+Holi,holi,-,UAE,TBD,2025-03-13,,NA,TBD,TBD,,cultural,history,False,start_raw: TBD,march 2025,primary
+Together in Ramadan (II),ramadan,-,KSA + UAE,2025-03-10,2025-03-17,8.0,30-70% Off (TBC),"- Fashion (focus on clothing + FAB across branded/ PL)
+- Beauty","- Hero banner + roundel by feed
+- App theme
+- Feed takeover across fashion, beauty, home",,cultural,history,False,,march 2025,primary
+Get Ready for Eid,eid_adha,-,KSA + UAE,2025-03-17,2025-03-24,8.0,Up to 80% Off + Coupon (TBC),"FAB, beauty + focus on gifting-relevant categories
+Gifting at checkout + same day/ 90min delivery as USPs","- Hero banner + roundel by feed
+- App theme",,sale,history,False,,march 2025,primary
+Mothers' Day,mothers_day,-,KSA + UAE,2025-03-14,2025-03-21,8.0,NA,"Female fashion (clothing + FAB), beauty (self-care) + focus on gifting-relevant categories
+Gifting at checkout + same day/ 90min delivery as USPs",- Hero banner + roundel on women fashion + beauty,https://docs.google.com/spreadsheets/d/1YHzlCLCcVNVVMGlgu4q6_lTwa5H-PeVigLl5qF73Gg8/edit?gid=0#gid=0,cultural,history,False,,march 2025,primary
+End of Ramadan Sale,ramadan,-,KSA + UAE,TBD,TBD,,30-90% Off + Coupon (TBC),Platform-wide,"- Hero banner + roundel by feed
+- App theme
+- Feed takeover across fashion, beauty, home",,cultural,history,False,start_raw: TBD | end_raw: TBD,march 2025,primary
+Travel Hub,travel_edit,-,UAE,2025-03-21,2025-04-04,15.0,NA,"Comfortable clothing/ shoes, travel accessories,  bags and luggage, mini-sized beauty products",- Hero banner on women fashion + beauty,https://docs.google.com/spreadsheets/d/1eVZMmjU8OExG0xp4UHykWuSVavxPgYxXWdGzWgk-504/edit?gid=0#gid=0,seasonal,history,False,,march 2025,primary
