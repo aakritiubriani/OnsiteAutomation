@@ -16,6 +16,8 @@ from datetime import date, timedelta
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
+import time
+
 import pandas as pd
 import openpyxl
 import yaml
@@ -46,6 +48,9 @@ OUT_DIR     = BASE / "output"
 _cfg = None
 _df  = None
 _kb  = None
+
+# ── BQ cache: { "pulse": {"data": {...}, "ts": float} } ───────────────────────
+_bq_cache: dict = {}
 
 
 def _load_cfg():
@@ -320,6 +325,27 @@ def api_save_config():
     except Exception as e:
         traceback.print_exc()
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/bq/category-pulse")
+def api_category_pulse():
+    """
+    Return 3-week category/subcategory pulse from BigQuery core_metrics.
+    Results are cached for 30 minutes to avoid repeated BQ charges.
+    """
+    try:
+        from bq_connector import get_category_pulse
+        cached = _bq_cache.get("pulse")
+        if cached and (time.time() - cached["ts"] < 1800):
+            log.info("BQ pulse: serving from cache")
+            return jsonify(cached["data"])
+        log.info("BQ pulse: fetching from BigQuery…")
+        data = get_category_pulse()
+        _bq_cache["pulse"] = {"data": data, "ts": time.time()}
+        return jsonify(data)
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/refresh-data", methods=["POST"])

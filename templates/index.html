@@ -299,6 +299,62 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
   .side-panel { width: 100vw; right: -100vw; }
   .main-wrap { padding: 10px 12px; }
 }
+
+/* ── Category Pulse Panel ── */
+.pulse-panel {
+  background: #fff; border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.10); overflow: hidden; margin-bottom: 16px;
+}
+.pulse-header {
+  background: #0d1b2a; color: #fff; padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.pulse-header .ptitle { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+.pulse-header .pasof  { font-size: 0.75rem; color: #90a; margin-left: 6px; }
+.pulse-header .pcontrols { display: flex; align-items: center; gap: 8px; }
+.pulse-filter-input {
+  background: #1e2d3d; border: 1px solid #334; color: #fff;
+  padding: 5px 10px; border-radius: 6px; font-size: 0.82rem; width: 200px;
+}
+.pulse-filter-input::placeholder { color: #778; }
+.pulse-filter-input:focus { outline: 1px solid var(--ns-green); }
+.pulse-close-btn { background: none; border: none; color: #888; font-size: 1.1rem; cursor: pointer; padding: 2px 8px; }
+.pulse-close-btn:hover { color: #fff; }
+.pulse-legend {
+  padding: 7px 18px; background: #f8f8f8; border-bottom: 1px solid #eee;
+  display: flex; gap: 18px; flex-wrap: wrap; align-items: center; font-size: 0.75rem; color: #666;
+}
+.pulse-table-container { overflow-x: auto; max-height: 440px; overflow-y: auto; }
+.pulse-table {
+  width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 960px;
+}
+.pulse-table thead th {
+  background: #f0f0f0; color: #444; font-weight: 700; padding: 8px 10px;
+  text-align: right; white-space: nowrap; position: sticky; top: 0; z-index: 5;
+  border-bottom: 2px solid #ddd;
+}
+.pulse-table thead th.left { text-align: left; }
+.pulse-table thead th.grp  { background: #e4e4e4; text-align: center; font-size: 0.72rem; color: #888; border-bottom: 1px solid #ddd; }
+.pulse-table tbody tr { border-bottom: 1px solid #f2f2f2; }
+.pulse-table tbody tr:hover td { background: #f7f9ff !important; }
+.pulse-table td { padding: 7px 10px; vertical-align: middle; text-align: right; }
+.pulse-table td.left { text-align: left; }
+.pulse-table td.cat-cell  { font-weight: 600; color: #111; }
+.pulse-table td.sub-cell  { color: #555; font-size: 0.78rem; }
+.pulse-table td.merch-cell{ color: #888; font-size: 0.75rem; }
+.wow-badge {
+  display: inline-flex; align-items: center; gap: 2px;
+  font-size: 0.74rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; white-space: nowrap;
+}
+.wow-badge.up   { background: #e8fff0; color: #1a7a4a; }
+.wow-badge.dn   { background: #fff0f0; color: #c0392b; }
+.wow-badge.flat { background: #f0f0f0; color: #888; }
+.flag-spike { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #fff3cd; color: #856404; font-size: 0.72rem; font-weight: 700; }
+.flag-dip   { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #f8d7da; color: #842029; font-size: 0.72rem; font-weight: 700; }
+.pulse-empty { text-align: center; padding: 40px; color: #aaa; font-size: 0.9rem; }
+.mini-trend { display: flex; align-items: flex-end; gap: 2px; height: 18px; justify-content: flex-end; }
+.mini-bar { width: 9px; border-radius: 2px 2px 0 0; background: #c8def8; }
+.mini-bar.last { background: #1a73e8; }
 </style>
 </head>
 <body>
@@ -368,8 +424,43 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
     <div class="tab-spacer"></div>
     <button class="action-btn"    onclick="App.acceptAll()"><i class="bi bi-check-all"></i> Accept All Visible</button>
     <button class="action-btn"    onclick="App.rejectTrends()"><i class="bi bi-x"></i> Reject All Trend Edits</button>
+    <button class="action-btn" id="btnPulse" onclick="App.togglePulse()" title="3-week category performance pulse from BigQuery"><i class="bi bi-bar-chart-line"></i> Category Pulse</button>
     <button class="action-btn search" onclick="App.searchWeb()"><i class="bi bi-search"></i> Search Web</button>
     <button class="action-btn export" onclick="App.exportXlsx()"><i class="bi bi-file-earmark-spreadsheet"></i> Export XLSX</button>
+  </div>
+
+  <!-- ═══ Category Pulse Panel (toggled by BQ button) ═══ -->
+  <div id="pulsePanelWrap" style="display:none">
+    <div class="pulse-panel">
+      <div class="pulse-header">
+        <div class="ptitle">
+          <i class="bi bi-bar-chart-line-fill" style="color:var(--ns-green)"></i>
+          Category Pulse — Last 3 Weeks
+          <span class="pasof" id="pulseAsOf"></span>
+        </div>
+        <div class="pcontrols">
+          <select id="pulseMerchFilter" class="pulse-filter-input" style="width:180px" onchange="App.renderPulse()">
+            <option value="">All merch teams</option>
+          </select>
+          <input type="text" id="pulseSearch" class="pulse-filter-input" placeholder="Filter category…" oninput="App.renderPulse()">
+          <select id="pulseFlagFilter" class="pulse-filter-input" style="width:130px" onchange="App.renderPulse()">
+            <option value="">All signals</option>
+            <option value="SPIKE">🔺 Spikes only</option>
+            <option value="DIP">🔻 Dips only</option>
+          </select>
+          <button class="pulse-close-btn" onclick="App.closePulse()" title="Close">✕</button>
+        </div>
+      </div>
+      <div class="pulse-legend">
+        <span style="color:#555; font-weight:600">Signals:</span>
+        <span><span class="flag-spike">🔺 SPIKE</span> &nbsp;WoW impressions or units &gt;+30%</span>
+        <span><span class="flag-dip">🔻 DIP</span> &nbsp;WoW impressions or units &lt;−20%</span>
+        <span style="margin-left:auto; color:#aaa" id="pulseRowCount"></span>
+      </div>
+      <div class="pulse-table-container" id="pulseTableBody">
+        <div class="pulse-empty"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading from BigQuery…</div>
+      </div>
+    </div>
   </div>
 
   <!-- Campaign table -->
@@ -946,6 +1037,172 @@ const App = (() => {
     }
   }
 
+  // ── Category Pulse ─────────────────────────────────────────────────
+  let pulseData = null;   // cached API response
+  let pulseOpen = false;
+
+  function fmtNum(n) {
+    if (n == null || n === 0) return '<span style="color:#ccc">—</span>';
+    if (Math.abs(n) >= 1000000) return (n/1000000).toFixed(1) + 'M';
+    if (Math.abs(n) >= 1000)    return (n/1000).toFixed(1) + 'K';
+    return String(n);
+  }
+
+  function wowBadge(val) {
+    if (val == null) return '<span style="color:#ccc">—</span>';
+    const cls = val > 0 ? 'up' : val < 0 ? 'dn' : 'flat';
+    const arrow = val > 0 ? '▲' : val < 0 ? '▼' : '►';
+    return `<span class="wow-badge ${cls}">${arrow} ${Math.abs(val)}%</span>`;
+  }
+
+  function miniBar(series) {
+    const max = Math.max(...series, 1);
+    return '<div class="mini-trend">' +
+      series.map((v, i) => {
+        const h = Math.max(3, Math.round((v / max) * 18));
+        const cls = i === series.length - 1 ? 'mini-bar last' : 'mini-bar';
+        return `<div class="${cls}" style="height:${h}px" title="${fmtNum(v)}"></div>`;
+      }).join('') +
+    '</div>';
+  }
+
+  function renderPulse() {
+    if (!pulseData || !pulseData.rows) return;
+    const tableBody = document.getElementById('pulseTableBody');
+    const searchVal = (document.getElementById('pulseSearch')?.value || '').toLowerCase().trim();
+    const flagVal   = document.getElementById('pulseFlagFilter')?.value || '';
+    const merchVal  = document.getElementById('pulseMerchFilter')?.value || '';
+
+    let rows = pulseData.rows;
+    if (searchVal) rows = rows.filter(r =>
+      r.category.toLowerCase().includes(searchVal) ||
+      r.sub_category.toLowerCase().includes(searchVal)
+    );
+    if (flagVal)   rows = rows.filter(r => r.flag === flagVal);
+    if (merchVal)  rows = rows.filter(r => r.merch_team === merchVal);
+
+    document.getElementById('pulseRowCount').textContent = `${rows.length} rows`;
+
+    if (rows.length === 0) {
+      tableBody.innerHTML = '<div class="pulse-empty">No rows match the current filter.</div>';
+      return;
+    }
+
+    const [w1lbl, w2lbl, w3lbl] = pulseData.week_labels || ['W-3','W-2','W-1'];
+
+    let html = `<table class="pulse-table">
+      <thead>
+        <tr>
+          <th class="left grp" rowspan="2" style="width:150px">Category</th>
+          <th class="left grp" rowspan="2" style="width:150px">Subcategory</th>
+          <th class="left grp" rowspan="2" style="width:130px">Merch Team</th>
+          <th class="grp" colspan="4">Impressions</th>
+          <th class="grp" colspan="4">Merch Impressions</th>
+          <th class="grp" colspan="4">Units</th>
+          <th class="grp" rowspan="2">Signal</th>
+        </tr>
+        <tr>
+          <th>${w1lbl}</th><th>${w2lbl}</th><th>${w3lbl}</th><th>WoW</th>
+          <th>${w1lbl}</th><th>${w2lbl}</th><th>${w3lbl}</th><th>WoW</th>
+          <th>${w1lbl}</th><th>${w2lbl}</th><th>${w3lbl}</th><th>WoW</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    rows.forEach(r => {
+      const flagHtml = r.flag === 'SPIKE'
+        ? '<span class="flag-spike">🔺 SPIKE</span>'
+        : r.flag === 'DIP'
+          ? '<span class="flag-dip">🔻 DIP</span>'
+          : '';
+
+      const rowBg = r.flag === 'SPIKE' ? 'background:#fffdf0'
+                  : r.flag === 'DIP'   ? 'background:#fff8f8'
+                  : '';
+
+      html += `<tr style="${rowBg}">
+        <td class="left cat-cell">${r.category}</td>
+        <td class="left sub-cell">${r.sub_category}</td>
+        <td class="left merch-cell">${r.merch_team}</td>
+        <td>${fmtNum(r.impressions[0])}</td>
+        <td>${fmtNum(r.impressions[1])}</td>
+        <td><strong>${fmtNum(r.impressions[2])}</strong></td>
+        <td>${wowBadge(r.imp_wow)}</td>
+        <td>${fmtNum(r.merch_impressions[0])}</td>
+        <td>${fmtNum(r.merch_impressions[1])}</td>
+        <td><strong>${fmtNum(r.merch_impressions[2])}</strong></td>
+        <td>${wowBadge(r.merch_wow)}</td>
+        <td>${fmtNum(r.units[0])}</td>
+        <td>${fmtNum(r.units[1])}</td>
+        <td><strong>${fmtNum(r.units[2])}</strong></td>
+        <td>${wowBadge(r.units_wow)}</td>
+        <td style="white-space:nowrap">${flagHtml}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    tableBody.innerHTML = html;
+  }
+
+  async function togglePulse() {
+    const wrap = document.getElementById('pulsePanelWrap');
+    if (pulseOpen) {
+      wrap.style.display = 'none';
+      pulseOpen = false;
+      document.getElementById('btnPulse').style.borderColor = '';
+      document.getElementById('btnPulse').style.color = '';
+      return;
+    }
+    wrap.style.display = 'block';
+    pulseOpen = true;
+    document.getElementById('btnPulse').style.borderColor = 'var(--ns-green)';
+    document.getElementById('btnPulse').style.color = 'var(--ns-green)';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    if (pulseData) { renderPulse(); return; }   // already loaded
+
+    // Fetch
+    document.getElementById('pulseTableBody').innerHTML =
+      '<div class="pulse-empty"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading from BigQuery…</div>';
+
+    try {
+      const res  = await fetch('/api/bq/category-pulse');
+      const data = await res.json();
+
+      if (data.error) {
+        document.getElementById('pulseTableBody').innerHTML =
+          `<div class="pulse-empty" style="color:#c00">BigQuery error: ${data.error}</div>`;
+        return;
+      }
+
+      pulseData = data;
+      document.getElementById('pulseAsOf').textContent = `data as of ${data.data_as_of}`;
+
+      // Populate merch team filter
+      const merch_teams = [...new Set(data.rows.map(r => r.merch_team))].sort();
+      const sel = document.getElementById('pulseMerchFilter');
+      merch_teams.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t; opt.textContent = t;
+        sel.appendChild(opt);
+      });
+
+      renderPulse();
+      toast(`✓ Category Pulse loaded — ${data.rows.length} category/sub rows`);
+    } catch(e) {
+      document.getElementById('pulseTableBody').innerHTML =
+        `<div class="pulse-empty" style="color:#c00">Failed to load: ${e.message}</div>`;
+      toast('Category Pulse failed: ' + e.message, true);
+    }
+  }
+
+  function closePulse() {
+    document.getElementById('pulsePanelWrap').style.display = 'none';
+    pulseOpen = false;
+    document.getElementById('btnPulse').style.borderColor = '';
+    document.getElementById('btnPulse').style.color = '';
+  }
+
   // ── Init ───────────────────────────────────────────────────────────
   function init() {
     // Set month selector to current month
@@ -959,7 +1216,9 @@ const App = (() => {
     generate, setStatus, setFilter, acceptAll, rejectTrends,
     handleRowClick, showHistory, openPanel, closePanel,
     openEdit, saveEdit, exportXlsx, searchWeb, closeSearch,
-    openConfig, saveConfig, init,
+    openConfig, saveConfig,
+    togglePulse, closePulse, renderPulse,
+    init,
   };
 })();
 
