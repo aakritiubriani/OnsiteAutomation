@@ -14,6 +14,7 @@
   --ns-dark: #111;
   --ns-card: #1a1a1a;
   --ns-border: #2a2a2a;
+  --sidebar-w: 230px;
   --row-sale: #fff0f0;
   --row-seasonal: #f3f0ff;
   --row-anchor: #f0f8ff;
@@ -25,33 +26,85 @@
   --row-global: #fffbf0;
 }
 * { box-sizing: border-box; }
-body { background: #f5f5f5; font-family: 'Calibri', 'Segoe UI', sans-serif; margin: 0; }
+body { margin: 0; font-family: 'Calibri', 'Segoe UI', sans-serif; background: #f5f5f5; }
 
-/* ── Navbar ── */
-.navbar-ns {
+/* ══════════════════════════════
+   SIDEBAR
+══════════════════════════════ */
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: var(--ns-black);
+  border-right: 2px solid var(--ns-green);
+  display: flex; flex-direction: column;
+  z-index: 300; overflow-y: auto;
+}
+.sidebar-brand {
+  padding: 22px 20px 16px;
+  border-bottom: 1px solid #1e1e1e;
+}
+.sidebar-brand .logo {
+  color: var(--ns-green); font-size: 1.25rem; font-weight: 900;
+  letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;
+}
+.sidebar-brand .logo .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--ns-green); flex-shrink: 0;
+}
+.sidebar-brand .sub { color: #444; font-size: 0.7rem; margin-top: 3px; padding-left: 18px; }
+
+.sidebar-nav { flex: 1; padding: 10px 0; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 20px;
+  color: #666; cursor: pointer; font-size: 0.88rem; font-weight: 500;
+  border-left: 3px solid transparent; transition: all 0.15s;
+  user-select: none;
+}
+.nav-item i { font-size: 1.05rem; width: 20px; }
+.nav-item:hover { background: #0e0e0e; color: #bbb; }
+.nav-item.active { color: var(--ns-green); background: #091009; border-left-color: var(--ns-green); }
+
+.sidebar-divider { height: 1px; background: #1a1a1a; margin: 6px 16px; }
+
+.sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid #1a1a1a;
+  color: #333; font-size: 0.68rem;
+}
+
+/* ══════════════════════════════
+   MAIN LAYOUT
+══════════════════════════════ */
+.main-content {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+}
+
+/* ══════════════════════════════
+   TOP BAR  (inside each view)
+══════════════════════════════ */
+.top-bar {
   background: var(--ns-black);
   padding: 0 24px;
   height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky; top: 0; z-index: 1000;
-  border-bottom: 2px solid var(--ns-green);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid #222;
+  gap: 10px;
 }
-.navbar-ns .brand {
-  color: var(--ns-green);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  display: flex; align-items: center; gap: 8px;
+.top-bar .page-title {
+  color: var(--ns-green); font-size: 1rem; font-weight: 700;
+  display: flex; align-items: center; gap: 8px; white-space: nowrap;
 }
-.navbar-ns .brand span.dot { width: 10px; height: 10px; background: var(--ns-green); border-radius: 50%; display: inline-block; }
-.navbar-ns .controls { display: flex; align-items: center; gap: 10px; }
-.navbar-ns select, .navbar-ns input[type=number] {
+.top-bar .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.top-bar select, .top-bar input[type=number] {
   background: #1a1a1a; color: #fff; border: 1px solid #444;
   padding: 6px 10px; border-radius: 6px; font-size: 0.9rem; cursor: pointer;
 }
-.navbar-ns select:focus, .navbar-ns input[type=number]:focus { outline: 1px solid var(--ns-green); }
+.top-bar select:focus, .top-bar input[type=number]:focus { outline: 1px solid var(--ns-green); }
+
 .btn-ns-primary {
   background: var(--ns-green); color: #000; border: none;
   padding: 7px 18px; border-radius: 6px; font-weight: 700;
@@ -65,26 +118,27 @@ body { background: #f5f5f5; font-family: 'Calibri', 'Segoe UI', sans-serif; marg
 }
 .btn-ns-outline:hover { border-color: var(--ns-green); color: var(--ns-green); }
 
-/* ── Stats bar ── */
+/* ══════════════════════════════
+   CAMPAIGN VIEW — Stats bar
+══════════════════════════════ */
 .stats-bar {
   background: var(--ns-dark);
   padding: 8px 24px;
   display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
   border-bottom: 1px solid var(--ns-border);
 }
-.stat-chip {
-  color: #aaa; font-size: 0.82rem;
-  display: flex; align-items: center; gap: 5px;
-}
+.stat-chip { color: #aaa; font-size: 0.82rem; display: flex; align-items: center; gap: 5px; }
 .stat-chip .val { color: #fff; font-weight: 700; font-size: 1rem; }
 .stat-chip.green .val { color: var(--ns-green); }
 .stat-chip.amber .val { color: #ffc107; }
 .stat-chip.red   .val { color: #ff5252; }
 
-/* ── Content area ── */
-.main-wrap { padding: 16px 24px; max-width: 1600px; margin: 0 auto; }
+/* ══════════════════════════════
+   CAMPAIGN VIEW — Content
+══════════════════════════════ */
+.main-wrap { padding: 16px 24px; }
 
-/* ── Tab bar ── */
+/* Tab bar */
 .tab-bar { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
 .tab-btn {
   padding: 5px 14px; border-radius: 20px; border: 1px solid #ccc;
@@ -104,10 +158,8 @@ body { background: #f5f5f5; font-family: 'Calibri', 'Segoe UI', sans-serif; marg
 .action-btn.search { background: #1a73e8; color: #fff; border-color: #1a73e8; }
 .action-btn.search:hover { background: #1557b0; }
 
-/* ── Empty / loading state ── */
-.empty-state {
-  text-align: center; padding: 80px 20px; color: #999;
-}
+/* Empty / loading */
+.empty-state { text-align: center; padding: 80px 20px; color: #999; }
 .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
 .empty-state h5 { color: #555; }
 .spinner-ns {
@@ -117,7 +169,7 @@ body { background: #f5f5f5; font-family: 'Calibri', 'Segoe UI', sans-serif; marg
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Campaign Table ── */
+/* Campaign table */
 .campaign-table-wrap { background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.08); overflow: hidden; }
 .campaign-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
 .campaign-table thead th {
@@ -129,7 +181,6 @@ body { background: #f5f5f5; font-family: 'Calibri', 'Segoe UI', sans-serif; marg
 .campaign-table tbody tr:hover { filter: brightness(0.97); }
 .campaign-table tbody tr.selected { outline: 2px solid var(--ns-green); outline-offset: -2px; }
 .campaign-table tbody tr.rejected { opacity: 0.4; }
-.campaign-table tbody tr.accepted { }
 .campaign-table td { padding: 9px 12px; vertical-align: middle; }
 .campaign-table td.name-col { font-weight: 600; max-width: 200px; }
 .campaign-table td.name-col small { display: block; color: #888; font-weight: 400; font-size: 0.76rem; }
@@ -160,45 +211,58 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
 .badge-type.trend_edit     { background: #e8e8e8; color: #555; }
 .badge-type.global_calendar{ background: #fff3cd; color: #856404; }
 
-/* Review flag */
-.review-dot {
-  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
-  background: #ffc107; margin-right: 4px; vertical-align: middle;
-}
-.confirmed-dot {
-  width: 8px; height: 8px; border-radius: 50%; display: inline-block;
-  background: #00c853; margin-right: 4px; vertical-align: middle;
-}
+/* Review dots */
+.review-dot    { width:8px; height:8px; border-radius:50%; display:inline-block; background:#ffc107; margin-right:4px; vertical-align:middle; }
+.confirmed-dot { width:8px; height:8px; border-radius:50%; display:inline-block; background:#00c853; margin-right:4px; vertical-align:middle; }
 
-/* Action buttons in table */
+/* Row action buttons */
 .row-actions { display: flex; gap: 4px; white-space: nowrap; }
 .btn-accept, .btn-reject, .btn-edit, .btn-history {
   width: 28px; height: 28px; border: none; border-radius: 5px;
-  cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center;
-  transition: 0.15s;
+  cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; transition: 0.15s;
 }
 .btn-accept  { background: #e8fff0; color: #1a7a4a; }
 .btn-accept:hover  { background: #00c853; color: #fff; }
-.btn-accept.active  { background: #00c853; color: #fff; }
+.btn-accept.active { background: #00c853; color: #fff; }
 .btn-reject  { background: #fff0f0; color: #c0392b; }
 .btn-reject:hover  { background: #ff5252; color: #fff; }
-.btn-reject.active  { background: #ff5252; color: #fff; }
+.btn-reject.active { background: #ff5252; color: #fff; }
 .btn-edit    { background: #f0f4ff; color: #0043a4; }
 .btn-edit:hover    { background: #1a73e8; color: #fff; }
 .btn-history { background: #f8f0ff; color: #6f42c1; }
 .btn-history:hover { background: #6f42c1; color: #fff; }
 
 /* Source badge */
-.src-badge {
-  font-size: 0.7rem; padding: 1px 6px; border-radius: 8px; font-weight: 600;
-  background: #eee; color: #666;
-}
+.src-badge { font-size: 0.7rem; padding: 1px 6px; border-radius: 8px; font-weight: 600; background: #eee; color: #666; }
 .src-badge.both    { background: #e8f5e9; color: #2e7d32; }
 .src-badge.config  { background: #e3f2fd; color: #1565c0; }
 .src-badge.history { background: #f3e5f5; color: #6a1b9a; }
 .src-badge.global  { background: #fff8e1; color: #f57f17; }
 
-/* ── Side panel ── */
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #666; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* Misc */
+.date-range { font-size: 0.78rem; color: #444; white-space: nowrap; }
+.tier-badge { font-size: 0.78rem; font-weight: 700; color: #555; }
+.geo-badge  { font-size: 0.78rem; color: #777; }
+
+/* Search panel */
+.search-panel { background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.08); margin-top: 16px; overflow: hidden; }
+.search-panel-header { background: #1a73e8; color: #fff; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; }
+.search-panel-header h6 { margin: 0; font-weight: 700; }
+.search-result-item { padding: 10px 18px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: flex-start; gap: 10px; }
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item .title { font-size: 0.85rem; font-weight: 500; color: #222; }
+.search-result-item .meta  { font-size: 0.75rem; color: #999; }
+.search-result-item a { color: #1a73e8; text-decoration: none; }
+.search-result-item a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════
+   HISTORY SIDE PANEL
+══════════════════════════════ */
 .side-panel {
   position: fixed; top: 0; right: -480px; width: 470px; height: 100vh;
   background: #fff; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
@@ -213,77 +277,33 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
 }
 .side-panel-header h5 { margin: 0; font-size: 1rem; font-weight: 700; }
 .side-panel-body { padding: 20px; flex: 1; }
-.hist-entry {
-  border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 10px;
-  background: #fafafa;
-}
-.hist-entry .sheet-lbl {
-  font-size: 0.75rem; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 6px;
-}
+.hist-entry { border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 10px; background: #fafafa; }
+.hist-entry .sheet-lbl { font-size: 0.75rem; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 6px; }
 .hist-kv { display: flex; flex-wrap: wrap; gap: 6px 16px; }
 .hist-kv .kv { font-size: 0.8rem; }
 .hist-kv .kv span { color: #888; }
 .hist-kv .kv strong { color: #222; }
 .no-hist { text-align: center; padding: 30px 0; color: #aaa; font-size: 0.9rem; }
 
-/* ── Edit Modal ── */
-.modal-ns .modal-content {
-  border-radius: 12px; border: none;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
-}
-.modal-ns .modal-header {
-  background: var(--ns-black); color: var(--ns-green); border-radius: 12px 12px 0 0;
-  border-bottom: none;
-}
+/* ══════════════════════════════
+   MODALS
+══════════════════════════════ */
+.modal-ns .modal-content { border-radius: 12px; border: none; box-shadow: 0 8px 40px rgba(0,0,0,0.2); }
+.modal-ns .modal-header { background: var(--ns-black); color: var(--ns-green); border-radius: 12px 12px 0 0; border-bottom: none; }
 .modal-ns .modal-header .btn-close { filter: invert(1); }
 .modal-ns label { font-size: 0.82rem; font-weight: 600; color: #444; margin-bottom: 3px; }
-.modal-ns .form-control, .modal-ns .form-select {
-  font-size: 0.85rem; border-radius: 6px;
-}
+.modal-ns .form-control, .modal-ns .form-select { font-size: 0.85rem; border-radius: 6px; }
 .modal-footer-ns { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid #eee; }
-
-/* ── Config Modal ── */
-.config-event-block {
-  border: 1px solid #e0e0e0; border-radius: 8px; padding: 14px; margin-bottom: 14px;
-}
+.config-event-block { border: 1px solid #e0e0e0; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
 .config-event-block h6 { font-weight: 700; color: #222; margin-bottom: 10px; }
 .config-event-block .date-row { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
 .config-event-block .date-row label { font-size: 0.78rem; color: #666; min-width: 60px; }
 .config-event-block .date-row input { flex: 1; font-size: 0.82rem; }
 
-/* ── Search results panel ── */
-.search-panel {
-  background: #fff; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-  margin-top: 16px; overflow: hidden;
-}
-.search-panel-header {
-  background: #1a73e8; color: #fff; padding: 12px 18px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.search-panel-header h6 { margin: 0; font-weight: 700; }
-.search-result-item {
-  padding: 10px 18px; border-bottom: 1px solid #f0f0f0;
-  display: flex; align-items: flex-start; gap: 10px;
-}
-.search-result-item:last-child { border-bottom: none; }
-.search-result-item .title { font-size: 0.85rem; font-weight: 500; color: #222; }
-.search-result-item .meta  { font-size: 0.75rem; color: #999; }
-.search-result-item a { color: #1a73e8; text-decoration: none; }
-.search-result-item a:hover { text-decoration: underline; }
-
-/* ── Legend ── */
-.legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.legend-item { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: #666; }
-.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
-
-/* ── Misc ── */
-.date-range { font-size: 0.78rem; color: #444; white-space: nowrap; }
-.tier-badge { font-size: 0.78rem; font-weight: 700; color: #555; }
-.geo-badge  { font-size: 0.78rem; color: #777; }
-.toast-wrap {
-  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-  display: flex; flex-direction: column; gap: 8px;
-}
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
 .ns-toast {
   background: var(--ns-black); color: var(--ns-green);
   padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
@@ -294,200 +314,312 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
 @keyframes fadeInUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeOut  { to   { opacity:0; transform:translateY(-8px); } }
 
-@media (max-width: 900px) {
-  .navbar-ns { flex-wrap: wrap; height: auto; padding: 10px 14px; gap: 8px; }
-  .side-panel { width: 100vw; right: -100vw; }
-  .main-wrap { padding: 10px 12px; }
+/* ══════════════════════════════
+   CATEGORY PULSE VIEW
+══════════════════════════════ */
+.pulse-page { padding: 20px 24px; flex: 1; }
+
+.pulse-card {
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.09); overflow: hidden;
 }
 
-/* ── Category Pulse Panel ── */
-.pulse-panel {
-  background: #fff; border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.10); overflow: hidden; margin-bottom: 16px;
+.pulse-card-header {
+  background: #0d1b2a; color: #fff;
+  padding: 16px 22px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
 }
-.pulse-header {
-  background: #0d1b2a; color: #fff; padding: 12px 18px;
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+.pulse-card-header .ptitle {
+  font-weight: 700; font-size: 1rem;
+  display: flex; align-items: center; gap: 10px;
 }
-.pulse-header .ptitle { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
-.pulse-header .pasof  { font-size: 0.75rem; color: #90a; margin-left: 6px; }
-.pulse-header .pcontrols { display: flex; align-items: center; gap: 8px; }
+.pulse-card-header .pasof { color: #5fa; font-size: 0.75rem; font-weight: 400; }
+.pulse-filters {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
 .pulse-filter-input {
   background: #1e2d3d; border: 1px solid #334; color: #fff;
-  padding: 5px 10px; border-radius: 6px; font-size: 0.82rem; width: 200px;
+  padding: 6px 12px; border-radius: 6px; font-size: 0.82rem;
 }
-.pulse-filter-input::placeholder { color: #778; }
-.pulse-filter-input:focus { outline: 1px solid var(--ns-green); }
-.pulse-close-btn { background: none; border: none; color: #888; font-size: 1.1rem; cursor: pointer; padding: 2px 8px; }
-.pulse-close-btn:hover { color: #fff; }
-.pulse-legend {
-  padding: 7px 18px; background: #f8f8f8; border-bottom: 1px solid #eee;
-  display: flex; gap: 18px; flex-wrap: wrap; align-items: center; font-size: 0.75rem; color: #666;
+.pulse-filter-input::placeholder { color: #556; }
+.pulse-filter-input:focus { outline: 1px solid var(--ns-green); border-color: var(--ns-green); }
+select.pulse-filter-input option { background: #1e2d3d; }
+
+.pulse-legend-bar {
+  background: #f4f6f8; padding: 8px 22px;
+  display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+  border-bottom: 1px solid #e8e8e8; font-size: 0.75rem; color: #666;
 }
-.pulse-table-container { overflow-x: auto; max-height: 440px; overflow-y: auto; }
-.pulse-table {
-  width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 960px;
-}
+.pulse-legend-bar .lbl { font-weight: 600; color: #444; }
+
+.flag-spike { display:inline-block; padding:2px 9px; border-radius:10px; background:#fff3cd; color:#856404; font-size:0.72rem; font-weight:700; }
+.flag-dip   { display:inline-block; padding:2px 9px; border-radius:10px; background:#f8d7da; color:#842029; font-size:0.72rem; font-weight:700; }
+
+.pulse-table-container { overflow-x: auto; max-height: calc(100vh - 290px); overflow-y: auto; }
+.pulse-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 1000px; }
 .pulse-table thead th {
-  background: #f0f0f0; color: #444; font-weight: 700; padding: 8px 10px;
-  text-align: right; white-space: nowrap; position: sticky; top: 0; z-index: 5;
-  border-bottom: 2px solid #ddd;
+  background: #f0f2f4; color: #444; font-weight: 700;
+  padding: 9px 12px; text-align: right; white-space: nowrap;
+  position: sticky; top: 0; z-index: 5; border-bottom: 2px solid #ddd;
 }
 .pulse-table thead th.left { text-align: left; }
-.pulse-table thead th.grp  { background: #e4e4e4; text-align: center; font-size: 0.72rem; color: #888; border-bottom: 1px solid #ddd; }
-.pulse-table tbody tr { border-bottom: 1px solid #f2f2f2; }
-.pulse-table tbody tr:hover td { background: #f7f9ff !important; }
-.pulse-table td { padding: 7px 10px; vertical-align: middle; text-align: right; }
-.pulse-table td.left { text-align: left; }
-.pulse-table td.cat-cell  { font-weight: 600; color: #111; }
+.pulse-table thead th.grp  {
+  background: #e8eaec; text-align: center; font-size: 0.72rem;
+  color: #777; border-bottom: 1px solid #ddd; letter-spacing: 0.3px;
+}
+.pulse-table tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.1s; }
+.pulse-table tbody tr:hover td { background: #f5f8ff !important; }
+.pulse-table td { padding: 8px 12px; vertical-align: middle; text-align: right; color: #333; }
+.pulse-table td.left    { text-align: left; }
+.pulse-table td.cat-cell  { font-weight: 600; color: #111; font-size: 0.83rem; }
 .pulse-table td.sub-cell  { color: #555; font-size: 0.78rem; }
-.pulse-table td.merch-cell{ color: #888; font-size: 0.75rem; }
+.pulse-table td.merch-cell{ color: #888; font-size: 0.74rem; }
+
 .wow-badge {
   display: inline-flex; align-items: center; gap: 2px;
-  font-size: 0.74rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; white-space: nowrap;
+  font-size: 0.74rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap;
 }
 .wow-badge.up   { background: #e8fff0; color: #1a7a4a; }
 .wow-badge.dn   { background: #fff0f0; color: #c0392b; }
 .wow-badge.flat { background: #f0f0f0; color: #888; }
-.flag-spike { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #fff3cd; color: #856404; font-size: 0.72rem; font-weight: 700; }
-.flag-dip   { display: inline-block; padding: 2px 8px; border-radius: 10px; background: #f8d7da; color: #842029; font-size: 0.72rem; font-weight: 700; }
-.pulse-empty { text-align: center; padding: 40px; color: #aaa; font-size: 0.9rem; }
-.mini-trend { display: flex; align-items: flex-end; gap: 2px; height: 18px; justify-content: flex-end; }
-.mini-bar { width: 9px; border-radius: 2px 2px 0 0; background: #c8def8; }
-.mini-bar.last { background: #1a73e8; }
+
+.pulse-empty { text-align: center; padding: 60px 20px; color: #aaa; font-size: 0.9rem; }
+
+/* Summary chips above table */
+.pulse-summary { display: flex; gap: 12px; padding: 12px 22px; background: #fafafa; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+.psum-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;
+  padding: 7px 14px; font-size: 0.8rem;
+}
+.psum-chip .pval { font-weight: 700; font-size: 1rem; color: #111; }
+.psum-chip.spike .pval { color: #856404; }
+.psum-chip.dip   .pval { color: #842029; }
+.psum-chip.total .pval { color: #1a73e8; }
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 60px; }
+  .sidebar-brand .logo span:not(.dot) { display: none; }
+  .sidebar-brand .sub { display: none; }
+  .nav-item span.nav-label { display: none; }
+  .nav-item { justify-content: center; padding: 14px; }
+  .nav-item i { width: auto; }
+  .side-panel { width: 100vw; right: -100vw; }
+  .main-wrap { padding: 10px 12px; }
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════ NAVBAR ═══════════════════════════ -->
-<nav class="navbar-ns">
-  <div class="brand">
-    <span class="dot"></span>
-    Namshi Campaign Planner
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo"><span class="dot"></span><span>Namshi</span></div>
+    <div class="sub">Campaign Planner</div>
   </div>
 
-  <div class="controls">
-    <select id="selMonth">
-      <option value="1">January</option><option value="2">February</option>
-      <option value="3">March</option><option value="4">April</option>
-      <option value="5">May</option><option value="6">June</option>
-      <option value="7" selected>July</option><option value="8">August</option>
-      <option value="9">September</option><option value="10">October</option>
-      <option value="11">November</option><option value="12">December</option>
-    </select>
-    <input type="number" id="selYear" value="2026" min="2024" max="2030" style="width:80px">
-    <button class="btn-ns-primary" id="btnGenerate" onclick="App.generate()">
-      <i class="bi bi-play-fill"></i> Generate
-    </button>
-    <button class="btn-ns-outline" onclick="App.openConfig()" title="Edit lunar/sports dates">
-      <i class="bi bi-sliders"></i> Config
-    </button>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" id="navCampaign" onclick="App.switchView('campaign')">
+      <i class="bi bi-calendar3"></i>
+      <span class="nav-label">Campaign Calendar</span>
+    </div>
+    <div class="nav-item" id="navPulse" onclick="App.switchView('pulse')">
+      <i class="bi bi-bar-chart-line"></i>
+      <span class="nav-label">Category Pulse</span>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="nav-item" onclick="App.openConfig()">
+      <i class="bi bi-sliders"></i>
+      <span class="nav-label">Config</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span>v2.1 &nbsp;·&nbsp; BQ Live</span>
   </div>
-</nav>
+</aside>
 
-<!-- ═══════════════════════════ STATS BAR ═══════════════════════════ -->
-<div class="stats-bar">
-  <div class="stat-chip"><span class="val" id="statTotal">0</span> campaigns</div>
-  <div class="stat-chip amber"><span class="val" id="statReview">0</span> need review</div>
-  <div class="stat-chip green"><span class="val" id="statAccepted">0</span> accepted</div>
-  <div class="stat-chip red"><span class="val" id="statRejected">0</span> rejected</div>
-  <div class="stat-chip" style="margin-left:auto;color:#555;" id="statLabel">
-    No draft yet — pick a month &amp; click Generate
-  </div>
-</div>
+<!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════ -->
+<div class="main-content">
 
-<!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
-<div class="main-wrap">
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       VIEW 1 — CAMPAIGN CALENDAR
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div id="viewCampaign">
 
-  <!-- Legend -->
-  <div class="legend" id="legend" style="display:none">
-    <div class="legend-item"><div class="legend-dot" style="background:#ffd7d7"></div> Sale</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#e8d8ff"></div> Seasonal</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#d0efff"></div> Monthly Anchor</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#fde8cc"></div> Cultural</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#d1f5e5"></div> National</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#d6e4ff"></div> Sports</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#ffd6ee"></div> Beauty</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#e8e8e8"></div> Trend Edit</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#fff3cd"></div> 🌍 Global Event</div>
-    <div class="legend-item" style="margin-left:12px"><span class="review-dot"></span> Needs review</div>
-    <div class="legend-item"><span class="confirmed-dot"></span> Confirmed</div>
-  </div>
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="page-title">
+        <i class="bi bi-calendar3"></i> Campaign Calendar
+      </div>
+      <div class="controls">
+        <select id="selMonth">
+          <option value="1">January</option><option value="2">February</option>
+          <option value="3">March</option><option value="4">April</option>
+          <option value="5">May</option><option value="6">June</option>
+          <option value="7" selected>July</option><option value="8">August</option>
+          <option value="9">September</option><option value="10">October</option>
+          <option value="11">November</option><option value="12">December</option>
+        </select>
+        <input type="number" id="selYear" value="2026" min="2024" max="2030" style="width:80px">
+        <button class="btn-ns-primary" id="btnGenerate" onclick="App.generate()">
+          <i class="bi bi-play-fill"></i> Generate
+        </button>
+        <button class="btn-ns-outline" onclick="App.openConfig()" title="Edit lunar/sports dates">
+          <i class="bi bi-sliders"></i> Config
+        </button>
+      </div>
+    </div>
 
-  <!-- Tab bar + actions -->
-  <div class="tab-bar" id="tabBar" style="display:none">
-    <button class="tab-btn active" onclick="App.setFilter('all')"        data-f="all">All</button>
-    <button class="tab-btn"       onclick="App.setFilter('pipeline')"    data-f="pipeline">Pipeline</button>
-    <button class="tab-btn"       onclick="App.setFilter('global')"      data-f="global">🌍 Global Events</button>
-    <button class="tab-btn"       onclick="App.setFilter('review')"      data-f="review">⚠ Needs Review</button>
-    <button class="tab-btn"       onclick="App.setFilter('accepted')"    data-f="accepted">✓ Accepted</button>
-    <div class="tab-spacer"></div>
-    <button class="action-btn"    onclick="App.acceptAll()"><i class="bi bi-check-all"></i> Accept All Visible</button>
-    <button class="action-btn"    onclick="App.rejectTrends()"><i class="bi bi-x"></i> Reject All Trend Edits</button>
-    <button class="action-btn" id="btnPulse" onclick="App.togglePulse()" title="3-week category performance pulse from BigQuery"><i class="bi bi-bar-chart-line"></i> Category Pulse</button>
-    <button class="action-btn search" onclick="App.searchWeb()"><i class="bi bi-search"></i> Search Web</button>
-    <button class="action-btn export" onclick="App.exportXlsx()"><i class="bi bi-file-earmark-spreadsheet"></i> Export XLSX</button>
-  </div>
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-chip"><span class="val" id="statTotal">0</span> campaigns</div>
+      <div class="stat-chip amber"><span class="val" id="statReview">0</span> need review</div>
+      <div class="stat-chip green"><span class="val" id="statAccepted">0</span> accepted</div>
+      <div class="stat-chip red"><span class="val" id="statRejected">0</span> rejected</div>
+      <div class="stat-chip" style="margin-left:auto;color:#555" id="statLabel">
+        No draft yet — pick a month &amp; click Generate
+      </div>
+    </div>
 
-  <!-- ═══ Category Pulse Panel (toggled by BQ button) ═══ -->
-  <div id="pulsePanelWrap" style="display:none">
-    <div class="pulse-panel">
-      <div class="pulse-header">
-        <div class="ptitle">
-          <i class="bi bi-bar-chart-line-fill" style="color:var(--ns-green)"></i>
-          Category Pulse — Last 3 Weeks
-          <span class="pasof" id="pulseAsOf"></span>
+    <!-- Campaign content -->
+    <div class="main-wrap">
+
+      <!-- Legend -->
+      <div class="legend" id="legend" style="display:none">
+        <div class="legend-item"><div class="legend-dot" style="background:#ffd7d7"></div> Sale</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e8d8ff"></div> Seasonal</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d0efff"></div> Monthly Anchor</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fde8cc"></div> Cultural</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d1f5e5"></div> National</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d6e4ff"></div> Sports</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffd6ee"></div> Beauty</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e8e8e8"></div> Trend Edit</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#fff3cd"></div> 🌍 Global Event</div>
+        <div class="legend-item" style="margin-left:12px"><span class="review-dot"></span> Needs review</div>
+        <div class="legend-item"><span class="confirmed-dot"></span> Confirmed</div>
+      </div>
+
+      <!-- Tab bar + action buttons -->
+      <div class="tab-bar" id="tabBar" style="display:none">
+        <button class="tab-btn active" onclick="App.setFilter('all')"     data-f="all">All</button>
+        <button class="tab-btn"       onclick="App.setFilter('pipeline')" data-f="pipeline">Pipeline</button>
+        <button class="tab-btn"       onclick="App.setFilter('global')"   data-f="global">🌍 Global</button>
+        <button class="tab-btn"       onclick="App.setFilter('review')"   data-f="review">⚠ Review</button>
+        <button class="tab-btn"       onclick="App.setFilter('accepted')" data-f="accepted">✓ Accepted</button>
+        <div class="tab-spacer"></div>
+        <button class="action-btn" onclick="App.acceptAll()"><i class="bi bi-check-all"></i> Accept All</button>
+        <button class="action-btn" onclick="App.rejectTrends()"><i class="bi bi-x"></i> Reject Trends</button>
+        <button class="action-btn search" onclick="App.searchWeb()"><i class="bi bi-search"></i> Search Web</button>
+        <button class="action-btn export" onclick="App.exportXlsx()"><i class="bi bi-file-earmark-spreadsheet"></i> Export XLSX</button>
+      </div>
+
+      <!-- Table -->
+      <div id="tableWrap">
+        <div class="empty-state" id="emptyState">
+          <div class="icon">📅</div>
+          <h5>No draft generated yet</h5>
+          <p>Select a month and year above, then click <strong>Generate</strong>.</p>
         </div>
-        <div class="pcontrols">
-          <select id="pulseMerchFilter" class="pulse-filter-input" style="width:180px" onchange="App.renderPulse()">
-            <option value="">All merch teams</option>
-          </select>
-          <input type="text" id="pulseSearch" class="pulse-filter-input" placeholder="Filter category…" oninput="App.renderPulse()">
-          <select id="pulseFlagFilter" class="pulse-filter-input" style="width:130px" onchange="App.renderPulse()">
-            <option value="">All signals</option>
-            <option value="SPIKE">🔺 Spikes only</option>
-            <option value="DIP">🔻 Dips only</option>
-          </select>
-          <button class="pulse-close-btn" onclick="App.closePulse()" title="Close">✕</button>
+      </div>
+
+      <!-- Web search results -->
+      <div id="searchPanel" style="display:none" class="search-panel">
+        <div class="search-panel-header">
+          <h6><i class="bi bi-globe2"></i> Live Web Results — <span id="searchLabel"></span></h6>
+          <button class="btn-ns-outline" style="color:#fff;border-color:rgba(255,255,255,0.3)" onclick="App.closeSearch()">✕</button>
         </div>
+        <div id="searchResults"></div>
       </div>
-      <div class="pulse-legend">
-        <span style="color:#555; font-weight:600">Signals:</span>
-        <span><span class="flag-spike">🔺 SPIKE</span> &nbsp;WoW impressions or units &gt;+30%</span>
-        <span><span class="flag-dip">🔻 DIP</span> &nbsp;WoW impressions or units &lt;−20%</span>
-        <span style="margin-left:auto; color:#aaa" id="pulseRowCount"></span>
+
+    </div><!-- /main-wrap -->
+  </div><!-- /viewCampaign -->
+
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       VIEW 2 — CATEGORY PULSE
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div id="viewPulse" style="display:none; flex-direction:column; flex:1">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="page-title">
+        <i class="bi bi-bar-chart-line-fill" style="color:var(--ns-green)"></i>
+        Category Pulse
+        <span id="pulseAsOf" style="font-size:0.75rem; color:#5fa; font-weight:400"></span>
       </div>
-      <div class="pulse-table-container" id="pulseTableBody">
-        <div class="pulse-empty"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading from BigQuery…</div>
+      <div class="controls">
+        <button class="btn-ns-outline" onclick="App.refreshPulse()" id="btnRefreshPulse" title="Reload from BigQuery">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
       </div>
     </div>
-  </div>
 
-  <!-- Campaign table -->
-  <div id="tableWrap">
-    <div class="empty-state" id="emptyState">
-      <div class="icon">📅</div>
-      <h5>No draft generated yet</h5>
-      <p>Select a month and year above, then click <strong>Generate</strong> to build your campaign plan.</p>
+    <!-- Pulse page content -->
+    <div class="pulse-page">
+      <div class="pulse-card">
+
+        <!-- Filters row -->
+        <div class="pulse-card-header">
+          <div class="ptitle">
+            <i class="bi bi-table"></i>
+            Category / Subcategory — Last 3 Weeks
+          </div>
+          <div class="pulse-filters">
+            <select id="pulseMerchFilter" class="pulse-filter-input" style="width:190px" onchange="App.renderPulse()">
+              <option value="">All merch teams</option>
+            </select>
+            <input type="text" id="pulseSearch" class="pulse-filter-input" style="width:200px"
+                   placeholder="Filter category or sub…" oninput="App.renderPulse()">
+            <select id="pulseFlagFilter" class="pulse-filter-input" style="width:140px" onchange="App.renderPulse()">
+              <option value="">All signals</option>
+              <option value="SPIKE">🔺 Spikes only</option>
+              <option value="DIP">🔻 Dips only</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Summary chips -->
+        <div class="pulse-summary" id="pulseSummary" style="display:none">
+          <div class="psum-chip total"><span class="pval" id="psTotal">—</span><span>total rows</span></div>
+          <div class="psum-chip spike"><span class="pval" id="psSpikes">—</span><span>🔺 spikes</span></div>
+          <div class="psum-chip dip"><span class="pval" id="psDips">—</span><span>🔻 dips</span></div>
+          <div class="psum-chip" style="margin-left:auto; font-size:0.73rem; color:#aaa" id="psRowCount"></div>
+        </div>
+
+        <!-- Legend -->
+        <div class="pulse-legend-bar">
+          <span class="lbl">Signals:</span>
+          <span><span class="flag-spike">🔺 SPIKE</span> &nbsp;Impressions WoW &gt; +30%</span>
+          <span><span class="flag-dip">🔻 DIP</span> &nbsp;Impressions WoW &lt; −20%</span>
+          <span style="margin-left:auto; color:#bbb; font-size:0.72rem">Merch impressions = non-search (onsite merchandised traffic)</span>
+        </div>
+
+        <!-- Table area -->
+        <div class="pulse-table-container" id="pulseTableBody">
+          <div class="pulse-empty">
+            <div class="spinner-ns"></div>
+            <p style="margin-top:8px">Loading from BigQuery…</p>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div id="loadingState" style="display:none;text-align:center;padding:60px 20px">
-      <div class="spinner-ns"></div>
-      <p style="color:#888">Generating campaign plan…</p>
-    </div>
-  </div>
+  </div><!-- /viewPulse -->
 
-  <!-- Web search results -->
-  <div id="searchPanel" style="display:none" class="search-panel">
-    <div class="search-panel-header">
-      <h6><i class="bi bi-globe2"></i> Live Web Results — <span id="searchLabel"></span></h6>
-      <button class="btn-ns-outline" style="color:#fff;border-color:rgba(255,255,255,0.3)" onclick="App.closeSearch()">✕</button>
-    </div>
-    <div id="searchResults"></div>
-  </div>
+</div><!-- /main-content -->
 
-</div><!-- /main-wrap -->
 
-<!-- ═══════════════════════════ SIDE PANEL (history) ═══════════════════════════ -->
+<!-- ═══════════════════════════════════════════════
+     HISTORY SIDE PANEL
+══════════════════════════════════════════════════ -->
 <div class="side-panel" id="sidePanel">
   <div class="side-panel-header">
     <h5 id="sidePanelTitle">Campaign History</h5>
@@ -499,7 +631,10 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
 </div>
 <div id="panelOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:1999" onclick="App.closePanel()"></div>
 
-<!-- ═══════════════════════════ EDIT MODAL ═══════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════════
+     EDIT MODAL
+══════════════════════════════════════════════════ -->
 <div class="modal fade modal-ns" id="editModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -508,9 +643,7 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body" style="padding:20px">
-        <div class="row g-3" id="editFormFields">
-          <!-- dynamically populated -->
-        </div>
+        <div class="row g-3" id="editFormFields"></div>
       </div>
       <div class="modal-footer-ns">
         <button class="action-btn" data-bs-dismiss="modal">Cancel</button>
@@ -520,7 +653,10 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
   </div>
 </div>
 
-<!-- ═══════════════════════════ CONFIG MODAL ═══════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════════
+     CONFIG MODAL
+══════════════════════════════════════════════════ -->
 <div class="modal fade modal-ns" id="configModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -530,8 +666,8 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
       </div>
       <div class="modal-body" style="padding:20px">
         <p style="font-size:0.85rem;color:#666;margin-bottom:16px">
-          Update confirmed dates for lunar and sports events. These are saved to
-          <code>calendar_config.yaml</code> and used in the next Generate run.
+          Update confirmed dates for lunar and sports events. Saved to
+          <code>calendar_config.yaml</code> — regenerate to apply.
         </p>
         <div id="configFields">Loading…</div>
       </div>
@@ -548,42 +684,39 @@ tr[data-source="global_calendar"] td { background: var(--row-global); }
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════════════════
-   Namshi Campaign Planner — Frontend
-   ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   Namshi Campaign Planner — Frontend App
+════════════════════════════════════════════════════════ */
 const App = (() => {
-  // ── State ──────────────────────────────────────────────────────────
+
+  // ── State ────────────────────────────────────────────────────────
   let state = {
-    campaigns: [],      // pipeline rows
-    globalEvents: [],   // global_events.yaml rows
-    month: 7, year: 2026,
-    monthName: 'July',
-    filter: 'all',
-    editingId: null,
-    configData: {},
+    campaigns: [], globalEvents: [],
+    month: 7, year: 2026, monthName: 'July',
+    filter: 'all', editingId: null, configData: {},
+    view: 'campaign',
   };
+  let pulseData  = null;
+  let pulseLoaded = false;
 
-  // ── Helpers ────────────────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────────
   function allRows() { return [...state.campaigns, ...state.globalEvents]; }
-
   function filteredRows() {
     const all = allRows();
     switch (state.filter) {
-      case 'pipeline':  return all.filter(r => r.source_type === 'pipeline');
-      case 'global':    return all.filter(r => r.source_type === 'global_calendar');
-      case 'review':    return all.filter(r => r.needs_review === true || r.needs_review === 'true' || r.needs_review === 'TRUE');
-      case 'accepted':  return all.filter(r => r.status === 'accepted');
-      default:          return all;
+      case 'pipeline': return all.filter(r => r.source_type === 'pipeline');
+      case 'global':   return all.filter(r => r.source_type === 'global_calendar');
+      case 'review':   return all.filter(r => r.needs_review === true || r.needs_review === 'true' || r.needs_review === 'TRUE');
+      case 'accepted': return all.filter(r => r.status === 'accepted');
+      default:         return all;
     }
   }
-
   function getRow(id) { return allRows().find(r => r.id === id); }
   function updateRow(id, patch) {
     let arr = state.campaigns.find(r => r.id === id) ? state.campaigns : state.globalEvents;
     const idx = arr.findIndex(r => r.id === id);
     if (idx >= 0) arr[idx] = { ...arr[idx], ...patch };
   }
-
   function toast(msg, err=false) {
     const div = document.createElement('div');
     div.className = 'ns-toast' + (err ? ' err' : '');
@@ -591,7 +724,6 @@ const App = (() => {
     document.getElementById('toastWrap').appendChild(div);
     setTimeout(() => div.remove(), 3100);
   }
-
   function updateStats() {
     const all = allRows();
     document.getElementById('statTotal').textContent    = all.length;
@@ -599,17 +731,12 @@ const App = (() => {
     document.getElementById('statAccepted').textContent = all.filter(r => r.status === 'accepted').length;
     document.getElementById('statRejected').textContent = all.filter(r => r.status === 'rejected').length;
   }
-
-  function badgeHtml(type) {
-    return `<span class="badge-type ${type}">${type.replace('_',' ')}</span>`;
-  }
-
+  function badgeHtml(type) { return `<span class="badge-type ${type}">${type.replace('_',' ')}</span>`; }
   function srcBadge(src) {
     const cls = src === 'both' ? 'both' : src === 'config' ? 'config' : src === 'history' ? 'history' : 'global';
     const lbl = src === 'global_calendar' ? '🌍 global' : src;
     return `<span class="src-badge ${cls}">${lbl}</span>`;
   }
-
   function reviewDot(r) {
     const nr = r.needs_review;
     const isReview = nr === true || nr === 'true' || nr === 'TRUE';
@@ -617,7 +744,6 @@ const App = (() => {
       ? '<span class="review-dot" title="Needs review"></span>'
       : '<span class="confirmed-dot" title="Confirmed"></span>';
   }
-
   function fmtDate(d) {
     if (!d || d === 'TBD' || d === '') return '<span style="color:#bbb">TBD</span>';
     try {
@@ -627,85 +753,74 @@ const App = (() => {
     } catch(e) { return d; }
   }
 
-  // ── Render table ───────────────────────────────────────────────────
+  // ── View switching ───────────────────────────────────────────────
+  function switchView(view) {
+    state.view = view;
+    document.getElementById('viewCampaign').style.display = view === 'campaign' ? 'block' : 'none';
+    document.getElementById('viewPulse').style.display    = view === 'pulse'    ? 'flex'  : 'none';
+    document.getElementById('navCampaign').classList.toggle('active', view === 'campaign');
+    document.getElementById('navPulse').classList.toggle('active', view === 'pulse');
+
+    if (view === 'pulse' && !pulseLoaded) {
+      loadPulse();
+    }
+  }
+
+  // ── Render campaign table ────────────────────────────────────────
   function renderTable() {
     const rows = filteredRows();
     const wrap = document.getElementById('tableWrap');
-
     if (rows.length === 0 && allRows().length > 0) {
       wrap.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h5>No campaigns match this filter</h5></div>`;
       return;
     }
-
     let html = `<div class="campaign-table-wrap"><table class="campaign-table">
-      <thead>
-        <tr>
-          <th style="width:36px">#</th>
-          <th>Campaign</th>
-          <th>Type</th>
-          <th>Tier</th>
-          <th>Geo</th>
-          <th>Start</th>
-          <th>End</th>
-          <th>Category Focus</th>
-          <th>Source</th>
-          <th>Review</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>`;
-
+      <thead><tr>
+        <th style="width:36px">#</th>
+        <th>Campaign</th><th>Type</th><th>Tier</th><th>Geo</th>
+        <th>Start</th><th>End</th><th>Category Focus</th><th>Source</th><th>Review</th><th>Actions</th>
+      </tr></thead><tbody>`;
     rows.forEach((r, i) => {
       const typeClass = r.source_type === 'global_calendar' ? 'global_calendar' : (r.event_type || 'trend_edit');
       const rejClass  = r.status === 'rejected' ? ' rejected' : (r.status === 'accepted' ? ' accepted' : '');
-      html += `<tr data-id="${r.id}" data-type="${r.event_type || ''}" data-source="${r.source_type || ''}"
-                   class="${rejClass}" onclick="App.handleRowClick(event,'${r.id}')">
+      html += `<tr data-id="${r.id}" data-type="${r.event_type||''}" data-source="${r.source_type||''}"
+               class="${rejClass}" onclick="App.handleRowClick(event,'${r.id}')">
         <td style="color:#aaa;font-size:0.78rem">${i+1}</td>
-        <td class="name-col">
-          ${reviewDot(r)}${r.campaign_name || ''}
-          <small>${r.canonical_key || ''}</small>
-        </td>
+        <td class="name-col">${reviewDot(r)}${r.campaign_name||''}<small>${r.canonical_key||''}</small></td>
         <td>${badgeHtml(typeClass)}</td>
-        <td class="tier-badge">${r.tier || '-'}</td>
-        <td class="geo-badge">${r.geography || '-'}</td>
+        <td class="tier-badge">${r.tier||'-'}</td>
+        <td class="geo-badge">${r.geography||'-'}</td>
         <td class="date-range">${fmtDate(r.start_date)}</td>
         <td class="date-range">${fmtDate(r.end_date)}</td>
         <td style="max-width:180px;font-size:0.78rem;color:#555">${(r.category_focus||'').slice(0,70)}${(r.category_focus||'').length>70?'…':''}</td>
-        <td>${srcBadge(r.source || r.source_type)}</td>
-        <td style="font-size:0.75rem;color:#777">${(r.needs_review===true||r.needs_review==='TRUE'||r.needs_review==='true') ? '⚠ review' : '✓ ok'}</td>
-        <td>
-          <div class="row-actions">
-            <button class="btn-accept ${r.status==='accepted'?'active':''}" title="Accept"
-                    onclick="event.stopPropagation();App.setStatus('${r.id}','accepted')">✓</button>
-            <button class="btn-reject ${r.status==='rejected'?'active':''}" title="Reject"
-                    onclick="event.stopPropagation();App.setStatus('${r.id}','rejected')">✕</button>
-            <button class="btn-edit"    title="Edit"
-                    onclick="event.stopPropagation();App.openEdit('${r.id}')"><i class="bi bi-pencil"></i></button>
-            <button class="btn-history" title="View history"
-                    onclick="event.stopPropagation();App.showHistory('${r.id}')"><i class="bi bi-clock-history"></i></button>
-          </div>
-        </td>
+        <td>${srcBadge(r.source||r.source_type)}</td>
+        <td style="font-size:0.75rem;color:#777">${(r.needs_review===true||r.needs_review==='TRUE'||r.needs_review==='true')?'⚠ review':'✓ ok'}</td>
+        <td><div class="row-actions">
+          <button class="btn-accept ${r.status==='accepted'?'active':''}" title="Accept"
+                  onclick="event.stopPropagation();App.setStatus('${r.id}','accepted')">✓</button>
+          <button class="btn-reject ${r.status==='rejected'?'active':''}" title="Reject"
+                  onclick="event.stopPropagation();App.setStatus('${r.id}','rejected')">✕</button>
+          <button class="btn-edit" title="Edit"
+                  onclick="event.stopPropagation();App.openEdit('${r.id}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn-history" title="View history"
+                  onclick="event.stopPropagation();App.showHistory('${r.id}')"><i class="bi bi-clock-history"></i></button>
+        </div></td>
       </tr>`;
     });
-
     html += '</tbody></table></div>';
     wrap.innerHTML = html;
     updateStats();
   }
 
-  // ── API calls ──────────────────────────────────────────────────────
+  // ── Generate ─────────────────────────────────────────────────────
   async function generate() {
     const month = +document.getElementById('selMonth').value;
     const year  = +document.getElementById('selYear').value;
     state.month = month; state.year = year;
-
-    // Replace table area with spinner (works on every click, not just the first)
     document.getElementById('tableWrap').innerHTML =
-      '<div style="text-align:center;padding:60px 20px">' +
-      '<div class="spinner-ns"></div>' +
+      '<div style="text-align:center;padding:60px 20px"><div class="spinner-ns"></div>' +
       '<p style="color:#888;margin-top:8px">Generating campaign plan…</p></div>';
     document.getElementById('btnGenerate').disabled = true;
-
     try {
       const res  = await fetch('/api/generate', {
         method: 'POST', headers: {'Content-Type':'application/json'},
@@ -713,12 +828,10 @@ const App = (() => {
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Unknown error');
-
-      state.campaigns   = data.campaigns || [];
-      state.globalEvents = data.global_events || [];
-      state.monthName   = data.month_name || '';
-      state.filter      = 'all';
-
+      state.campaigns    = data.campaigns    || [];
+      state.globalEvents = data.global_events|| [];
+      state.monthName    = data.month_name   || '';
+      state.filter       = 'all';
       document.getElementById('legend').style.display  = 'flex';
       document.getElementById('tabBar').style.display  = 'flex';
       document.getElementById('statLabel').textContent = `${state.monthName} ${state.year}`;
@@ -736,53 +849,33 @@ const App = (() => {
   function setStatus(id, status) {
     const r = getRow(id);
     if (!r) return;
-    const newStatus = r.status === status ? 'pending' : status;  // toggle
-    updateRow(id, { status: newStatus });
+    updateRow(id, { status: r.status === status ? 'pending' : status });
     renderTable();
   }
-
   function setFilter(f) {
     state.filter = f;
-    document.querySelectorAll('.tab-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.f === f);
-    });
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.f === f));
     renderTable();
   }
-
-  function acceptAll() {
-    filteredRows().forEach(r => updateRow(r.id, { status: 'accepted' }));
-    renderTable();
-    toast('✓ All visible rows accepted');
-  }
-
-  function rejectTrends() {
-    allRows().filter(r => r.event_type === 'trend_edit').forEach(r => updateRow(r.id, { status: 'rejected' }));
-    renderTable();
-    toast('Trend edits rejected');
-  }
-
+  function acceptAll() { filteredRows().forEach(r => updateRow(r.id, {status:'accepted'})); renderTable(); toast('✓ All visible rows accepted'); }
+  function rejectTrends() { allRows().filter(r => r.event_type==='trend_edit').forEach(r => updateRow(r.id,{status:'rejected'})); renderTable(); toast('Trend edits rejected'); }
   function handleRowClick(evt, id) {
-    // click anywhere on row = select it; buttons stop propagation
     document.querySelectorAll('.campaign-table tbody tr').forEach(tr =>
       tr.classList.toggle('selected', tr.dataset.id === id));
   }
 
-  // ── History panel ──────────────────────────────────────────────────
+  // ── History panel ─────────────────────────────────────────────────
   async function showHistory(id) {
     const r = getRow(id);
     if (!r) return;
     document.getElementById('sidePanelTitle').textContent = r.campaign_name;
-    document.getElementById('sidePanelBody').innerHTML = '<div class="no-hist"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading history…</div>';
+    document.getElementById('sidePanelBody').innerHTML = '<div class="no-hist"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading…</div>';
     openPanel();
     try {
       const res  = await fetch(`/api/history/${encodeURIComponent(r.canonical_key)}`);
       const data = await res.json();
       const hist = data.history || [];
-
-      let html = `<div style="margin-bottom:14px">
-        <div style="font-size:0.8rem;color:#888;margin-bottom:6px">Canonical key: <code>${r.canonical_key}</code></div>`;
-
-      // Show current row details first
+      let html = `<div style="margin-bottom:14px"><div style="font-size:0.8rem;color:#888;margin-bottom:6px">Canonical key: <code>${r.canonical_key}</code></div>`;
       html += `<div style="background:#f0fff4;border:1px solid #c8f5d8;border-radius:8px;padding:12px;margin-bottom:12px">
         <div style="font-size:0.72rem;font-weight:700;color:#2e7d32;margin-bottom:8px">CURRENT DRAFT — ${state.monthName} ${state.year}</div>
         <div class="hist-kv">
@@ -793,14 +886,13 @@ const App = (() => {
         </div>
         ${r.raw_notes ? `<div style="margin-top:8px;font-size:0.77rem;color:#555;font-style:italic">${r.raw_notes}</div>` : ''}
       </div>`;
-
       if (hist.length === 0) {
         html += `<div class="no-hist" style="padding:20px 0">No historical data for this campaign</div>`;
       } else {
         html += `<div style="font-size:0.8rem;font-weight:700;color:#444;margin-bottom:8px">Historical Runs (${hist.length})</div>`;
         hist.forEach(h => {
           html += `<div class="hist-entry">
-            <div class="sheet-lbl">📋 ${h.sheet_name || ''}</div>
+            <div class="sheet-lbl">📋 ${h.sheet_name||''}</div>
             <div class="hist-kv">
               <div class="kv"><span>Name </span><strong>${h.campaign_name||'-'}</strong></div>
               <div class="kv"><span>Start </span><strong>${h.start_date||'TBD'}</strong></div>
@@ -816,42 +908,33 @@ const App = (() => {
       html += '</div>';
       document.getElementById('sidePanelBody').innerHTML = html;
     } catch(e) {
-      document.getElementById('sidePanelBody').innerHTML = `<div class="no-hist">Error loading history: ${e.message}</div>`;
+      document.getElementById('sidePanelBody').innerHTML = `<div class="no-hist">Error: ${e.message}</div>`;
     }
   }
+  function openPanel()  { document.getElementById('sidePanel').classList.add('open'); document.getElementById('panelOverlay').style.display='block'; }
+  function closePanel() { document.getElementById('sidePanel').classList.remove('open'); document.getElementById('panelOverlay').style.display='none'; }
 
-  function openPanel()  {
-    document.getElementById('sidePanel').classList.add('open');
-    document.getElementById('panelOverlay').style.display = 'block';
-  }
-  function closePanel() {
-    document.getElementById('sidePanel').classList.remove('open');
-    document.getElementById('panelOverlay').style.display = 'none';
-  }
-
-  // ── Edit modal ──────────────────────────────────────────────────────
+  // ── Edit modal ───────────────────────────────────────────────────
   function openEdit(id) {
     const r = getRow(id);
     if (!r) return;
     state.editingId = id;
-
     const EDITABLE = [
-      { k:'campaign_name',      label:'Campaign Name',       type:'text' },
-      { k:'tier',               label:'Tier',                type:'select', opts:['Tier 1','Tier 2','Tier 3','-'] },
-      { k:'geography',          label:'Geography',           type:'select', opts:['KSA + UAE','KSA','UAE','All'] },
-      { k:'start_date',         label:'Start Date',          type:'date' },
-      { k:'end_date',           label:'End Date',            type:'date' },
-      { k:'promos_coupons',     label:'Promos / Coupons',    type:'text' },
-      { k:'category_focus',     label:'Category Focus',      type:'text' },
-      { k:'onsite_deliverables',label:'Onsite Deliverables', type:'textarea' },
-      { k:'wireframes',         label:'Wireframes',          type:'text' },
-      { k:'raw_notes',          label:'Notes',               type:'textarea' },
+      {k:'campaign_name', label:'Campaign Name', type:'text'},
+      {k:'tier',          label:'Tier',          type:'select', opts:['Tier 1','Tier 2','Tier 3','-']},
+      {k:'geography',     label:'Geography',     type:'select', opts:['KSA + UAE','KSA','UAE','All']},
+      {k:'start_date',    label:'Start Date',    type:'date'},
+      {k:'end_date',      label:'End Date',      type:'date'},
+      {k:'promos_coupons',label:'Promos / Coupons', type:'text'},
+      {k:'category_focus',label:'Category Focus',   type:'text'},
+      {k:'onsite_deliverables', label:'Onsite Deliverables', type:'textarea'},
+      {k:'wireframes',    label:'Wireframes',    type:'text'},
+      {k:'raw_notes',     label:'Notes',         type:'textarea'},
     ];
-
     let html = '';
     EDITABLE.forEach(f => {
       const val = r[f.k] !== undefined ? r[f.k] : '';
-      const safeVal = String(val).replace(/"/g, '&quot;');
+      const safeVal = String(val).replace(/"/g,'&quot;');
       let input;
       if (f.type === 'textarea') {
         input = `<textarea class="form-control form-control-sm" id="ef_${f.k}" rows="2">${safeVal}</textarea>`;
@@ -866,358 +949,259 @@ const App = (() => {
       }
       html += `<div class="col-md-6"><label>${f.label}</label>${input}</div>`;
     });
-
     document.getElementById('editFormFields').innerHTML = html;
     new bootstrap.Modal(document.getElementById('editModal')).show();
   }
-
   function saveEdit() {
     const id = state.editingId;
-    const r  = getRow(id);
-    if (!r) return;
-
+    if (!getRow(id)) return;
     const KEYS = ['campaign_name','tier','geography','start_date','end_date',
                   'promos_coupons','category_focus','onsite_deliverables','wireframes','raw_notes'];
     const patch = {};
-    KEYS.forEach(k => {
-      const el = document.getElementById('ef_' + k);
-      if (el) patch[k] = el.value;
-    });
-
-    // Recalc duration
+    KEYS.forEach(k => { const el = document.getElementById('ef_'+k); if (el) patch[k] = el.value; });
     if (patch.start_date && patch.end_date &&
-        /^\d{4}-\d{2}-\d{2}$/.test(patch.start_date) &&
-        /^\d{4}-\d{2}-\d{2}$/.test(patch.end_date)) {
-      const s = new Date(patch.start_date), e = new Date(patch.end_date);
-      patch.duration_days = Math.round((e - s) / 86400000) + 1;
+        /^\d{4}-\d{2}-\d{2}$/.test(patch.start_date) && /^\d{4}-\d{2}-\d{2}$/.test(patch.end_date)) {
+      patch.duration_days = Math.round((new Date(patch.end_date)-new Date(patch.start_date))/86400000)+1;
     }
-
     updateRow(id, patch);
     bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-    renderTable();
-    toast('Row updated');
+    renderTable(); toast('Row updated');
   }
 
-  // ── Export ──────────────────────────────────────────────────────────
+  // ── Export ───────────────────────────────────────────────────────
   async function exportXlsx() {
     const toExport = allRows().filter(r => r.status !== 'rejected');
-    if (toExport.length === 0) { toast('Nothing to export (all rejected)', true); return; }
-
+    if (!toExport.length) { toast('Nothing to export', true); return; }
     toast(`Exporting ${toExport.length} rows…`);
     try {
       const res = await fetch('/api/export', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ rows: toExport, month: state.month, year: state.year }),
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({rows:toExport, month:state.month, year:state.year}),
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || res.statusText);
-      }
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error||res.statusText); }
       const blob = await res.blob();
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
-      a.href = url; a.download = `draft_calendar_${state.month}_${state.year}.xlsx`;
+      a.href=url; a.download=`draft_calendar_${state.month}_${state.year}.xlsx`;
       a.click(); URL.revokeObjectURL(url);
       toast('✓ Excel downloaded');
-    } catch(e) {
-      toast('Export failed: ' + e.message, true);
-    }
+    } catch(e) { toast('Export failed: '+e.message, true); }
   }
 
-  // ── Web search ──────────────────────────────────────────────────────
+  // ── Web search ───────────────────────────────────────────────────
   async function searchWeb() {
     const panel = document.getElementById('searchPanel');
     const res_div = document.getElementById('searchResults');
     document.getElementById('searchLabel').textContent = `${state.monthName} ${state.year}`;
-    panel.style.display = 'block';
-    res_div.innerHTML = '<div style="padding:16px;color:#888;text-align:center"><div class="spinner-ns" style="margin:0 auto 8px"></div>Searching…</div>';
+    panel.style.display='block';
+    res_div.innerHTML='<div style="padding:16px;color:#888;text-align:center"><div class="spinner-ns" style="margin:0 auto 8px"></div>Searching…</div>';
     panel.scrollIntoView({behavior:'smooth'});
-
     try {
       const r = await fetch(`/api/search?month=${state.month}&year=${state.year}`);
       const d = await r.json();
       const results = d.results || [];
-      if (results.length === 0) {
-        res_div.innerHTML = '<div style="padding:16px;color:#888;text-align:center">No results found — check internet connection</div>';
-        return;
-      }
+      if (!results.length) { res_div.innerHTML='<div style="padding:16px;color:#888;text-align:center">No results found</div>'; return; }
       res_div.innerHTML = results.map(item => `
-        <div class="search-result-item">
-          <div style="flex:1">
-            <div class="title">
-              ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener">${item.title}</a>` : item.title}
-            </div>
-            ${item.date ? `<div class="meta">${item.date}</div>` : ''}
-          </div>
-        </div>`).join('');
-    } catch(e) {
-      res_div.innerHTML = `<div style="padding:16px;color:#c00;text-align:center">Search error: ${e.message}</div>`;
-    }
+        <div class="search-result-item"><div style="flex:1">
+          <div class="title">${item.link?`<a href="${item.link}" target="_blank" rel="noopener">${item.title}</a>`:item.title}</div>
+          ${item.date?`<div class="meta">${item.date}</div>`:''}
+        </div></div>`).join('');
+    } catch(e) { res_div.innerHTML=`<div style="padding:16px;color:#c00;text-align:center">Error: ${e.message}</div>`; }
   }
+  function closeSearch() { document.getElementById('searchPanel').style.display='none'; }
 
-  function closeSearch() { document.getElementById('searchPanel').style.display = 'none'; }
-
-  // ── Config modal ────────────────────────────────────────────────────
+  // ── Config modal ─────────────────────────────────────────────────
   async function openConfig() {
-    document.getElementById('configFields').innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading…</div>';
+    document.getElementById('configFields').innerHTML='<div style="text-align:center;padding:20px"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading…</div>';
     new bootstrap.Modal(document.getElementById('configModal')).show();
-
     try {
       const res  = await fetch('/api/config/dates');
       const data = await res.json();
       state.configData = data;
-
       let html = '';
       Object.entries(data).forEach(([ck, ev]) => {
-        html += `<div class="config-event-block">
-          <h6>${ev.name} <small style="font-weight:400;color:#888;font-size:0.75rem">(${ck})</small></h6>`;
-        const datesObj = ev.dates || {};
-        const years = Object.keys(datesObj).length > 0 ? Object.keys(datesObj) : [state.year];
+        html += `<div class="config-event-block"><h6>${ev.name} <small style="font-weight:400;color:#888;font-size:0.75rem">(${ck})</small></h6>`;
+        const datesObj = ev.dates||{};
+        const years = Object.keys(datesObj).length>0 ? Object.keys(datesObj) : [state.year];
         years.forEach(yr => {
-          const d = datesObj[yr] || {};
-          html += `<div class="date-row">
-            <label>${yr}</label>
-            <input type="date" class="form-control form-control-sm"
-                   id="cfg_${ck}_${yr}_start" value="${d.start||''}" placeholder="Start date">
+          const d = datesObj[yr]||{};
+          html += `<div class="date-row"><label>${yr}</label>
+            <input type="date" class="form-control form-control-sm" id="cfg_${ck}_${yr}_start" value="${d.start||''}">
             <span style="color:#aaa;font-size:0.8rem">→</span>
-            <input type="date" class="form-control form-control-sm"
-                   id="cfg_${ck}_${yr}_end" value="${d.end||''}" placeholder="End date">
+            <input type="date" class="form-control form-control-sm" id="cfg_${ck}_${yr}_end" value="${d.end||''}">
           </div>`;
         });
-        // Add next year row if only current year shown
-        const nextYr = state.year + 1;
-        if (!years.includes(String(nextYr)) && !years.includes(nextYr)) {
-          const d2 = {};
-          html += `<div class="date-row">
-            <label>${nextYr}</label>
-            <input type="date" class="form-control form-control-sm"
-                   id="cfg_${ck}_${nextYr}_start" value="" placeholder="Start date">
+        const nextYr = state.year+1;
+        if (!years.includes(String(nextYr))&&!years.includes(nextYr)) {
+          html += `<div class="date-row"><label>${nextYr}</label>
+            <input type="date" class="form-control form-control-sm" id="cfg_${ck}_${nextYr}_start" value="">
             <span style="color:#aaa;font-size:0.8rem">→</span>
-            <input type="date" class="form-control form-control-sm"
-                   id="cfg_${ck}_${nextYr}_end" value="" placeholder="End date">
+            <input type="date" class="form-control form-control-sm" id="cfg_${ck}_${nextYr}_end" value="">
           </div>`;
         }
         html += `</div>`;
       });
-      document.getElementById('configFields').innerHTML = html || '<p style="color:#888">No configurable dates found.</p>';
-    } catch(e) {
-      document.getElementById('configFields').innerHTML = `<p style="color:#c00">Error loading config: ${e.message}</p>`;
-    }
+      document.getElementById('configFields').innerHTML = html||'<p style="color:#888">No configurable dates found.</p>';
+    } catch(e) { document.getElementById('configFields').innerHTML=`<p style="color:#c00">Error: ${e.message}</p>`; }
   }
-
   async function saveConfig() {
     const payload = {};
     Object.entries(state.configData).forEach(([ck, ev]) => {
-      const datesObj = ev.dates || {};
+      const datesObj = ev.dates||{};
       const years = [...new Set([...Object.keys(datesObj).map(Number), state.year, state.year+1])];
       years.forEach(yr => {
         const sEl = document.getElementById(`cfg_${ck}_${yr}_start`);
         const eEl = document.getElementById(`cfg_${ck}_${yr}_end`);
-        if (sEl || eEl) {
-          if (!payload[ck]) payload[ck] = {};
-          payload[ck][yr] = { start: sEl?.value||'', end: eEl?.value||'' };
-        }
+        if (sEl||eEl) { if (!payload[ck]) payload[ck]={}; payload[ck][yr]={start:sEl?.value||'',end:eEl?.value||''}; }
       });
     });
-
     try {
-      const res  = await fetch('/api/config/dates', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(payload),
-      });
+      const res  = await fetch('/api/config/dates',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const data = await res.json();
-      if (data.success) {
-        bootstrap.Modal.getInstance(document.getElementById('configModal')).hide();
-        toast('✓ Config saved — regenerate to apply');
-      } else {
-        toast('Save failed: ' + (data.error||'unknown'), true);
-      }
-    } catch(e) {
-      toast('Save failed: ' + e.message, true);
-    }
+      if (data.success) { bootstrap.Modal.getInstance(document.getElementById('configModal')).hide(); toast('✓ Config saved — regenerate to apply'); }
+      else { toast('Save failed: '+(data.error||'unknown'),true); }
+    } catch(e) { toast('Save failed: '+e.message,true); }
   }
 
-  // ── Category Pulse ─────────────────────────────────────────────────
-  let pulseData = null;   // cached API response
-  let pulseOpen = false;
-
+  // ── Category Pulse ───────────────────────────────────────────────
   function fmtNum(n) {
-    if (n == null || n === 0) return '<span style="color:#ccc">—</span>';
-    if (Math.abs(n) >= 1000000) return (n/1000000).toFixed(1) + 'M';
-    if (Math.abs(n) >= 1000)    return (n/1000).toFixed(1) + 'K';
+    if (n==null||n===0) return '<span style="color:#ccc">—</span>';
+    if (Math.abs(n)>=1000000) return (n/1000000).toFixed(1)+'M';
+    if (Math.abs(n)>=1000)    return (n/1000).toFixed(1)+'K';
     return String(n);
   }
-
   function wowBadge(val) {
-    if (val == null) return '<span style="color:#ccc">—</span>';
-    const cls = val > 0 ? 'up' : val < 0 ? 'dn' : 'flat';
-    const arrow = val > 0 ? '▲' : val < 0 ? '▼' : '►';
+    if (val==null) return '<span style="color:#ccc">—</span>';
+    const cls   = val>0 ? 'up' : val<0 ? 'dn' : 'flat';
+    const arrow = val>0 ? '▲' : val<0 ? '▼' : '►';
     return `<span class="wow-badge ${cls}">${arrow} ${Math.abs(val)}%</span>`;
   }
 
-  function miniBar(series) {
-    const max = Math.max(...series, 1);
-    return '<div class="mini-trend">' +
-      series.map((v, i) => {
-        const h = Math.max(3, Math.round((v / max) * 18));
-        const cls = i === series.length - 1 ? 'mini-bar last' : 'mini-bar';
-        return `<div class="${cls}" style="height:${h}px" title="${fmtNum(v)}"></div>`;
-      }).join('') +
-    '</div>';
-  }
-
   function renderPulse() {
-    if (!pulseData || !pulseData.rows) return;
-    const tableBody = document.getElementById('pulseTableBody');
-    const searchVal = (document.getElementById('pulseSearch')?.value || '').toLowerCase().trim();
-    const flagVal   = document.getElementById('pulseFlagFilter')?.value || '';
-    const merchVal  = document.getElementById('pulseMerchFilter')?.value || '';
+    if (!pulseData||!pulseData.rows) return;
+    const searchVal = (document.getElementById('pulseSearch')?.value||'').toLowerCase().trim();
+    const flagVal   = document.getElementById('pulseFlagFilter')?.value||'';
+    const merchVal  = document.getElementById('pulseMerchFilter')?.value||'';
 
     let rows = pulseData.rows;
     if (searchVal) rows = rows.filter(r =>
-      r.category.toLowerCase().includes(searchVal) ||
-      r.sub_category.toLowerCase().includes(searchVal)
+      r.category.toLowerCase().includes(searchVal) || r.sub_category.toLowerCase().includes(searchVal)
     );
-    if (flagVal)   rows = rows.filter(r => r.flag === flagVal);
-    if (merchVal)  rows = rows.filter(r => r.merch_team === merchVal);
+    if (flagVal)  rows = rows.filter(r => r.flag === flagVal);
+    if (merchVal) rows = rows.filter(r => r.merch_team === merchVal);
 
-    document.getElementById('pulseRowCount').textContent = `${rows.length} rows`;
+    // Update summary chips
+    const spikes = pulseData.rows.filter(r => r.flag==='SPIKE').length;
+    const dips   = pulseData.rows.filter(r => r.flag==='DIP').length;
+    document.getElementById('psTotal').textContent  = pulseData.rows.length;
+    document.getElementById('psSpikes').textContent = spikes;
+    document.getElementById('psDips').textContent   = dips;
+    document.getElementById('psRowCount').textContent = `Showing ${rows.length} rows`;
+    document.getElementById('pulseSummary').style.display = 'flex';
 
-    if (rows.length === 0) {
-      tableBody.innerHTML = '<div class="pulse-empty">No rows match the current filter.</div>';
+    if (!rows.length) {
+      document.getElementById('pulseTableBody').innerHTML = '<div class="pulse-empty">No rows match the current filter.</div>';
       return;
     }
 
-    const [w1lbl, w2lbl, w3lbl] = pulseData.week_labels || ['W-3','W-2','W-1'];
+    const [w1lbl, w2lbl, w3lbl] = pulseData.week_labels||['W-3','W-2','W-1'];
 
     let html = `<table class="pulse-table">
       <thead>
         <tr>
-          <th class="left grp" rowspan="2" style="width:150px">Category</th>
-          <th class="left grp" rowspan="2" style="width:150px">Subcategory</th>
-          <th class="left grp" rowspan="2" style="width:130px">Merch Team</th>
+          <th class="left" rowspan="2" style="width:160px">Category</th>
+          <th class="left" rowspan="2" style="width:160px">Subcategory</th>
+          <th class="left" rowspan="2" style="width:150px">Merch Team</th>
           <th class="grp" colspan="4">Impressions</th>
           <th class="grp" colspan="4">Merch Impressions</th>
           <th class="grp" colspan="4">Units</th>
-          <th class="grp" rowspan="2">Signal</th>
+          <th rowspan="2" style="white-space:nowrap">Signal</th>
         </tr>
         <tr>
-          <th>${w1lbl}</th><th>${w2lbl}</th><th>${w3lbl}</th><th>WoW</th>
-          <th>${w1lbl}</th><th>${w2lbl}</th><th>${w3lbl}</th><th>WoW</th>
-          <th>${w1lbl}</th><th>${w2lbl}</th><th>${w3lbl}</th><th>WoW</th>
+          <th>${w1lbl}</th><th>${w2lbl}</th><th style="color:#1a73e8">${w3lbl}</th><th>WoW</th>
+          <th>${w1lbl}</th><th>${w2lbl}</th><th style="color:#1a73e8">${w3lbl}</th><th>WoW</th>
+          <th>${w1lbl}</th><th>${w2lbl}</th><th style="color:#1a73e8">${w3lbl}</th><th>WoW</th>
         </tr>
       </thead>
       <tbody>`;
 
     rows.forEach(r => {
-      const flagHtml = r.flag === 'SPIKE'
+      const flagHtml = r.flag==='SPIKE'
         ? '<span class="flag-spike">🔺 SPIKE</span>'
-        : r.flag === 'DIP'
+        : r.flag==='DIP'
           ? '<span class="flag-dip">🔻 DIP</span>'
           : '';
-
-      const rowBg = r.flag === 'SPIKE' ? 'background:#fffdf0'
-                  : r.flag === 'DIP'   ? 'background:#fff8f8'
-                  : '';
-
+      const rowBg = r.flag==='SPIKE' ? 'background:#fffdf0'
+                  : r.flag==='DIP'   ? 'background:#fff8f8' : '';
       html += `<tr style="${rowBg}">
         <td class="left cat-cell">${r.category}</td>
         <td class="left sub-cell">${r.sub_category}</td>
         <td class="left merch-cell">${r.merch_team}</td>
-        <td>${fmtNum(r.impressions[0])}</td>
-        <td>${fmtNum(r.impressions[1])}</td>
-        <td><strong>${fmtNum(r.impressions[2])}</strong></td>
-        <td>${wowBadge(r.imp_wow)}</td>
-        <td>${fmtNum(r.merch_impressions[0])}</td>
-        <td>${fmtNum(r.merch_impressions[1])}</td>
-        <td><strong>${fmtNum(r.merch_impressions[2])}</strong></td>
-        <td>${wowBadge(r.merch_wow)}</td>
-        <td>${fmtNum(r.units[0])}</td>
-        <td>${fmtNum(r.units[1])}</td>
-        <td><strong>${fmtNum(r.units[2])}</strong></td>
-        <td>${wowBadge(r.units_wow)}</td>
+        <td>${fmtNum(r.impressions[0])}</td><td>${fmtNum(r.impressions[1])}</td><td><strong>${fmtNum(r.impressions[2])}</strong></td><td>${wowBadge(r.imp_wow)}</td>
+        <td>${fmtNum(r.merch_impressions[0])}</td><td>${fmtNum(r.merch_impressions[1])}</td><td><strong>${fmtNum(r.merch_impressions[2])}</strong></td><td>${wowBadge(r.merch_wow)}</td>
+        <td>${fmtNum(r.units[0])}</td><td>${fmtNum(r.units[1])}</td><td><strong>${fmtNum(r.units[2])}</strong></td><td>${wowBadge(r.units_wow)}</td>
         <td style="white-space:nowrap">${flagHtml}</td>
       </tr>`;
     });
 
     html += '</tbody></table>';
-    tableBody.innerHTML = html;
+    document.getElementById('pulseTableBody').innerHTML = html;
   }
 
-  async function togglePulse() {
-    const wrap = document.getElementById('pulsePanelWrap');
-    if (pulseOpen) {
-      wrap.style.display = 'none';
-      pulseOpen = false;
-      document.getElementById('btnPulse').style.borderColor = '';
-      document.getElementById('btnPulse').style.color = '';
-      return;
-    }
-    wrap.style.display = 'block';
-    pulseOpen = true;
-    document.getElementById('btnPulse').style.borderColor = 'var(--ns-green)';
-    document.getElementById('btnPulse').style.color = 'var(--ns-green)';
-    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    if (pulseData) { renderPulse(); return; }   // already loaded
-
-    // Fetch
+  async function loadPulse() {
     document.getElementById('pulseTableBody').innerHTML =
-      '<div class="pulse-empty"><div class="spinner-ns" style="margin:0 auto 8px"></div>Loading from BigQuery…</div>';
-
+      '<div class="pulse-empty"><div class="spinner-ns"></div><p style="margin-top:8px">Loading from BigQuery…</p></div>';
+    document.getElementById('pulseSummary').style.display = 'none';
     try {
       const res  = await fetch('/api/bq/category-pulse');
       const data = await res.json();
-
       if (data.error) {
         document.getElementById('pulseTableBody').innerHTML =
           `<div class="pulse-empty" style="color:#c00">BigQuery error: ${data.error}</div>`;
         return;
       }
-
-      pulseData = data;
-      document.getElementById('pulseAsOf').textContent = `data as of ${data.data_as_of}`;
+      pulseData   = data;
+      pulseLoaded = true;
+      document.getElementById('pulseAsOf').textContent = `  ·  data as of ${data.data_as_of}`;
 
       // Populate merch team filter
-      const merch_teams = [...new Set(data.rows.map(r => r.merch_team))].sort();
+      const teams = [...new Set(data.rows.map(r=>r.merch_team))].sort();
       const sel = document.getElementById('pulseMerchFilter');
-      merch_teams.forEach(t => {
-        const opt = document.createElement('option');
-        opt.value = t; opt.textContent = t;
-        sel.appendChild(opt);
-      });
+      sel.innerHTML = '<option value="">All merch teams</option>';
+      teams.forEach(t => { const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
 
       renderPulse();
-      toast(`✓ Category Pulse loaded — ${data.rows.length} category/sub rows`);
+      toast(`✓ Category Pulse loaded — ${data.rows.length} rows (${data.week_labels?.join(' · ')})`);
     } catch(e) {
       document.getElementById('pulseTableBody').innerHTML =
         `<div class="pulse-empty" style="color:#c00">Failed to load: ${e.message}</div>`;
-      toast('Category Pulse failed: ' + e.message, true);
+      toast('Category Pulse error: '+e.message, true);
     }
   }
 
-  function closePulse() {
-    document.getElementById('pulsePanelWrap').style.display = 'none';
-    pulseOpen = false;
-    document.getElementById('btnPulse').style.borderColor = '';
-    document.getElementById('btnPulse').style.color = '';
+  async function refreshPulse() {
+    pulseData   = null;
+    pulseLoaded = false;
+    document.getElementById('btnRefreshPulse').disabled = true;
+    // Bust the server cache by calling with a cache-bust param
+    await fetch('/api/bq/category-pulse?bust=' + Date.now());
+    await loadPulse();
+    document.getElementById('btnRefreshPulse').disabled = false;
   }
 
-  // ── Init ───────────────────────────────────────────────────────────
+  // ── Init ─────────────────────────────────────────────────────────
   function init() {
-    // Set month selector to current month
     const now = new Date();
-    document.getElementById('selMonth').value = now.getMonth() + 1;
+    document.getElementById('selMonth').value = now.getMonth()+1;
     document.getElementById('selYear').value  = now.getFullYear();
   }
 
-  // Expose public API
   return {
     generate, setStatus, setFilter, acceptAll, rejectTrends,
     handleRowClick, showHistory, openPanel, closePanel,
     openEdit, saveEdit, exportXlsx, searchWeb, closeSearch,
     openConfig, saveConfig,
-    togglePulse, closePulse, renderPulse,
+    switchView, renderPulse, loadPulse, refreshPulse,
     init,
   };
 })();

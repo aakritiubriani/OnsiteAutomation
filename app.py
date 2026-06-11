@@ -335,8 +335,9 @@ def api_category_pulse():
     """
     try:
         from bq_connector import get_category_pulse
+        bust   = request.args.get("bust")  # cache-bust from UI refresh button
         cached = _bq_cache.get("pulse")
-        if cached and (time.time() - cached["ts"] < 1800):
+        if cached and not bust and (time.time() - cached["ts"] < 1800):
             log.info("BQ pulse: serving from cache")
             return jsonify(cached["data"])
         log.info("BQ pulse: fetching from BigQuery…")
