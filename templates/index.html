@@ -495,6 +495,10 @@ select.pulse-filter-input option { background: #1e2d3d; }
       <i class="bi bi-bar-chart-line"></i>
       <span class="nav-label">Category Pulse</span>
     </div>
+    <div class="nav-item" id="navWireframe" onclick="App.switchView('wireframe')">
+      <i class="bi bi-grid-3x3-gap"></i>
+      <span class="nav-label">Wireframe Generator</span>
+    </div>
     <div class="sidebar-divider"></div>
     <div class="nav-item" onclick="App.openConfig()">
       <i class="bi bi-sliders"></i>
@@ -582,7 +586,6 @@ select.pulse-filter-input option { background: #1e2d3d; }
         <button class="action-btn" onclick="App.rejectTrends()"><i class="bi bi-x"></i> Reject Trends</button>
         <button class="action-btn search" onclick="App.searchWeb()"><i class="bi bi-search"></i> Search Web</button>
         <button class="action-btn export" onclick="App.exportXlsx()"><i class="bi bi-file-earmark-spreadsheet"></i> Export XLSX</button>
-        <button class="action-btn export" onclick="App.exportWireframeXlsx()"><i class="bi bi-grid-3x3-gap"></i> Export Wireframes</button>
       </div>
 
       <!-- Table -->
@@ -765,6 +768,75 @@ select.pulse-filter-input option { background: #1e2d3d; }
     </div>
   </div><!-- /viewPulse -->
 
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       VIEW 3 — WIREFRAME GENERATOR
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div id="viewWireframe" style="display:none; flex-direction:column; flex:1">
+
+    <div class="top-bar">
+      <div class="page-title">
+        <i class="bi bi-grid-3x3-gap-fill" style="color:var(--ns-green)"></i>
+        Wireframe Generator
+        <span style="font-size:0.75rem; color:#888; font-weight:400" id="wfMonthLabel"></span>
+      </div>
+      <div class="controls">
+        <button class="btn-ns-outline" onclick="App.exportWireframeXlsx()" title="Export all okayed wireframes for this month">
+          <i class="bi bi-file-earmark-spreadsheet"></i> Export Okayed Wireframes
+        </button>
+      </div>
+    </div>
+
+    <div class="pulse-page" id="wfEmptyState" style="display:none">
+      <div class="empty-state"><div class="icon"><i class="bi bi-calendar3"></i></div>
+        <h5>No campaigns loaded yet</h5>
+        <p style="color:#888">Generate a month on the Campaign Calendar tab first, then come back here to build wireframes for each campaign.</p>
+      </div>
+    </div>
+
+    <div class="pulse-page" id="wfBody" style="display:none; flex-direction:row; gap:16px; align-items:flex-start">
+
+      <!-- Campaign list -->
+      <div class="pulse-card" style="width:300px; flex-shrink:0; padding:0">
+        <div class="pulse-card-header" style="padding:12px 14px">
+          <div class="ptitle" style="font-size:0.85rem"><i class="bi bi-list-ul"></i> Campaigns this month</div>
+        </div>
+        <div id="wfCampaignList" style="max-height:70vh; overflow-y:auto"></div>
+      </div>
+
+      <!-- Tile builder + preview -->
+      <div class="pulse-card" style="flex:1; min-width:0">
+        <div id="wfEditorEmpty" class="pulse-empty">Select a campaign on the left to build its wireframe.</div>
+        <div id="wfEditor" style="display:none; padding:16px">
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px">
+            <div>
+              <div style="font-weight:700; font-size:1.05rem" id="wfCampName"></div>
+              <div style="color:#888; font-size:0.78rem" id="wfCampMeta"></div>
+            </div>
+            <div id="wfStatusBadge"></div>
+          </div>
+
+          <div style="display:flex; gap:6px; margin-bottom:10px">
+            <select class="form-select form-select-sm" id="wf_tile_picker" style="max-width:260px"></select>
+            <button type="button" class="action-btn" onclick="App.addWireframeTile()">+ Add tile</button>
+          </div>
+          <div id="wf_tile_list" style="margin-bottom:16px"></div>
+
+          <div style="font-size:0.78rem; color:#888; margin-bottom:6px">Preview (proportional mockup, not final design)</div>
+          <div id="wfPreview" style="border:1px solid #333; border-radius:6px; padding:8px; background:#111; margin-bottom:16px"></div>
+
+          <div style="display:flex; gap:8px">
+            <button class="action-btn" onclick="App.saveWireframeDraft()"><i class="bi bi-save"></i> Save Draft</button>
+            <button class="action-btn export" onclick="App.okayWireframe()"><i class="bi bi-check-circle"></i> ✓ Okay &amp; Attach to Campaign Sheet</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /viewWireframe -->
+
 </div><!-- /main-content -->
 
 
@@ -920,16 +992,21 @@ const App = (() => {
   // ── View switching ───────────────────────────────────────────────
   function switchView(view) {
     state.view = view;
-    document.getElementById('viewCampaign').style.display = view === 'campaign' ? 'block' : 'none';
-    document.getElementById('viewPulse').style.display    = view === 'pulse'    ? 'flex'  : 'none';
+    document.getElementById('viewCampaign').style.display  = view === 'campaign'  ? 'block' : 'none';
+    document.getElementById('viewPulse').style.display     = view === 'pulse'     ? 'flex'  : 'none';
+    document.getElementById('viewWireframe').style.display = view === 'wireframe' ? 'flex'  : 'none';
     document.getElementById('navCampaign').classList.toggle('active', view === 'campaign');
     document.getElementById('navPulse').classList.toggle('active', view === 'pulse');
+    document.getElementById('navWireframe').classList.toggle('active', view === 'wireframe');
 
     if (view === 'pulse' && !pulseLoaded) {
       loadPulse();
     }
     if (view === 'pulse' && !actLoaded) {
       loadActivations();
+    }
+    if (view === 'wireframe') {
+      renderWireframeView();
     }
   }
 
@@ -945,7 +1022,7 @@ const App = (() => {
       <thead><tr>
         <th style="width:36px">#</th>
         <th>Campaign</th><th>Type</th><th>Tier</th><th>Geo</th>
-        <th>Start</th><th>End</th><th>Category Focus</th><th>Source</th><th>Review</th><th>Actions</th>
+        <th>Start</th><th>End</th><th>Category Focus</th><th>Source</th><th>Review</th><th>Wireframe</th><th>Actions</th>
       </tr></thead><tbody>`;
     rows.forEach((r, i) => {
       const typeClass = r.source_type === 'global_calendar' ? 'global_calendar' : (r.event_type || 'trend_edit');
@@ -962,6 +1039,7 @@ const App = (() => {
         <td style="max-width:180px;font-size:0.78rem;color:#555">${(r.category_focus||'').slice(0,70)}${(r.category_focus||'').length>70?'…':''}</td>
         <td>${srcBadge(r.source||r.source_type)}</td>
         <td style="font-size:0.75rem;color:#777">${(r.needs_review===true||r.needs_review==='TRUE'||r.needs_review==='true')?'⚠ review':'✓ ok'}</td>
+        <td style="cursor:pointer" onclick="event.stopPropagation();App.closeEditAndGoToWireframe('${r.id}')" title="Open in Wireframe Generator">${wfStatusBadgeHtml(r)}</td>
         <td><div class="row-actions">
           <button class="btn-accept ${r.status==='accepted'?'active':''}" title="Accept"
                   onclick="event.stopPropagation();App.setStatus('${r.id}','accepted')">✓</button>
@@ -1082,14 +1160,10 @@ const App = (() => {
   function closePanel() { document.getElementById('sidePanel').classList.remove('open'); document.getElementById('panelOverlay').style.display='none'; }
 
   // ── Edit modal ───────────────────────────────────────────────────
-  let editingTiles = [];   // working copy of the row's wireframe_tiles while the modal is open
-
   async function openEdit(id) {
     const r = getRow(id);
     if (!r) return;
     state.editingId = id;
-    editingTiles = [...(r.wireframe_tiles || [])];
-    await loadTileCatalog();
 
     const EDITABLE = [
       {k:'campaign_name', label:'Campaign Name', type:'text'},
@@ -1121,64 +1195,31 @@ const App = (() => {
       html += `<div class="col-md-6"><label>${f.label}</label>${input}</div>`;
     });
 
-    // Wireframe tile picker — replaces the old free-text "wireframes" field
-    const tileOpts = tileCatalog.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
-    html += `<div class="col-md-12">
-      <label>Wireframe Tiles</label>
-      <div style="display:flex; gap:6px">
-        <select class="form-select form-select-sm" id="ef_tile_picker" style="max-width:260px">${tileOpts}</select>
-        <button type="button" class="action-btn" style="padding:4px 10px" onclick="App.addWireframeTile()">+ Add tile</button>
+    // Wireframe is read-only here — built in its own tab, then attached.
+    const tileCount = (r.wireframe_tiles || []).length;
+    const statusLbl = r.wireframe_status === 'okayed'
+      ? '<span style="color:#2e7d32;font-weight:700">✓ Okayed — attached</span>'
+      : (tileCount ? '<span style="color:#b8860b;font-weight:700">Draft</span>' : '<span style="color:#888">Not started</span>');
+    html += `<div class="col-md-12" style="border-top:1px solid #333; padding-top:10px; margin-top:6px">
+      <label>Wireframe</label>
+      <div style="display:flex; align-items:center; gap:10px">
+        <span style="font-size:0.85rem">${tileCount} tile(s) — ${statusLbl}</span>
+        <button type="button" class="action-btn" onclick="App.closeEditAndGoToWireframe('${id}')">
+          <i class="bi bi-grid-3x3-gap"></i> Manage in Wireframe Generator
+        </button>
       </div>
-      <div id="ef_tile_list" style="margin-top:8px"></div>
     </div>`;
 
     document.getElementById('editFormFields').innerHTML = html;
-    renderTileList();
     new bootstrap.Modal(document.getElementById('editModal')).show();
   }
 
-  function renderTileList() {
-    const wrap = document.getElementById('ef_tile_list');
-    if (!wrap) return;
-    if (!editingTiles.length) {
-      wrap.innerHTML = '<div style="color:#888; font-size:0.8rem">No tiles added yet.</div>';
-      return;
-    }
-    wrap.innerHTML = editingTiles.map((tid, i) => {
-      const t = tileCatalog.find(x => x.id === tid);
-      const label = t ? t.label : tid;
-      return `<div style="display:flex; align-items:center; gap:6px; padding:4px 8px; margin-bottom:4px; background:#2a2a2a; border-radius:4px">
-        <span style="color:#888; font-size:0.75rem">${i+1}.</span>
-        <span style="flex:1">${label}</span>
-        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.moveWireframeTile(${i},-1)" ${i===0?'disabled':''}>↑</button>
-        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.moveWireframeTile(${i},1)" ${i===editingTiles.length-1?'disabled':''}>↓</button>
-        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.removeWireframeTile(${i})">✕</button>
-      </div>`;
-    }).join('');
-  }
-
-  function addWireframeTile() {
-    const sel = document.getElementById('ef_tile_picker');
-    if (!sel || !sel.value) return;
-    editingTiles.push(sel.value);
-    renderTileList();
-  }
-  function removeWireframeTile(idx) {
-    editingTiles.splice(idx, 1);
-    renderTileList();
-  }
-  function moveWireframeTile(idx, dir) {
-    const j = idx + dir;
-    if (j < 0 || j >= editingTiles.length) return;
-    [editingTiles[idx], editingTiles[j]] = [editingTiles[j], editingTiles[idx]];
-    renderTileList();
-  }
-  function tilesSummary(tileIds) {
-    if (!tileIds.length) return 'TBD';
-    return tileIds.map((tid, i) => {
-      const t = tileCatalog.find(x => x.id === tid);
-      return `${i+1}. ${t ? t.label : tid}`;
-    }).join('  ');
+  function closeEditAndGoToWireframe(id) {
+    const modalEl = document.getElementById('editModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+    switchView('wireframe');
+    selectWireframeCampaign(id);
   }
 
   function saveEdit() {
@@ -1192,11 +1233,164 @@ const App = (() => {
         /^\d{4}-\d{2}-\d{2}$/.test(patch.start_date) && /^\d{4}-\d{2}-\d{2}$/.test(patch.end_date)) {
       patch.duration_days = Math.round((new Date(patch.end_date)-new Date(patch.start_date))/86400000)+1;
     }
-    patch.wireframe_tiles = [...editingTiles];
-    patch.wireframes      = tilesSummary(editingTiles);
     updateRow(id, patch);
     bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
     renderTable(); toast('Row updated');
+  }
+
+  // ── Wireframe Generator tab ─────────────────────────────────────
+  let wfSelectedId = null;
+  let wfTiles      = [];   // working copy of the selected campaign's wireframe_tiles
+
+  function wfStatusBadgeHtml(r) {
+    const tileCount = (r.wireframe_tiles || []).length;
+    if (r.wireframe_status === 'okayed') {
+      return '<span class="badge-top-brand" style="background:#e6f4ea;color:#2e7d32">✓ OKAYED</span>';
+    }
+    if (tileCount) {
+      return '<span class="badge-top-brand" style="background:#fff3cd;color:#856404">DRAFT</span>';
+    }
+    return '<span style="color:#888; font-size:0.72rem">not started</span>';
+  }
+
+  async function renderWireframeView() {
+    const rows = allRows().filter(r => r.status !== 'rejected');
+    document.getElementById('wfMonthLabel').textContent = rows.length ? `· ${state.monthName} ${state.year}` : '';
+    if (!rows.length) {
+      document.getElementById('wfEmptyState').style.display = 'flex';
+      document.getElementById('wfBody').style.display = 'none';
+      return;
+    }
+    document.getElementById('wfEmptyState').style.display = 'none';
+    document.getElementById('wfBody').style.display = 'flex';
+    await loadTileCatalog();
+
+    const list = document.getElementById('wfCampaignList');
+    list.innerHTML = rows.map(r => `
+      <div class="wf-camp-row ${r.id === wfSelectedId ? 'active' : ''}" style="padding:10px 14px; border-bottom:1px solid #222; cursor:pointer; ${r.id===wfSelectedId?'background:#0e0e0e':''}"
+           onclick="App.selectWireframeCampaign('${r.id}')">
+        <div style="font-size:0.85rem; font-weight:600">${r.campaign_name || '(untitled)'}</div>
+        <div style="font-size:0.72rem; color:#888; margin-top:2px">${fmtDate(r.start_date)} · ${r.tier || '-'}</div>
+        <div style="margin-top:4px">${wfStatusBadgeHtml(r)}</div>
+      </div>`).join('');
+
+    if (wfSelectedId && getRow(wfSelectedId)) {
+      selectWireframeCampaign(wfSelectedId);
+    } else {
+      document.getElementById('wfEditor').style.display = 'none';
+      document.getElementById('wfEditorEmpty').style.display = 'block';
+    }
+  }
+
+  function selectWireframeCampaign(id) {
+    const r = getRow(id);
+    if (!r) return;
+    wfSelectedId = id;
+    wfTiles = [...(r.wireframe_tiles || [])];
+
+    document.getElementById('wfEditorEmpty').style.display = 'none';
+    document.getElementById('wfEditor').style.display = 'block';
+    document.getElementById('wfCampName').textContent = r.campaign_name || '(untitled)';
+    document.getElementById('wfCampMeta').textContent =
+      [r.tier, r.geography, fmtDate(r.start_date), r.category_focus].filter(Boolean).join('  ·  ');
+    document.getElementById('wfStatusBadge').innerHTML = wfStatusBadgeHtml(r);
+
+    const picker = document.getElementById('wf_tile_picker');
+    picker.innerHTML = tileCatalog.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+
+    renderWfTileList();
+    renderWfPreview();
+
+    // Highlight selected row in the list without a full re-render
+    document.querySelectorAll('.wf-camp-row').forEach(el => el.classList.remove('active'));
+  }
+
+  function renderWfTileList() {
+    const wrap = document.getElementById('wf_tile_list');
+    if (!wrap) return;
+    if (!wfTiles.length) {
+      wrap.innerHTML = '<div style="color:#888; font-size:0.8rem">No tiles added yet.</div>';
+      return;
+    }
+    wrap.innerHTML = wfTiles.map((tid, i) => {
+      const t = tileCatalog.find(x => x.id === tid);
+      const label = t ? t.label : tid;
+      return `<div style="display:flex; align-items:center; gap:6px; padding:5px 8px; margin-bottom:4px; background:#1a1a1a; border-radius:4px">
+        <span style="color:#888; font-size:0.75rem">${i+1}.</span>
+        <span style="flex:1">${label}</span>
+        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.moveWireframeTile(${i},-1)" ${i===0?'disabled':''}>↑</button>
+        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.moveWireframeTile(${i},1)" ${i===wfTiles.length-1?'disabled':''}>↓</button>
+        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.removeWireframeTile(${i})">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  function renderWfPreview() {
+    const wrap = document.getElementById('wfPreview');
+    if (!wrap) return;
+    if (!wfTiles.length) {
+      wrap.innerHTML = '<div style="color:#666; font-size:0.8rem; text-align:center; padding:20px">Add tiles to see a preview.</div>';
+      return;
+    }
+    wrap.innerHTML = wfTiles.map(tid => {
+      const t = tileCatalog.find(x => x.id === tid) || {label: tid, width: 4, height: 1};
+      const widthPct = Math.round((t.width / 4) * 100);
+      const heightPx = 28 * (t.height || 1);
+      return `<div style="width:${widthPct}%; height:${heightPx}px; background:#2d3a2d; border:1px solid #4a6b4a;
+                    display:flex; align-items:center; justify-content:center; margin-bottom:4px; border-radius:4px;
+                    color:#9fd9a8; font-size:0.75rem; font-weight:600">${t.label}</div>`;
+    }).join('');
+  }
+
+  function addWireframeTile() {
+    const sel = document.getElementById('wf_tile_picker');
+    if (!sel || !sel.value) return;
+    wfTiles.push(sel.value);
+    renderWfTileList();
+    renderWfPreview();
+  }
+  function removeWireframeTile(idx) {
+    wfTiles.splice(idx, 1);
+    renderWfTileList();
+    renderWfPreview();
+  }
+  function moveWireframeTile(idx, dir) {
+    const j = idx + dir;
+    if (j < 0 || j >= wfTiles.length) return;
+    [wfTiles[idx], wfTiles[j]] = [wfTiles[j], wfTiles[idx]];
+    renderWfTileList();
+    renderWfPreview();
+  }
+  function tilesSummary(tileIds) {
+    if (!tileIds.length) return 'TBD';
+    return tileIds.map((tid, i) => {
+      const t = tileCatalog.find(x => x.id === tid);
+      return `${i+1}. ${t ? t.label : tid}`;
+    }).join('  ');
+  }
+
+  function saveWireframeDraft() {
+    if (!wfSelectedId) return;
+    updateRow(wfSelectedId, {
+      wireframe_tiles:  [...wfTiles],
+      wireframes:       tilesSummary(wfTiles),
+      wireframe_status: 'draft',
+    });
+    toast('Draft saved');
+    renderWireframeView();
+  }
+
+  function okayWireframe() {
+    if (!wfSelectedId) return;
+    if (!wfTiles.length) { toast('Add at least one tile before okaying', true); return; }
+    updateRow(wfSelectedId, {
+      wireframe_tiles:  [...wfTiles],
+      wireframes:       tilesSummary(wfTiles),
+      wireframe_status: 'okayed',
+    });
+    toast('✓ Wireframe okayed and attached to the campaign sheet');
+    renderWireframeView();
+    renderTable();
   }
 
   // ── Export ───────────────────────────────────────────────────────
@@ -1220,18 +1414,16 @@ const App = (() => {
   }
 
   async function exportWireframeXlsx() {
-    const toExport = allRows().filter(r => r.status !== 'rejected');
-    if (!toExport.length) { toast('Nothing to export', true); return; }
-    const withTiles = toExport.filter(r => r.wireframe_tiles && r.wireframe_tiles.length).length;
-    if (!withTiles) {
-      toast('No campaigns have wireframe tiles assigned yet — open a row, add tiles, then export.', true);
+    const okayed = allRows().filter(r => r.status !== 'rejected' && r.wireframe_status === 'okayed');
+    if (!okayed.length) {
+      toast('No wireframes have been okayed yet — build and okay at least one in the Wireframe Generator tab first.', true);
       return;
     }
-    toast(`Exporting wireframes for ${toExport.length} campaigns…`);
+    toast(`Exporting ${okayed.length} okayed wireframe(s)…`);
     try {
       const res = await fetch('/api/export-wireframe', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({rows:toExport, month:state.month, year:state.year}),
+        body: JSON.stringify({rows:okayed, month:state.month, year:state.year}),
       });
       if (!res.ok) { const e = await res.json(); throw new Error(e.error||res.statusText); }
       const blob = await res.blob();
@@ -1668,7 +1860,9 @@ const App = (() => {
     generate, setStatus, setFilter, acceptAll, rejectTrends,
     handleRowClick, showHistory, openPanel, closePanel,
     openEdit, saveEdit, exportXlsx, exportWireframeXlsx,
+    closeEditAndGoToWireframe, selectWireframeCampaign,
     addWireframeTile, removeWireframeTile, moveWireframeTile,
+    saveWireframeDraft, okayWireframe,
     searchWeb, closeSearch,
     openConfig, saveConfig,
     switchView, renderPulse, loadPulse, refreshPulse,
