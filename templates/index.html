@@ -398,6 +398,39 @@ select.pulse-filter-input option { background: #1e2d3d; }
 .psum-chip.total .pval { color: #1a73e8; }
 
 /* ══════════════════════════════
+   PULSE — Platform & Merch Team overview
+══════════════════════════════ */
+.pulse-overview { display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px; }
+
+.platform-card {
+  background: #0d1b2a; color: #fff; border-radius: 12px;
+  padding: 18px 22px; box-shadow: 0 1px 8px rgba(0,0,0,0.09);
+  display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+}
+.platform-card .pc-title {
+  font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+  color: var(--ns-green); white-space: nowrap;
+}
+.platform-card .pc-metrics { display: flex; gap: 26px; flex-wrap: wrap; }
+.platform-card .pc-metric { display: flex; flex-direction: column; gap: 3px; }
+.platform-card .pc-metric .pc-label { font-size: 0.68rem; color: #8aa; text-transform: uppercase; letter-spacing: 0.4px; }
+.platform-card .pc-metric .pc-val   { font-size: 1.15rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+
+.merch-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+.merch-card {
+  background: #fff; border: 1px solid #e6e6e6; border-radius: 10px;
+  padding: 12px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.merch-card .mc-name { font-size: 0.8rem; font-weight: 700; color: #222; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.merch-card .mc-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.74rem; color: #888; margin-bottom: 3px; }
+.merch-card .mc-row .mc-v { color: #333; font-weight: 600; }
+.merch-card.flag-spike-card { border-color: #ffe39b; background: #fffdf3; }
+.merch-card.flag-dip-card   { border-color: #f3b8be; background: #fff8f8; }
+
+/* ══════════════════════════════
    RESPONSIVE
 ══════════════════════════════ */
 @media (max-width: 900px) {
@@ -564,6 +597,13 @@ select.pulse-filter-input option { background: #1e2d3d; }
 
     <!-- Pulse page content -->
     <div class="pulse-page">
+
+      <!-- Platform + Merch Team overview -->
+      <div class="pulse-overview" id="pulseOverview" style="display:none">
+        <div class="platform-card" id="platformCard"></div>
+        <div class="merch-grid" id="merchGrid"></div>
+      </div>
+
       <div class="pulse-card">
 
         <!-- Filters row -->
@@ -573,10 +613,22 @@ select.pulse-filter-input option { background: #1e2d3d; }
             Category / Subcategory — Last 3 Weeks
           </div>
           <div class="pulse-filters">
-            <select id="pulseMerchFilter" class="pulse-filter-input" style="width:190px" onchange="App.renderPulse()">
+            <select id="pulseMerchFilter" class="pulse-filter-input" style="width:170px" onchange="App.renderPulse()">
               <option value="">All merch teams</option>
             </select>
-            <input type="text" id="pulseSearch" class="pulse-filter-input" style="width:200px"
+            <select id="pulseCategoryFilter" class="pulse-filter-input" style="width:160px" onchange="App.renderPulse()">
+              <option value="">All categories</option>
+            </select>
+            <select id="pulseSubCategoryFilter" class="pulse-filter-input" style="width:160px" onchange="App.renderPulse()">
+              <option value="">All subcategories</option>
+            </select>
+            <select id="pulseGenderFilter" class="pulse-filter-input" style="width:130px" onchange="App.renderPulse()">
+              <option value="">All genders</option>
+            </select>
+            <select id="pulseCountryFilter" class="pulse-filter-input" style="width:130px" onchange="App.renderPulse()">
+              <option value="">All countries</option>
+            </select>
+            <input type="text" id="pulseSearch" class="pulse-filter-input" style="width:180px"
                    placeholder="Filter category or sub…" oninput="App.renderPulse()">
             <select id="pulseFlagFilter" class="pulse-filter-input" style="width:140px" onchange="App.renderPulse()">
               <option value="">All signals</option>
@@ -1079,16 +1131,24 @@ const App = (() => {
 
   function renderPulse() {
     if (!pulseData||!pulseData.rows) return;
-    const searchVal = (document.getElementById('pulseSearch')?.value||'').toLowerCase().trim();
-    const flagVal   = document.getElementById('pulseFlagFilter')?.value||'';
-    const merchVal  = document.getElementById('pulseMerchFilter')?.value||'';
+    const searchVal  = (document.getElementById('pulseSearch')?.value||'').toLowerCase().trim();
+    const flagVal    = document.getElementById('pulseFlagFilter')?.value||'';
+    const merchVal   = document.getElementById('pulseMerchFilter')?.value||'';
+    const catVal     = document.getElementById('pulseCategoryFilter')?.value||'';
+    const subVal     = document.getElementById('pulseSubCategoryFilter')?.value||'';
+    const genderVal  = document.getElementById('pulseGenderFilter')?.value||'';
+    const countryVal = document.getElementById('pulseCountryFilter')?.value||'';
 
     let rows = pulseData.rows;
     if (searchVal) rows = rows.filter(r =>
       r.category.toLowerCase().includes(searchVal) || r.sub_category.toLowerCase().includes(searchVal)
     );
-    if (flagVal)  rows = rows.filter(r => r.flag === flagVal);
-    if (merchVal) rows = rows.filter(r => r.merch_team === merchVal);
+    if (flagVal)    rows = rows.filter(r => r.flag === flagVal);
+    if (merchVal)   rows = rows.filter(r => r.merch_team === merchVal);
+    if (catVal)     rows = rows.filter(r => r.category === catVal);
+    if (subVal)     rows = rows.filter(r => r.sub_category === subVal);
+    if (genderVal)  rows = rows.filter(r => r.gender === genderVal);
+    if (countryVal) rows = rows.filter(r => r.country === countryVal);
 
     // Update summary chips
     const spikes = pulseData.rows.filter(r => r.flag==='SPIKE').length;
@@ -1109,9 +1169,11 @@ const App = (() => {
     let html = `<table class="pulse-table">
       <thead>
         <tr>
-          <th class="left" rowspan="2" style="width:160px">Category</th>
-          <th class="left" rowspan="2" style="width:160px">Subcategory</th>
-          <th class="left" rowspan="2" style="width:150px">Merch Team</th>
+          <th class="left" rowspan="2" style="width:150px">Category</th>
+          <th class="left" rowspan="2" style="width:150px">Subcategory</th>
+          <th class="left" rowspan="2" style="width:130px">Merch Team</th>
+          <th class="left" rowspan="2" style="width:80px">Gender</th>
+          <th class="left" rowspan="2" style="width:80px">Country</th>
           <th class="grp" colspan="4">Impressions</th>
           <th class="grp" colspan="4">Merch Impressions</th>
           <th class="grp" colspan="4">Units</th>
@@ -1137,6 +1199,8 @@ const App = (() => {
         <td class="left cat-cell">${r.category}</td>
         <td class="left sub-cell">${r.sub_category}</td>
         <td class="left merch-cell">${r.merch_team}</td>
+        <td class="left merch-cell">${r.gender||''}</td>
+        <td class="left merch-cell">${r.country||''}</td>
         <td>${fmtNum(r.impressions[0])}</td><td>${fmtNum(r.impressions[1])}</td><td><strong>${fmtNum(r.impressions[2])}</strong></td><td>${wowBadge(r.imp_wow)}</td>
         <td>${fmtNum(r.merch_impressions[0])}</td><td>${fmtNum(r.merch_impressions[1])}</td><td><strong>${fmtNum(r.merch_impressions[2])}</strong></td><td>${wowBadge(r.merch_wow)}</td>
         <td>${fmtNum(r.units[0])}</td><td>${fmtNum(r.units[1])}</td><td><strong>${fmtNum(r.units[2])}</strong></td><td>${wowBadge(r.units_wow)}</td>
@@ -1148,10 +1212,50 @@ const App = (() => {
     document.getElementById('pulseTableBody').innerHTML = html;
   }
 
+  function fillSelect(id, values, placeholder) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = `<option value="">${placeholder}</option>`;
+    values.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+  }
+
+  function renderPlatformCard(ps, weekLabels) {
+    if (!ps) { document.getElementById('platformCard').innerHTML=''; return; }
+    const [w1lbl, w2lbl, w3lbl] = weekLabels||['W-3','W-2','W-1'];
+    const flagHtml = ps.flag==='SPIKE' ? '<span class="flag-spike">🔺 SPIKE</span>'
+                    : ps.flag==='DIP'  ? '<span class="flag-dip">🔻 DIP</span>' : '';
+    document.getElementById('platformCard').innerHTML = `
+      <div class="pc-title"><i class="bi bi-globe2"></i> Platform — All Merch Teams</div>
+      <div class="pc-metrics">
+        <div class="pc-metric"><span class="pc-label">Impressions (${w3lbl})</span>
+          <span class="pc-val">${fmtNum(ps.impressions[2])} ${wowBadge(ps.imp_wow)}</span></div>
+        <div class="pc-metric"><span class="pc-label">Merch Impressions (${w3lbl})</span>
+          <span class="pc-val">${fmtNum(ps.merch_impressions[2])} ${wowBadge(ps.merch_wow)}</span></div>
+        <div class="pc-metric"><span class="pc-label">Units (${w3lbl})</span>
+          <span class="pc-val">${fmtNum(ps.units[2])} ${wowBadge(ps.units_wow)}</span></div>
+        ${flagHtml ? `<div class="pc-metric"><span class="pc-label">Signal</span><span class="pc-val">${flagHtml}</span></div>` : ''}
+      </div>`;
+  }
+
+  function renderMerchGrid(teams) {
+    const grid = document.getElementById('merchGrid');
+    if (!teams || !teams.length) { grid.innerHTML=''; return; }
+    grid.innerHTML = teams.map(t => {
+      const cardCls = t.flag==='SPIKE' ? 'flag-spike-card' : t.flag==='DIP' ? 'flag-dip-card' : '';
+      return `<div class="merch-card ${cardCls}">
+        <div class="mc-name" title="${t.merch_team}">${t.merch_team}</div>
+        <div class="mc-row"><span>Impr.</span><span class="mc-v">${fmtNum(t.impressions[2])} ${wowBadge(t.imp_wow)}</span></div>
+        <div class="mc-row"><span>Merch Impr.</span><span class="mc-v">${fmtNum(t.merch_impressions[2])} ${wowBadge(t.merch_wow)}</span></div>
+        <div class="mc-row"><span>Units</span><span class="mc-v">${fmtNum(t.units[2])} ${wowBadge(t.units_wow)}</span></div>
+      </div>`;
+    }).join('');
+  }
+
   async function loadPulse() {
     document.getElementById('pulseTableBody').innerHTML =
       '<div class="pulse-empty"><div class="spinner-ns"></div><p style="margin-top:8px">Loading from BigQuery…</p></div>';
     document.getElementById('pulseSummary').style.display = 'none';
+    document.getElementById('pulseOverview').style.display = 'none';
     try {
       const res  = await fetch('/api/bq/category-pulse');
       const data = await res.json();
@@ -1164,11 +1268,17 @@ const App = (() => {
       pulseLoaded = true;
       document.getElementById('pulseAsOf').textContent = `  ·  data as of ${data.data_as_of}`;
 
-      // Populate merch team filter
-      const teams = [...new Set(data.rows.map(r=>r.merch_team))].sort();
-      const sel = document.getElementById('pulseMerchFilter');
-      sel.innerHTML = '<option value="">All merch teams</option>';
-      teams.forEach(t => { const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
+      // Populate filters
+      fillSelect('pulseMerchFilter',       [...new Set(data.rows.map(r=>r.merch_team))].sort(),   'All merch teams');
+      fillSelect('pulseCategoryFilter',    [...new Set(data.rows.map(r=>r.category))].sort(),      'All categories');
+      fillSelect('pulseSubCategoryFilter', [...new Set(data.rows.map(r=>r.sub_category))].sort(),  'All subcategories');
+      fillSelect('pulseGenderFilter',      [...new Set(data.rows.map(r=>r.gender))].sort(),        'All genders');
+      fillSelect('pulseCountryFilter',     [...new Set(data.rows.map(r=>r.country))].sort(),       'All countries');
+
+      // Platform + merch-team overview
+      renderPlatformCard(data.platform_summary, data.week_labels);
+      renderMerchGrid(data.merch_team_summary);
+      document.getElementById('pulseOverview').style.display = 'flex';
 
       renderPulse();
       toast(`✓ Category Pulse loaded — ${data.rows.length} rows (${data.week_labels?.join(' · ')})`);
