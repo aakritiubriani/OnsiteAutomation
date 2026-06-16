@@ -495,9 +495,13 @@ select.pulse-filter-input option { background: #1e2d3d; }
       <i class="bi bi-bar-chart-line"></i>
       <span class="nav-label">Category Pulse</span>
     </div>
-    <div class="nav-item" id="navWireframe" onclick="App.switchView('wireframe')">
+    <div class="nav-item" onclick="window.open('/wireframe-app', '_blank')">
       <i class="bi bi-grid-3x3-gap"></i>
       <span class="nav-label">Wireframe Generator</span>
+    </div>
+    <div class="nav-item" id="navWireframe" onclick="App.switchView('wireframe')" style="opacity:0.6">
+      <i class="bi bi-grid-3x3-gap"></i>
+      <span class="nav-label">Wireframe Generator (legacy)</span>
     </div>
     <div class="sidebar-divider"></div>
     <div class="nav-item" onclick="App.openConfig()">
@@ -817,10 +821,11 @@ select.pulse-filter-input option { background: #1e2d3d; }
             <div id="wfStatusBadge"></div>
           </div>
 
-          <div style="display:flex; gap:6px; margin-bottom:10px">
-            <select class="form-select form-select-sm" id="wf_tile_picker" style="max-width:260px"></select>
-            <button type="button" class="action-btn" onclick="App.addWireframeTile()">+ Add tile</button>
+          <div style="display:flex; gap:6px; margin-bottom:10px; align-items:flex-start">
+            <select class="form-select form-select-sm" id="wf_tile_picker" multiple style="max-width:320px; height:90px"></select>
+            <button type="button" class="action-btn" onclick="App.addWireframeTile()">+ Add selected tile(s)</button>
           </div>
+          <div style="color:#888; font-size:0.72rem; margin-bottom:10px">Ctrl/Cmd-click (or Shift-click) to select multiple modules at once.</div>
           <div id="wf_tile_list" style="margin-bottom:16px"></div>
 
           <div style="font-size:0.78rem; color:#888; margin-bottom:6px">Preview (proportional mockup, not final design)</div>
@@ -1282,11 +1287,25 @@ const App = (() => {
     }
   }
 
+  // Normalize a possibly-legacy tile entry (plain id string) into the
+  // {tile_id, copy_en, copy_en_refined, copy_ar} shape used going forward.
+  function normalizeTileEntry(entry) {
+    if (typeof entry === 'string') {
+      return {tile_id: entry, copy_en: '', copy_en_refined: '', copy_ar: ''};
+    }
+    return {
+      tile_id: entry.tile_id,
+      copy_en: entry.copy_en || '',
+      copy_en_refined: entry.copy_en_refined || '',
+      copy_ar: entry.copy_ar || '',
+    };
+  }
+
   function selectWireframeCampaign(id) {
     const r = getRow(id);
     if (!r) return;
     wfSelectedId = id;
-    wfTiles = [...(r.wireframe_tiles || [])];
+    wfTiles = (r.wireframe_tiles || []).map(normalizeTileEntry);
 
     document.getElementById('wfEditorEmpty').style.display = 'none';
     document.getElementById('wfEditor').style.display = 'block';
@@ -1312,9 +1331,9 @@ const App = (() => {
       wrap.innerHTML = '<div style="color:#888; font-size:0.8rem">No tiles added yet.</div>';
       return;
     }
-    wrap.innerHTML = wfTiles.map((tid, i) => {
-      const t = tileCatalog.find(x => x.id === tid);
-      const label = t ? t.label : tid;
+    wrap.innerHTML = wfTiles.map((entry, i) => {
+      const t = tileCatalog.find(x => x.id === entry.tile_id);
+      const label = t ? t.label : entry.tile_id;
       return `<div style="display:flex; align-items:center; gap:6px; padding:5px 8px; margin-bottom:4px; background:#1a1a1a; border-radius:4px">
         <span style="color:#888; font-size:0.75rem">${i+1}.</span>
         <span style="flex:1">${label}</span>
@@ -1332,20 +1351,35 @@ const App = (() => {
       wrap.innerHTML = '<div style="color:#666; font-size:0.8rem; text-align:center; padding:20px">Add tiles to see a preview.</div>';
       return;
     }
-    wrap.innerHTML = wfTiles.map(tid => {
-      const t = tileCatalog.find(x => x.id === tid) || {label: tid, width: 4, height: 1};
+    wrap.innerHTML = wfTiles.map((entry, i) => {
+      const t = tileCatalog.find(x => x.id === entry.tile_id) || {label: entry.tile_id, width: 4, height: 1};
       const widthPct = Math.round((t.width / 4) * 100);
-      const heightPx = 28 * (t.height || 1);
-      return `<div style="width:${widthPct}%; height:${heightPx}px; background:#2d3a2d; border:1px solid #4a6b4a;
-                    display:flex; align-items:center; justify-content:center; margin-bottom:4px; border-radius:4px;
-                    color:#9fd9a8; font-size:0.75rem; font-weight:600">${t.label}</div>`;
+      const refinedBlock = (entry.copy_en_refined || entry.copy_ar) ? `
+        <div style="margin-top:8px; padding:8px; background:#10160f; border:1px solid #2e4a2e; border-radius:4px; font-size:0.78rem; text-align:left">
+          <div style="color:#9fd9a8"><strong>Refined (EN):</strong> ${entry.copy_en_refined || ''}</div>
+          <div dir="rtl" style="color:#9fd9a8; margin-top:4px"><strong>عربي:</strong> ${entry.copy_ar || ''}</div>
+        </div>` : '';
+      return `<div style="width:${widthPct}%; min-height:28px; background:#2d3a2d; border:1px solid #4a6b4a;
+                    padding:10px; margin-bottom:6px; border-radius:4px">
+          <div style="color:#9fd9a8; font-size:0.78rem; font-weight:600; text-align:center; margin-bottom:8px">${t.label}</div>
+          <div style="display:flex; gap:6px">
+            <input type="text" class="form-control form-control-sm" placeholder="Type ad copy for this tile…"
+                   value="${(entry.copy_en || '').replace(/"/g,'&quot;')}"
+                   oninput="App.updateWireframeTileCopy(${i}, this.value)" style="flex:1">
+            <button type="button" class="action-btn" id="wf_refine_btn_${i}" onclick="App.refineWireframeTileCopy(${i})">Refine &amp; Translate</button>
+          </div>
+          ${refinedBlock}
+        </div>`;
     }).join('');
   }
 
   function addWireframeTile() {
     const sel = document.getElementById('wf_tile_picker');
-    if (!sel || !sel.value) return;
-    wfTiles.push(sel.value);
+    if (!sel) return;
+    const selected = Array.from(sel.selectedOptions).map(o => o.value);
+    if (!selected.length) return;
+    selected.forEach(tid => wfTiles.push({tile_id: tid, copy_en: '', copy_en_refined: '', copy_ar: ''}));
+    Array.from(sel.options).forEach(o => o.selected = false);
     renderWfTileList();
     renderWfPreview();
   }
@@ -1361,11 +1395,38 @@ const App = (() => {
     renderWfTileList();
     renderWfPreview();
   }
-  function tilesSummary(tileIds) {
-    if (!tileIds.length) return 'TBD';
-    return tileIds.map((tid, i) => {
-      const t = tileCatalog.find(x => x.id === tid);
-      return `${i+1}. ${t ? t.label : tid}`;
+  function updateWireframeTileCopy(idx, value) {
+    if (!wfTiles[idx]) return;
+    wfTiles[idx].copy_en = value;
+  }
+  async function refineWireframeTileCopy(idx) {
+    const entry = wfTiles[idx];
+    if (!entry) return;
+    const text = (entry.copy_en || '').trim();
+    if (!text) { toast('Add some English copy for this tile first', true); return; }
+    const btn = document.getElementById(`wf_refine_btn_${idx}`);
+    if (btn) { btn.disabled = true; btn.textContent = 'Refining…'; }
+    try {
+      const res = await fetch('/api/refine-copy', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({text}),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || res.statusText);
+      entry.copy_en_refined = data.refined_en;
+      entry.copy_ar = data.arabic;
+      renderWfTileList();
+      toast('✓ Copy refined and translated');
+    } catch (e) {
+      toast('Refine failed: ' + e.message, true);
+      if (btn) { btn.disabled = false; btn.textContent = 'Refine & Translate'; }
+    }
+  }
+  function tilesSummary(tiles) {
+    if (!tiles.length) return 'TBD';
+    return tiles.map((entry, i) => {
+      const t = tileCatalog.find(x => x.id === entry.tile_id);
+      return `${i+1}. ${t ? t.label : entry.tile_id}`;
     }).join('  ');
   }
 
@@ -1862,6 +1923,7 @@ const App = (() => {
     openEdit, saveEdit, exportXlsx, exportWireframeXlsx,
     closeEditAndGoToWireframe, selectWireframeCampaign,
     addWireframeTile, removeWireframeTile, moveWireframeTile,
+    updateWireframeTileCopy, refineWireframeTileCopy,
     saveWireframeDraft, okayWireframe,
     searchWeb, closeSearch,
     openConfig, saveConfig,

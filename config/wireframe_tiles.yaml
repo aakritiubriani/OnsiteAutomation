@@ -1,12 +1,9 @@
 # Wireframe tile catalog — the building blocks the wireframe generator picks
 # from when laying out a campaign page.
 #
-# This is a STARTER list, drafted from the free-text "onsite_deliverables"
-# values found in standardized_history.csv (Hero banner, Roundel, Feed
-# Module, Middle nav, Landing page, Splashscreen, etc). Edit freely:
-# rename, add, remove, or change widths — this file is the one input only
-# you can supply; everything downstream (the tile picker in the planner UI,
-# the Excel wireframe export) reads from it.
+# Edit freely: rename, add, remove, or change widths — this file is the one
+# input only you can supply; everything downstream (the tile picker in the
+# planner UI, the Excel wireframe export) reads from it.
 #
 # Fields:
 #   id     — stable key, never change once campaigns reference it
@@ -16,68 +13,86 @@
 #   notes  — optional placement guidance
 
 tiles:
-  - id: splashscreen
-    label: Splashscreen
-    width: 4
-    height: 3
-    notes: App open / launch screen takeover
-
   - id: hero_banner
     label: Hero Banner
     width: 4
     height: 2
     notes: Top-of-homepage banner
 
-  - id: roundel
-    label: Roundel (entry point)
-    width: 1
-    height: 1
-    notes: Small circular icon row under hero banner
-
-  - id: middle_nav
-    label: Middle Nav Banner
-    width: 4
-    height: 1
-
-  - id: feed_module
-    label: Feed Module (tile grid)
+  - id: tier1_banner
+    label: Tier 1 Banner
     width: 4
     height: 2
-    notes: Carousel/grid of product or brand tiles inside the feed
 
-  - id: feed_takeover
-    label: Feed Takeover
-    width: 4
-    height: 3
-    notes: Full feed re-skin for the campaign
-
-  - id: category_entry
-    label: Category Page Entry Point
+  - id: tier2_banner
+    label: Tier 2 Banner
     width: 2
     height: 1
 
-  - id: landing_page_hero
-    label: Landing Page — Hero
+  - id: tier2_banner_carousel
+    label: Tier 2 Banner + Carousel
+    width: 4
+    height: 2
+    notes: Tier 2 banner followed by a product/brand carousel
+
+  - id: carousel
+    label: Carousel
     width: 4
     height: 2
 
-  - id: landing_page_grid
-    label: Landing Page — Tile Grid
-    width: 4
-    height: 3
-
-  - id: pdp_cart_banner
-    label: PDP / Cart Banner
-    width: 4
-    height: 1
-
-  - id: logo_unit
-    label: Logo Unit
+  - id: roundel
+    label: Roundel
     width: 1
     height: 1
+    notes: Small circular icon row entry point
 
-  - id: app_theme
-    label: App Theme Skin
+  - id: top_brands_tile
+    label: Top Brands Tile
+    width: 2
+    height: 1
+
+  - id: trend_tile
+    label: Trend Tile
+    width: 2
+    height: 1
+
+  - id: vertical_tile_carousel
+    label: Vertical Tile + Carousel
+    width: 4
+    height: 2
+
+  - id: cross_nudge
+    label: Cross Nudge
+    width: 1
+    height: 1
+    notes: Cross-category/cross-brand nudge unit
+
+  - id: mobile_category_page_tiles
+    label: Mobile Category Page Tiles
+    width: 4
+    height: 2
+
+  - id: tier2_banner_tiles
+    label: Tier 2 Banner + Tiles
+    width: 4
+    height: 2
+
+  - id: tier1_banner_tiles
+    label: Tier 1 Banner + Tiles
+    width: 4
+    height: 2
+
+  - id: tiles_on_feed
+    label: Tiles on Feed
+    width: 4
+    height: 2
+
+  - id: thin_strip_banner
+    label: Thin Strip Banner
     width: 4
     height: 1
-    notes: Color/icon theme change, not a content tile
+
+  - id: strip_banner
+    label: Strip Banner
+    width: 4
+    height: 1

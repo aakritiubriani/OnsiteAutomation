@@ -114,7 +114,17 @@ def write_wireframe_xlsx(campaigns: list[dict], filepath, month: int, year: int)
             ws.row_dimensions[row].height = 18
             row += 1
         else:
-            for tid in tiles:
+            for entry in tiles:
+                # entry is either a legacy tile-id string, or a dict
+                # {tile_id, copy_en, copy_en_refined, copy_ar} once copy has been added.
+                if isinstance(entry, dict):
+                    tid = entry.get("tile_id", "")
+                    copy_en_refined = (entry.get("copy_en_refined") or "").strip()
+                    copy_ar = (entry.get("copy_ar") or "").strip()
+                else:
+                    tid = entry
+                    copy_en_refined = copy_ar = ""
+
                 tile = catalog.get(tid, {"label": tid, "width": GRID_COLS, "height": 1})
                 width = max(1, min(GRID_COLS, int(tile.get("width", GRID_COLS))))
                 height = max(1, int(tile.get("height", 1)))
@@ -125,7 +135,11 @@ def write_wireframe_xlsx(campaigns: list[dict], filepath, month: int, year: int)
                     ws.merge_cells(start_row=row, start_column=start_col,
                                    end_row=row + height - 1, end_column=end_col)
                 cell = ws.cell(row=row, column=start_col)
-                cell.value = f"{tile.get('label', tid)}\n[SKU + copy: TBD]"
+                if copy_en_refined or copy_ar:
+                    copy_block = "\n".join(b for b in (copy_en_refined, copy_ar) if b)
+                    cell.value = f"{tile.get('label', tid)}\n{copy_block}\n[SKU: TBD]"
+                else:
+                    cell.value = f"{tile.get('label', tid)}\n[SKU + copy: TBD]"
                 cell.font = TILE_FONT
                 cell.fill = TILE_FILL
                 cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)

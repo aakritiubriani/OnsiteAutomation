@@ -1,0 +1,17 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #0b0b0b;
+  color: #e6e6e6;
+  font: 15px/1.4 system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}

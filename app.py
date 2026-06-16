@@ -248,6 +248,16 @@ def api_export():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/wireframe-app")
+def wireframe_app():
+    """Serve the React-based Wireframe Generator (built via frontend/, npm run build)."""
+    built_index = BASE / "static" / "wireframe-app" / "index.html"
+    if not built_index.exists():
+        return ("Wireframe app not built yet. Run:\n"
+                "  cd frontend && npm install && npm run build"), 404
+    return built_index.read_text(encoding="utf-8")
+
+
 @app.route("/api/wireframe-tiles")
 def api_wireframe_tiles():
     """Return the tile catalog (config/wireframe_tiles.yaml) for the planner's tile picker."""
@@ -282,6 +292,69 @@ def api_export_wireframe():
             download_name=f"wireframe_{month}_{year}.xlsx",
             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/refine-copy", methods=["POST"])
+def api_refine_copy():
+    """
+    Take raw English ad copy for a wireframe tile, refine it into punchy
+    e-commerce marketing copy, and translate the refined copy to Arabic.
+    Requires ANTHROPIC_API_KEY to be set in the environment.
+    """
+    try:
+        import os
+        body = request.get_json(force=True)
+        raw_text = (body.get("text") or "").strip()
+        if not raw_text:
+            return jsonify({"error": "No copy text supplied"}), 400
+
+        if not os.environ.get("ANTHROPIC_API_KEY"):
+            return jsonify({"error": (
+                "ANTHROPIC_API_KEY is not set. Set it as an environment variable "
+                "on the machine running this app (e.g. in PowerShell: "
+                "$env:ANTHROPIC_API_KEY = 'sk-ant-...') and restart the server."
+            )}), 500
+
+        import anthropic
+        client = anthropic.Anthropic()
+
+        prompt = (
+            "You are an e-commerce copywriter for an online fashion retailer (Namshi). "
+            "Given the raw ad copy below for a single onsite tile/banner, do two things:\n"
+            "1. Refine it into punchy, conversion-oriented e-commerce marketing copy, "
+            "suitable for a short tile/banner (keep it concise — a headline plus optional short subline).\n"
+            "2. Translate the refined copy into Arabic (Modern Standard Arabic, "
+            "natural for a UAE/KSA e-commerce audience).\n\n"
+            f"Raw copy:\n{raw_text}\n\n"
+            "Respond in exactly this format, with no extra commentary:\n"
+            "REFINED_EN: <refined English copy>\n"
+            "ARABIC: <Arabic translation of the refined copy>"
+        )
+
+        resp = client.messages.create(
+            model="claude-opus-4-8",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        out_text = "".join(
+            block.text for block in resp.content if getattr(block, "type", None) == "text"
+        )
+
+        refined_en, arabic = "", ""
+        for line in out_text.splitlines():
+            if line.strip().startswith("REFINED_EN:"):
+                refined_en = line.split(":", 1)[1].strip()
+            elif line.strip().startswith("ARABIC:"):
+                arabic = line.split(":", 1)[1].strip()
+
+        if not refined_en or not arabic:
+            return jsonify({"error": "Could not parse model response", "raw": out_text}), 500
+
+        return jsonify({"refined_en": refined_en, "arabic": arabic})
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500

@@ -19,6 +19,11 @@ env/
 # Generated output (re-created by the app on each run)
 output/
 
+# React frontend (frontend/) build artifacts — run `npm install && npm run build`
+# in frontend/ to regenerate static/wireframe-app/ locally.
+frontend/node_modules/
+static/wireframe-app/
+
 # Debug / scratch scripts
 debug_*.py
 
