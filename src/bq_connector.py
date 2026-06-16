@@ -424,21 +424,57 @@ def get_new_activations(num_months: int = 6) -> dict:
         raw_reactivation = _run(client, sql_reactivation)
         new_brand_months = {(r["brand"], r["month"]) for r in raw_reactivation}
 
-        # ── Step 6: assemble detail rows with is_new_brand flag ─────────────
+        # ── Step 5b: brand "platform size" ranking per country ──────────────
+        # Top-tier brand = total lifetime GMV (across ALL its SKUs, not just
+        # this window's new ones) is at/above the 80th percentile (top 20%)
+        # of all brands in that country. Nulls in gmv_inc_vat are treated as
+        # 0 (no recorded sales) rather than excluded.
+        sql_brand_rank = f"""
+        WITH brand_totals AS (
+          SELECT
+            brand,
+            UPPER(IFNULL(country, '(unclassified)')) AS country,
+            SUM(IFNULL(gmv_inc_vat, 0)) AS total_gmv
+          FROM {ACT_TBL}
+          WHERE brand IS NOT NULL
+          GROUP BY 1, 2
+        ),
+        thresholds AS (
+          SELECT country, APPROX_QUANTILES(total_gmv, 100)[OFFSET(80)] AS p80_gmv
+          FROM brand_totals
+          GROUP BY country
+        )
+        SELECT
+          bt.brand, bt.country, bt.total_gmv, th.p80_gmv,
+          (bt.total_gmv >= th.p80_gmv) AS is_top_brand
+        FROM brand_totals bt
+        JOIN thresholds th USING (country)
+        """
+        raw_brand_rank = _run(client, sql_brand_rank)
+        top_brand_map = {(r["brand"], r["country"]): bool(r["is_top_brand"]) for r in raw_brand_rank}
+        country_thresholds = {r["country"]: float(r["p80_gmv"] or 0) for r in raw_brand_rank}
+
+        # ── Step 6: assemble detail rows with is_new_brand / is_top_brand ───
         result_rows = []
         for r in raw_detail:
             result_rows.append({
-                "month":        r["month"],
-                "brand":        r["brand"],
-                "category":     r["category"],
-                "gender":       r["gender"],
-                "country":      r["country"],
-                "new_skus":     int(r["new_skus"] or 0),
-                "is_new_brand": (r["brand"], r["month"]) in new_brand_months,
+                "month":         r["month"],
+                "brand":         r["brand"],
+                "category":      r["category"],
+                "gender":        r["gender"],
+                "country":       r["country"],
+                "new_skus":      int(r["new_skus"] or 0),
+                "is_new_brand":  (r["brand"], r["month"]) in new_brand_months,
+                "is_top_brand":  top_brand_map.get((r["brand"], r["country"]), False),
             })
-        # within month, surface new-brand rows first, then by sku volume desc;
-        # months themselves newest-first (stable multi-pass sort)
-        result_rows.sort(key=lambda x: (0 if x["is_new_brand"] else 1, -x["new_skus"]))
+        # within month, surface top-tier brands first, then new-brand rows,
+        # then by sku volume desc; months themselves newest-first (stable
+        # multi-pass sort)
+        result_rows.sort(key=lambda x: (
+            0 if x["is_top_brand"] else 1,
+            0 if x["is_new_brand"] else 1,
+            -x["new_skus"],
+        ))
         result_rows.sort(key=lambda x: x["month"], reverse=True)
 
         # ── Step 7: monthly summary with new-brand counts + MoM% ───────────
@@ -463,12 +499,13 @@ def get_new_activations(num_months: int = 6) -> dict:
             prev_skus = new_skus
 
         return {
-            "success":         True,
-            "data_as_of":       str(max_date),
-            "months":           months,
-            "month_labels":     [_fmt_month_label(m) for m in months],
-            "monthly_summary":  monthly_summary,
-            "rows":             result_rows,
+            "success":               True,
+            "data_as_of":            str(max_date),
+            "months":                months,
+            "month_labels":          [_fmt_month_label(m) for m in months],
+            "monthly_summary":       monthly_summary,
+            "rows":                  result_rows,
+            "top_brand_thresholds":  country_thresholds,  # {"AE": 22600.96, "SA": 22352.59, ...}
         }
 
     except Exception as e:

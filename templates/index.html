@@ -452,6 +452,11 @@ select.pulse-filter-input option { background: #1e2d3d; }
   background: #d1f5e5; color: #1a7a4a; font-size: 0.68rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.3px;
 }
+.badge-top-brand {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  background: #fff3cd; color: #856404; font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
 .act-checkbox-filter { display: flex; align-items: center; gap: 6px; color: #cdd; font-size: 0.82rem; }
 .act-checkbox-filter input { accent-color: var(--ns-green); cursor: pointer; }
 
@@ -718,6 +723,10 @@ select.pulse-filter-input option { background: #1e2d3d; }
               <input type="checkbox" id="actNewOnlyFilter" onchange="App.renderActivations()">
               🆕 New brands only
             </label>
+            <label class="act-checkbox-filter">
+              <input type="checkbox" id="actTopOnlyFilter" onchange="App.renderActivations()">
+              🏆 Top 20% brands only
+            </label>
           </div>
         </div>
 
@@ -728,14 +737,18 @@ select.pulse-filter-input option { background: #1e2d3d; }
         <div class="pulse-summary" id="actSummary" style="display:none">
           <div class="psum-chip total"><span class="pval" id="asTotal">—</span><span>total rows</span></div>
           <div class="psum-chip spike"><span class="pval" id="asNewBrands">—</span><span>🆕 new brands</span></div>
+          <div class="psum-chip dip"><span class="pval" id="asTopBrands">—</span><span>🏆 top-20% brands</span></div>
           <div class="psum-chip" style="margin-left:auto; font-size:0.73rem; color:#aaa" id="asRowCount"></div>
         </div>
 
         <!-- Legend -->
-        <div class="pulse-legend-bar">
-          <span class="lbl">Legend:</span>
-          <span><span class="badge-new-brand">🆕 NEW</span> &nbsp;Brand had 0 SKUs go live in the prior 180 days (or first activation on record)</span>
-          <span style="margin-left:auto; color:#bbb; font-size:0.72rem">Source: noonbinmlook.looker.new_activations_shine</span>
+        <div class="pulse-legend-bar" style="flex-direction:column; align-items:flex-start; gap:4px">
+          <div>
+            <span class="lbl">Legend:</span>
+            <span><span class="badge-new-brand">🆕 NEW</span> &nbsp;Brand had 0 SKUs go live in the prior 180 days (or first activation on record)</span>
+            <span><span class="badge-top-brand">🏆 TOP 20%</span> &nbsp;Brand's lifetime GMV in this country is at/above the 80th percentile of all brands on the platform</span>
+          </div>
+          <div id="actThresholdNote" style="color:#999; font-size:0.72rem"></div>
         </div>
 
         <!-- Table area -->
@@ -1423,6 +1436,7 @@ const App = (() => {
     const countryVal  = document.getElementById('actCountryFilter')?.value || '';
     const brandSearch = (document.getElementById('actBrandSearch')?.value || '').toLowerCase().trim();
     const newOnly     = document.getElementById('actNewOnlyFilter')?.checked || false;
+    const topOnly     = document.getElementById('actTopOnlyFilter')?.checked || false;
 
     let rows = actData.rows;
     if (monthVal)    rows = rows.filter(r => r.month === monthVal);
@@ -1431,10 +1445,13 @@ const App = (() => {
     if (countryVal)  rows = rows.filter(r => r.country === countryVal);
     if (brandSearch) rows = rows.filter(r => r.brand.toLowerCase().includes(brandSearch));
     if (newOnly)      rows = rows.filter(r => r.is_new_brand);
+    if (topOnly)      rows = rows.filter(r => r.is_top_brand);
 
     const newBrandTotal = actData.rows.filter(r => r.is_new_brand).length;
+    const topBrandTotal = actData.rows.filter(r => r.is_top_brand).length;
     document.getElementById('asTotal').textContent      = actData.rows.length;
     document.getElementById('asNewBrands').textContent  = newBrandTotal;
+    document.getElementById('asTopBrands').textContent  = topBrandTotal;
     document.getElementById('asRowCount').textContent   = `Showing ${rows.length} rows`;
     document.getElementById('actSummary').style.display = 'flex';
 
@@ -1457,7 +1474,11 @@ const App = (() => {
     rows.slice(0, 2000).forEach(r => {
       const monthIdx = actData.months.indexOf(r.month);
       const monthLbl = (actData.month_labels && actData.month_labels[monthIdx]) || r.month;
-      const rowBg = r.is_new_brand ? 'background:#f0fff4' : '';
+      const rowBg = r.is_new_brand ? 'background:#f0fff4' : (r.is_top_brand ? 'background:#fffdf3' : '');
+      const badges = [
+        r.is_new_brand ? '<span class="badge-new-brand">🆕 NEW</span>' : '',
+        r.is_top_brand ? '<span class="badge-top-brand">🏆 TOP 20%</span>' : '',
+      ].filter(Boolean).join(' ');
       html += `<tr style="${rowBg}">
         <td class="left">${monthLbl}</td>
         <td class="left cat-cell">${r.brand}</td>
@@ -1465,7 +1486,7 @@ const App = (() => {
         <td class="left merch-cell">${r.gender}</td>
         <td class="left merch-cell">${r.country}</td>
         <td>${fmtNum(r.new_skus)}</td>
-        <td class="left">${r.is_new_brand ? '<span class="badge-new-brand">🆕 NEW</span>' : ''}</td>
+        <td class="left" style="white-space:nowrap">${badges}</td>
       </tr>`;
     });
 
@@ -1503,6 +1524,12 @@ const App = (() => {
       fillSelect('actCategoryFilter', [...new Set(data.rows.map(r=>r.category))].sort(), 'All categories');
       fillSelect('actGenderFilter',   [...new Set(data.rows.map(r=>r.gender))].sort(),   'All genders');
       fillSelect('actCountryFilter',  [...new Set(data.rows.map(r=>r.country))].sort(),  'All countries');
+
+      // Threshold note (top-20% GMV cutoff per country)
+      const th = data.top_brand_thresholds || {};
+      const thParts = Object.entries(th).map(([c,v]) => `${c}: ≥ ${Math.round(v).toLocaleString()}`);
+      document.getElementById('actThresholdNote').textContent =
+        thParts.length ? `80th-percentile lifetime GMV cutoff — ${thParts.join('  ·  ')}` : '';
 
       renderMonthTrend();
       renderActivations();
