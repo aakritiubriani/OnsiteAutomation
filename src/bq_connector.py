@@ -270,3 +270,207 @@ def get_category_pulse() -> dict:
     except Exception as e:
         log.error("BQ category pulse failed: %s", e)
         return {"error": str(e)}
+
+
+# ── New Activations (new_activations_shine) ─────────────────────────────────────
+
+ACT_TBL          = "`noonbinmlook.looker.new_activations_shine`"
+NEW_BRAND_GAP_DAYS = 180   # a brand counts as "new on Namshi" if it had 0 SKUs
+                           # go live in the NEW_BRAND_GAP_DAYS before its first
+                           # activation in a given month (or this is its very
+                           # first activation in the whole dataset).
+
+
+def _fmt_month_label(month_start_str: str) -> str:
+    """'2026-05-01' → 'May 2026'"""
+    try:
+        d = date.fromisoformat(month_start_str)
+        months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        return f"{months[d.month]} {d.year}"
+    except Exception:
+        return month_start_str
+
+
+def get_new_activations(num_months: int = 6) -> dict:
+    """
+    Return monthly new-SKU-activation activity from `new_activations_shine`:
+    which brands went live with new SKUs, in which category / gender / country,
+    and which of those brands are "new on Namshi" (had zero SKUs go live in the
+    NEW_BRAND_GAP_DAYS / 180 days before this activation, or this is their very
+    first activation ever observed in the table).
+
+    Returns
+    -------
+    {
+      "success":     True,
+      "data_as_of":  "YYYY-MM-DD",
+      "months":       ["YYYY-MM-01", ...]   (oldest → newest, up to num_months),
+      "month_labels": ["Jan 2026", ...],
+      "monthly_summary": [
+          { "month": "YYYY-MM-01", "new_skus": int, "active_brands": int,
+            "new_brand_count": int, "skus_mom": float|None }, ...
+      ],
+      "rows": [
+          { "month": "YYYY-MM-01", "brand": str, "category": str, "gender": str,
+            "country": str, "new_skus": int, "is_new_brand": bool }, ...
+      ]
+    }
+    """
+    if not _BQ_AVAILABLE:
+        return {"error": "google-cloud-bigquery not installed"}
+
+    try:
+        client = _client()
+
+        # ── Step 1: latest "live" activation date (exclude future-dated/planned) ──
+        max_rows = _run(client, f"""
+            SELECT MAX(activated_at) AS max_date
+            FROM {ACT_TBL}
+            WHERE activated_at <= CURRENT_DATE()
+        """)
+        max_date = max_rows[0]["max_date"] if max_rows else None
+        if not max_date:
+            return {"error": "No activation data found (activated_at <= today)."}
+
+        # ── Step 2: trailing N-month window (current partial month included) ──
+        month_end_start = date(max_date.year, max_date.month, 1)
+        # step back (num_months - 1) months to get the window start
+        y, m = month_end_start.year, month_end_start.month
+        m -= (num_months - 1)
+        while m <= 0:
+            m += 12
+            y -= 1
+        window_start = date(y, m, 1)
+
+        ny, nm = month_end_start.year, month_end_start.month + 1
+        if nm > 12:
+            nm -= 12
+            ny += 1
+        window_end_excl = date(ny, nm, 1)  # exclusive upper bound
+
+        months = []
+        cy, cm = window_start.year, window_start.month
+        while date(cy, cm, 1) < window_end_excl:
+            months.append(f"{cy:04d}-{cm:02d}-01")
+            cm += 1
+            if cm > 12:
+                cm = 1
+                cy += 1
+
+        # ── Step 3: monthly platform totals ──────────────────────────────
+        sql_monthly = f"""
+        SELECT
+          FORMAT_DATE('%Y-%m-01', DATE_TRUNC(activated_at, MONTH)) AS month,
+          COUNT(DISTINCT sku_config) AS new_skus,
+          COUNT(DISTINCT brand)      AS active_brands
+        FROM {ACT_TBL}
+        WHERE activated_at >= '{window_start}'
+          AND activated_at <  '{window_end_excl}'
+          AND activated_at <= CURRENT_DATE()
+        GROUP BY 1
+        """
+        raw_monthly = _run(client, sql_monthly)
+        monthly_map = {r["month"]: r for r in raw_monthly}
+
+        # ── Step 4: detail — brand x category x gender x country x month ──
+        sql_detail = f"""
+        SELECT
+          FORMAT_DATE('%Y-%m-01', DATE_TRUNC(activated_at, MONTH)) AS month,
+          brand,
+          IFNULL(category, '(unclassified)')      AS category,
+          IFNULL(gender,   '(unclassified)')       AS gender,
+          UPPER(IFNULL(country, '(unclassified)')) AS country,
+          COUNT(DISTINCT sku_config) AS new_skus
+        FROM {ACT_TBL}
+        WHERE activated_at >= '{window_start}'
+          AND activated_at <  '{window_end_excl}'
+          AND activated_at <= CURRENT_DATE()
+          AND brand IS NOT NULL
+        GROUP BY 1, 2, 3, 4, 5
+        ORDER BY new_skus DESC
+        LIMIT 50000
+        """
+        raw_detail = _run(client, sql_detail)
+
+        # ── Step 5: brand-level reactivation detection (full history, not just
+        #            the display window) — flags (brand, month) where the brand
+        #            had a gap of >= NEW_BRAND_GAP_DAYS since its previous
+        #            activation, or this is its first-ever activation on record.
+        sql_reactivation = f"""
+        WITH brand_dates AS (
+          SELECT DISTINCT brand, activated_at
+          FROM {ACT_TBL}
+          WHERE brand IS NOT NULL AND activated_at <= CURRENT_DATE()
+        ),
+        gapped AS (
+          SELECT
+            brand, activated_at,
+            DATE_DIFF(
+              activated_at,
+              LAG(activated_at) OVER (PARTITION BY brand ORDER BY activated_at),
+              DAY
+            ) AS gap_days
+          FROM brand_dates
+        )
+        SELECT DISTINCT
+          brand,
+          FORMAT_DATE('%Y-%m-01', DATE_TRUNC(activated_at, MONTH)) AS month
+        FROM gapped
+        WHERE (gap_days IS NULL OR gap_days >= {NEW_BRAND_GAP_DAYS})
+          AND activated_at >= '{window_start}'
+          AND activated_at <  '{window_end_excl}'
+        """
+        raw_reactivation = _run(client, sql_reactivation)
+        new_brand_months = {(r["brand"], r["month"]) for r in raw_reactivation}
+
+        # ── Step 6: assemble detail rows with is_new_brand flag ─────────────
+        result_rows = []
+        for r in raw_detail:
+            result_rows.append({
+                "month":        r["month"],
+                "brand":        r["brand"],
+                "category":     r["category"],
+                "gender":       r["gender"],
+                "country":      r["country"],
+                "new_skus":     int(r["new_skus"] or 0),
+                "is_new_brand": (r["brand"], r["month"]) in new_brand_months,
+            })
+        # within month, surface new-brand rows first, then by sku volume desc;
+        # months themselves newest-first (stable multi-pass sort)
+        result_rows.sort(key=lambda x: (0 if x["is_new_brand"] else 1, -x["new_skus"]))
+        result_rows.sort(key=lambda x: x["month"], reverse=True)
+
+        # ── Step 7: monthly summary with new-brand counts + MoM% ───────────
+        new_brand_counts_by_month: dict = {}
+        for brand, month in new_brand_months:
+            new_brand_counts_by_month[month] = new_brand_counts_by_month.get(month, 0) + 1
+
+        monthly_summary = []
+        prev_skus = None
+        for month in months:
+            row = monthly_map.get(month, {})
+            new_skus = int(row.get("new_skus") or 0)
+            active_brands = int(row.get("active_brands") or 0)
+            mom = _wow(new_skus, prev_skus) if prev_skus is not None else None
+            monthly_summary.append({
+                "month":           month,
+                "new_skus":        new_skus,
+                "active_brands":   active_brands,
+                "new_brand_count": new_brand_counts_by_month.get(month, 0),
+                "skus_mom":        mom,
+            })
+            prev_skus = new_skus
+
+        return {
+            "success":         True,
+            "data_as_of":       str(max_date),
+            "months":           months,
+            "month_labels":     [_fmt_month_label(m) for m in months],
+            "monthly_summary":  monthly_summary,
+            "rows":             result_rows,
+        }
+
+    except Exception as e:
+        log.error("BQ new activations failed: %s", e)
+        return {"error": str(e)}

@@ -349,6 +349,29 @@ def api_category_pulse():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/bq/new-activations")
+def api_new_activations():
+    """
+    Return monthly new-SKU activation activity from new_activations_shine
+    (brand x category x gender x country), with new-on-Namshi brand detection.
+    Results are cached for 30 minutes to avoid repeated BQ charges.
+    """
+    try:
+        from bq_connector import get_new_activations
+        bust   = request.args.get("bust")
+        cached = _bq_cache.get("activations")
+        if cached and not bust and (time.time() - cached["ts"] < 1800):
+            log.info("BQ activations: serving from cache")
+            return jsonify(cached["data"])
+        log.info("BQ activations: fetching from BigQuery…")
+        data = get_new_activations()
+        _bq_cache["activations"] = {"data": data, "ts": time.time()}
+        return jsonify(data)
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/refresh-data", methods=["POST"])
 def api_refresh_data():
     """Re-run standardize.py to pick up xlsx changes, then rebuild KB."""

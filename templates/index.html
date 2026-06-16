@@ -431,6 +431,31 @@ select.pulse-filter-input option { background: #1e2d3d; }
 .merch-card.flag-dip-card   { border-color: #f3b8be; background: #fff8f8; }
 
 /* ══════════════════════════════
+   NEW BRAND ACTIVATIONS section
+══════════════════════════════ */
+.act-month-trend {
+  display: flex; gap: 8px; padding: 12px 22px; overflow-x: auto;
+  background: #fafafa; border-bottom: 1px solid #eee;
+}
+.act-month-chip {
+  flex-shrink: 0; min-width: 110px; background: #fff; border: 1px solid #e0e0e0;
+  border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: 0.15s;
+}
+.act-month-chip:hover { border-color: #1a73e8; }
+.act-month-chip.active { border-color: var(--ns-black); background: #f0f0f0; box-shadow: inset 0 0 0 1px var(--ns-black); }
+.act-month-chip .amc-label { font-size: 0.7rem; color: #888; font-weight: 600; }
+.act-month-chip .amc-skus  { font-size: 0.95rem; font-weight: 700; color: #111; display:flex; align-items:center; gap:6px; }
+.act-month-chip .amc-newbrands { font-size: 0.68rem; color: #1a7a4a; font-weight: 600; margin-top: 2px; }
+
+.badge-new-brand {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  background: #d1f5e5; color: #1a7a4a; font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+.act-checkbox-filter { display: flex; align-items: center; gap: 6px; color: #cdd; font-size: 0.82rem; }
+.act-checkbox-filter input { accent-color: var(--ns-green); cursor: pointer; }
+
+/* ══════════════════════════════
    RESPONSIVE
 ══════════════════════════════ */
 @media (max-width: 900px) {
@@ -663,6 +688,66 @@ select.pulse-filter-input option { background: #1e2d3d; }
         </div>
 
       </div>
+
+      <!-- ═══════════ NEW BRAND ACTIVATIONS ═══════════ -->
+      <div class="pulse-card" style="margin-top:18px">
+
+        <!-- Filters row -->
+        <div class="pulse-card-header">
+          <div class="ptitle">
+            <i class="bi bi-stars"></i>
+            New Brand Activations — Monthly
+            <span id="actAsOf" style="font-size:0.75rem; color:#5fa; font-weight:400"></span>
+          </div>
+          <div class="pulse-filters">
+            <select id="actMonthFilter" class="pulse-filter-input" style="width:130px" onchange="App.renderActivations()">
+              <option value="">All months</option>
+            </select>
+            <select id="actCategoryFilter" class="pulse-filter-input" style="width:160px" onchange="App.renderActivations()">
+              <option value="">All categories</option>
+            </select>
+            <select id="actGenderFilter" class="pulse-filter-input" style="width:130px" onchange="App.renderActivations()">
+              <option value="">All genders</option>
+            </select>
+            <select id="actCountryFilter" class="pulse-filter-input" style="width:130px" onchange="App.renderActivations()">
+              <option value="">All countries</option>
+            </select>
+            <input type="text" id="actBrandSearch" class="pulse-filter-input" style="width:170px"
+                   placeholder="Search brand…" oninput="App.renderActivations()">
+            <label class="act-checkbox-filter">
+              <input type="checkbox" id="actNewOnlyFilter" onchange="App.renderActivations()">
+              🆕 New brands only
+            </label>
+          </div>
+        </div>
+
+        <!-- Monthly trend chips -->
+        <div class="act-month-trend" id="actMonthTrend"></div>
+
+        <!-- Summary chips -->
+        <div class="pulse-summary" id="actSummary" style="display:none">
+          <div class="psum-chip total"><span class="pval" id="asTotal">—</span><span>total rows</span></div>
+          <div class="psum-chip spike"><span class="pval" id="asNewBrands">—</span><span>🆕 new brands</span></div>
+          <div class="psum-chip" style="margin-left:auto; font-size:0.73rem; color:#aaa" id="asRowCount"></div>
+        </div>
+
+        <!-- Legend -->
+        <div class="pulse-legend-bar">
+          <span class="lbl">Legend:</span>
+          <span><span class="badge-new-brand">🆕 NEW</span> &nbsp;Brand had 0 SKUs go live in the prior 180 days (or first activation on record)</span>
+          <span style="margin-left:auto; color:#bbb; font-size:0.72rem">Source: noonbinmlook.looker.new_activations_shine</span>
+        </div>
+
+        <!-- Table area -->
+        <div class="pulse-table-container" id="actTableBody">
+          <div class="pulse-empty">
+            <div class="spinner-ns"></div>
+            <p style="margin-top:8px">Loading from BigQuery…</p>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </div><!-- /viewPulse -->
 
@@ -750,6 +835,8 @@ const App = (() => {
   };
   let pulseData  = null;
   let pulseLoaded = false;
+  let actData    = null;
+  let actLoaded  = false;
 
   // ── Helpers ──────────────────────────────────────────────────────
   function allRows() { return [...state.campaigns, ...state.globalEvents]; }
@@ -815,6 +902,9 @@ const App = (() => {
 
     if (view === 'pulse' && !pulseLoaded) {
       loadPulse();
+    }
+    if (view === 'pulse' && !actLoaded) {
+      loadActivations();
     }
   }
 
@@ -1299,6 +1389,132 @@ const App = (() => {
     document.getElementById('btnRefreshPulse').disabled = false;
   }
 
+  // ── New Brand Activations ─────────────────────────────────────────
+  let actSelectedMonth = '';
+
+  function renderMonthTrend() {
+    if (!actData || !actData.monthly_summary) return;
+    const wrap = document.getElementById('actMonthTrend');
+    wrap.innerHTML = actData.monthly_summary.map(m => {
+      const labelIdx = actData.months.indexOf(m.month);
+      const label = (actData.month_labels && actData.month_labels[labelIdx]) || m.month;
+      const active = m.month === actSelectedMonth ? 'active' : '';
+      return `<div class="act-month-chip ${active}" onclick="App.selectActMonth('${m.month}')">
+        <div class="amc-label">${label}</div>
+        <div class="amc-skus">${fmtNum(m.new_skus)} ${wowBadge(m.skus_mom)}</div>
+        <div class="amc-newbrands">🆕 ${m.new_brand_count} new brands</div>
+      </div>`;
+    }).join('');
+  }
+
+  function selectActMonth(month) {
+    actSelectedMonth = (actSelectedMonth === month) ? '' : month;
+    const sel = document.getElementById('actMonthFilter');
+    if (sel) sel.value = actSelectedMonth;
+    renderMonthTrend();
+    renderActivations();
+  }
+
+  function renderActivations() {
+    if (!actData || !actData.rows) return;
+    const monthVal    = document.getElementById('actMonthFilter')?.value || actSelectedMonth || '';
+    const catVal      = document.getElementById('actCategoryFilter')?.value || '';
+    const genderVal   = document.getElementById('actGenderFilter')?.value || '';
+    const countryVal  = document.getElementById('actCountryFilter')?.value || '';
+    const brandSearch = (document.getElementById('actBrandSearch')?.value || '').toLowerCase().trim();
+    const newOnly     = document.getElementById('actNewOnlyFilter')?.checked || false;
+
+    let rows = actData.rows;
+    if (monthVal)    rows = rows.filter(r => r.month === monthVal);
+    if (catVal)      rows = rows.filter(r => r.category === catVal);
+    if (genderVal)   rows = rows.filter(r => r.gender === genderVal);
+    if (countryVal)  rows = rows.filter(r => r.country === countryVal);
+    if (brandSearch) rows = rows.filter(r => r.brand.toLowerCase().includes(brandSearch));
+    if (newOnly)      rows = rows.filter(r => r.is_new_brand);
+
+    const newBrandTotal = actData.rows.filter(r => r.is_new_brand).length;
+    document.getElementById('asTotal').textContent      = actData.rows.length;
+    document.getElementById('asNewBrands').textContent  = newBrandTotal;
+    document.getElementById('asRowCount').textContent   = `Showing ${rows.length} rows`;
+    document.getElementById('actSummary').style.display = 'flex';
+
+    if (!rows.length) {
+      document.getElementById('actTableBody').innerHTML = '<div class="pulse-empty">No rows match the current filter.</div>';
+      return;
+    }
+
+    let html = `<table class="pulse-table">
+      <thead><tr>
+        <th class="left">Month</th>
+        <th class="left">Brand</th>
+        <th class="left">Category</th>
+        <th class="left">Gender</th>
+        <th class="left">Country</th>
+        <th>New SKUs</th>
+        <th class="left">Status</th>
+      </tr></thead><tbody>`;
+
+    rows.slice(0, 2000).forEach(r => {
+      const monthIdx = actData.months.indexOf(r.month);
+      const monthLbl = (actData.month_labels && actData.month_labels[monthIdx]) || r.month;
+      const rowBg = r.is_new_brand ? 'background:#f0fff4' : '';
+      html += `<tr style="${rowBg}">
+        <td class="left">${monthLbl}</td>
+        <td class="left cat-cell">${r.brand}</td>
+        <td class="left sub-cell">${r.category}</td>
+        <td class="left merch-cell">${r.gender}</td>
+        <td class="left merch-cell">${r.country}</td>
+        <td>${fmtNum(r.new_skus)}</td>
+        <td class="left">${r.is_new_brand ? '<span class="badge-new-brand">🆕 NEW</span>' : ''}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    if (rows.length > 2000) {
+      html += `<div style="padding:10px 18px;color:#999;font-size:0.78rem">Showing first 2,000 of ${rows.length} matching rows — refine filters to narrow down.</div>`;
+    }
+    document.getElementById('actTableBody').innerHTML = html;
+  }
+
+  async function loadActivations() {
+    document.getElementById('actTableBody').innerHTML =
+      '<div class="pulse-empty"><div class="spinner-ns"></div><p style="margin-top:8px">Loading from BigQuery…</p></div>';
+    document.getElementById('actSummary').style.display = 'none';
+    try {
+      const res  = await fetch('/api/bq/new-activations');
+      const data = await res.json();
+      if (data.error) {
+        document.getElementById('actTableBody').innerHTML =
+          `<div class="pulse-empty" style="color:#c00">BigQuery error: ${data.error}</div>`;
+        return;
+      }
+      actData   = data;
+      actLoaded = true;
+      document.getElementById('actAsOf').textContent = `  ·  data as of ${data.data_as_of}`;
+
+      // Populate filters
+      const monthSel = document.getElementById('actMonthFilter');
+      monthSel.innerHTML = '<option value="">All months</option>';
+      [...data.months].reverse().forEach((m, idx) => {
+        const lbl = data.month_labels[data.months.indexOf(m)];
+        const o = document.createElement('option'); o.value = m; o.textContent = lbl;
+        monthSel.appendChild(o);
+      });
+      fillSelect('actCategoryFilter', [...new Set(data.rows.map(r=>r.category))].sort(), 'All categories');
+      fillSelect('actGenderFilter',   [...new Set(data.rows.map(r=>r.gender))].sort(),   'All genders');
+      fillSelect('actCountryFilter',  [...new Set(data.rows.map(r=>r.country))].sort(),  'All countries');
+
+      renderMonthTrend();
+      renderActivations();
+      const newBrands = data.rows.filter(r=>r.is_new_brand).length;
+      toast(`✓ New Activations loaded — ${data.rows.length} rows, ${newBrands} new-brand entries`);
+    } catch(e) {
+      document.getElementById('actTableBody').innerHTML =
+        `<div class="pulse-empty" style="color:#c00">Failed to load: ${e.message}</div>`;
+      toast('New Activations error: '+e.message, true);
+    }
+  }
+
   // ── Init ─────────────────────────────────────────────────────────
   function init() {
     const now = new Date();
@@ -1312,6 +1528,7 @@ const App = (() => {
     openEdit, saveEdit, exportXlsx, searchWeb, closeSearch,
     openConfig, saveConfig,
     switchView, renderPulse, loadPulse, refreshPulse,
+    loadActivations, renderActivations, selectActMonth,
     init,
   };
 })();
