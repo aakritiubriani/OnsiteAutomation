@@ -248,6 +248,45 @@ def api_export():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/wireframe-tiles")
+def api_wireframe_tiles():
+    """Return the tile catalog (config/wireframe_tiles.yaml) for the planner's tile picker."""
+    try:
+        from wireframe import load_tile_catalog
+        return jsonify({"tiles": load_tile_catalog()})
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/export-wireframe", methods=["POST"])
+def api_export_wireframe():
+    """Export the reviewed campaigns' wireframe tile layout to an xlsx, one row-block per campaign."""
+    try:
+        from wireframe import write_wireframe_xlsx
+        body  = request.get_json(force=True)
+        rows  = body.get("rows", [])
+        month = int(body.get("month", 7))
+        year  = int(body.get("year", 2026))
+
+        if not rows:
+            return jsonify({"error": "No rows supplied"}), 400
+
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        out_path = OUT_DIR / f"wireframe_{month}_{year}.xlsx"
+        write_wireframe_xlsx(rows, out_path, month, year)
+
+        return send_file(
+            str(out_path),
+            as_attachment=True,
+            download_name=f"wireframe_{month}_{year}.xlsx",
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/search")
 def api_search():
     month    = int(request.args.get("month", 7))

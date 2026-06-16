@@ -582,6 +582,7 @@ select.pulse-filter-input option { background: #1e2d3d; }
         <button class="action-btn" onclick="App.rejectTrends()"><i class="bi bi-x"></i> Reject Trends</button>
         <button class="action-btn search" onclick="App.searchWeb()"><i class="bi bi-search"></i> Search Web</button>
         <button class="action-btn export" onclick="App.exportXlsx()"><i class="bi bi-file-earmark-spreadsheet"></i> Export XLSX</button>
+        <button class="action-btn export" onclick="App.exportWireframeXlsx()"><i class="bi bi-grid-3x3-gap"></i> Export Wireframes</button>
       </div>
 
       <!-- Table -->
@@ -850,6 +851,17 @@ const App = (() => {
   let pulseLoaded = false;
   let actData    = null;
   let actLoaded  = false;
+  let tileCatalog = [];   // [{id, label, width, height, notes}, ...] from config/wireframe_tiles.yaml
+
+  async function loadTileCatalog() {
+    if (tileCatalog.length) return tileCatalog;
+    try {
+      const res  = await fetch('/api/wireframe-tiles');
+      const data = await res.json();
+      tileCatalog = data.tiles || [];
+    } catch (e) { console.error('Failed to load tile catalog', e); }
+    return tileCatalog;
+  }
 
   // ── Helpers ──────────────────────────────────────────────────────
   function allRows() { return [...state.campaigns, ...state.globalEvents]; }
@@ -1070,10 +1082,15 @@ const App = (() => {
   function closePanel() { document.getElementById('sidePanel').classList.remove('open'); document.getElementById('panelOverlay').style.display='none'; }
 
   // ── Edit modal ───────────────────────────────────────────────────
-  function openEdit(id) {
+  let editingTiles = [];   // working copy of the row's wireframe_tiles while the modal is open
+
+  async function openEdit(id) {
     const r = getRow(id);
     if (!r) return;
     state.editingId = id;
+    editingTiles = [...(r.wireframe_tiles || [])];
+    await loadTileCatalog();
+
     const EDITABLE = [
       {k:'campaign_name', label:'Campaign Name', type:'text'},
       {k:'tier',          label:'Tier',          type:'select', opts:['Tier 1','Tier 2','Tier 3','-']},
@@ -1083,7 +1100,6 @@ const App = (() => {
       {k:'promos_coupons',label:'Promos / Coupons', type:'text'},
       {k:'category_focus',label:'Category Focus',   type:'text'},
       {k:'onsite_deliverables', label:'Onsite Deliverables', type:'textarea'},
-      {k:'wireframes',    label:'Wireframes',    type:'text'},
       {k:'raw_notes',     label:'Notes',         type:'textarea'},
     ];
     let html = '';
@@ -1104,20 +1120,80 @@ const App = (() => {
       }
       html += `<div class="col-md-6"><label>${f.label}</label>${input}</div>`;
     });
+
+    // Wireframe tile picker — replaces the old free-text "wireframes" field
+    const tileOpts = tileCatalog.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+    html += `<div class="col-md-12">
+      <label>Wireframe Tiles</label>
+      <div style="display:flex; gap:6px">
+        <select class="form-select form-select-sm" id="ef_tile_picker" style="max-width:260px">${tileOpts}</select>
+        <button type="button" class="action-btn" style="padding:4px 10px" onclick="App.addWireframeTile()">+ Add tile</button>
+      </div>
+      <div id="ef_tile_list" style="margin-top:8px"></div>
+    </div>`;
+
     document.getElementById('editFormFields').innerHTML = html;
+    renderTileList();
     new bootstrap.Modal(document.getElementById('editModal')).show();
   }
+
+  function renderTileList() {
+    const wrap = document.getElementById('ef_tile_list');
+    if (!wrap) return;
+    if (!editingTiles.length) {
+      wrap.innerHTML = '<div style="color:#888; font-size:0.8rem">No tiles added yet.</div>';
+      return;
+    }
+    wrap.innerHTML = editingTiles.map((tid, i) => {
+      const t = tileCatalog.find(x => x.id === tid);
+      const label = t ? t.label : tid;
+      return `<div style="display:flex; align-items:center; gap:6px; padding:4px 8px; margin-bottom:4px; background:#2a2a2a; border-radius:4px">
+        <span style="color:#888; font-size:0.75rem">${i+1}.</span>
+        <span style="flex:1">${label}</span>
+        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.moveWireframeTile(${i},-1)" ${i===0?'disabled':''}>↑</button>
+        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.moveWireframeTile(${i},1)" ${i===editingTiles.length-1?'disabled':''}>↓</button>
+        <button type="button" class="action-btn" style="padding:2px 6px" onclick="App.removeWireframeTile(${i})">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  function addWireframeTile() {
+    const sel = document.getElementById('ef_tile_picker');
+    if (!sel || !sel.value) return;
+    editingTiles.push(sel.value);
+    renderTileList();
+  }
+  function removeWireframeTile(idx) {
+    editingTiles.splice(idx, 1);
+    renderTileList();
+  }
+  function moveWireframeTile(idx, dir) {
+    const j = idx + dir;
+    if (j < 0 || j >= editingTiles.length) return;
+    [editingTiles[idx], editingTiles[j]] = [editingTiles[j], editingTiles[idx]];
+    renderTileList();
+  }
+  function tilesSummary(tileIds) {
+    if (!tileIds.length) return 'TBD';
+    return tileIds.map((tid, i) => {
+      const t = tileCatalog.find(x => x.id === tid);
+      return `${i+1}. ${t ? t.label : tid}`;
+    }).join('  ');
+  }
+
   function saveEdit() {
     const id = state.editingId;
     if (!getRow(id)) return;
     const KEYS = ['campaign_name','tier','geography','start_date','end_date',
-                  'promos_coupons','category_focus','onsite_deliverables','wireframes','raw_notes'];
+                  'promos_coupons','category_focus','onsite_deliverables','raw_notes'];
     const patch = {};
     KEYS.forEach(k => { const el = document.getElementById('ef_'+k); if (el) patch[k] = el.value; });
     if (patch.start_date && patch.end_date &&
         /^\d{4}-\d{2}-\d{2}$/.test(patch.start_date) && /^\d{4}-\d{2}-\d{2}$/.test(patch.end_date)) {
       patch.duration_days = Math.round((new Date(patch.end_date)-new Date(patch.start_date))/86400000)+1;
     }
+    patch.wireframe_tiles = [...editingTiles];
+    patch.wireframes      = tilesSummary(editingTiles);
     updateRow(id, patch);
     bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
     renderTable(); toast('Row updated');
@@ -1141,6 +1217,30 @@ const App = (() => {
       a.click(); URL.revokeObjectURL(url);
       toast('✓ Excel downloaded');
     } catch(e) { toast('Export failed: '+e.message, true); }
+  }
+
+  async function exportWireframeXlsx() {
+    const toExport = allRows().filter(r => r.status !== 'rejected');
+    if (!toExport.length) { toast('Nothing to export', true); return; }
+    const withTiles = toExport.filter(r => r.wireframe_tiles && r.wireframe_tiles.length).length;
+    if (!withTiles) {
+      toast('No campaigns have wireframe tiles assigned yet — open a row, add tiles, then export.', true);
+      return;
+    }
+    toast(`Exporting wireframes for ${toExport.length} campaigns…`);
+    try {
+      const res = await fetch('/api/export-wireframe', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({rows:toExport, month:state.month, year:state.year}),
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error||res.statusText); }
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href=url; a.download=`wireframe_${state.month}_${state.year}.xlsx`;
+      a.click(); URL.revokeObjectURL(url);
+      toast('✓ Wireframe exported');
+    } catch(e) { toast('Wireframe export failed: '+e.message, true); }
   }
 
   // ── Web search ───────────────────────────────────────────────────
@@ -1567,7 +1667,9 @@ const App = (() => {
   return {
     generate, setStatus, setFilter, acceptAll, rejectTrends,
     handleRowClick, showHistory, openPanel, closePanel,
-    openEdit, saveEdit, exportXlsx, searchWeb, closeSearch,
+    openEdit, saveEdit, exportXlsx, exportWireframeXlsx,
+    addWireframeTile, removeWireframeTile, moveWireframeTile,
+    searchWeb, closeSearch,
     openConfig, saveConfig,
     switchView, renderPulse, loadPulse, refreshPulse,
     loadActivations, renderActivations, selectActMonth,

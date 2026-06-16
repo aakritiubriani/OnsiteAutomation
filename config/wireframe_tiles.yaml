@@ -1,0 +1,83 @@
+# Wireframe tile catalog — the building blocks the wireframe generator picks
+# from when laying out a campaign page.
+#
+# This is a STARTER list, drafted from the free-text "onsite_deliverables"
+# values found in standardized_history.csv (Hero banner, Roundel, Feed
+# Module, Middle nav, Landing page, Splashscreen, etc). Edit freely:
+# rename, add, remove, or change widths — this file is the one input only
+# you can supply; everything downstream (the tile picker in the planner UI,
+# the Excel wireframe export) reads from it.
+#
+# Fields:
+#   id     — stable key, never change once campaigns reference it
+#   label  — human-readable name shown in the UI / Excel
+#   width  — mockup width in grid units out of 4 (1=quarter, 2=half, 4=full)
+#   height — mockup height in rows (just affects how tall the Excel block is)
+#   notes  — optional placement guidance
+
+tiles:
+  - id: splashscreen
+    label: Splashscreen
+    width: 4
+    height: 3
+    notes: App open / launch screen takeover
+
+  - id: hero_banner
+    label: Hero Banner
+    width: 4
+    height: 2
+    notes: Top-of-homepage banner
+
+  - id: roundel
+    label: Roundel (entry point)
+    width: 1
+    height: 1
+    notes: Small circular icon row under hero banner
+
+  - id: middle_nav
+    label: Middle Nav Banner
+    width: 4
+    height: 1
+
+  - id: feed_module
+    label: Feed Module (tile grid)
+    width: 4
+    height: 2
+    notes: Carousel/grid of product or brand tiles inside the feed
+
+  - id: feed_takeover
+    label: Feed Takeover
+    width: 4
+    height: 3
+    notes: Full feed re-skin for the campaign
+
+  - id: category_entry
+    label: Category Page Entry Point
+    width: 2
+    height: 1
+
+  - id: landing_page_hero
+    label: Landing Page — Hero
+    width: 4
+    height: 2
+
+  - id: landing_page_grid
+    label: Landing Page — Tile Grid
+    width: 4
+    height: 3
+
+  - id: pdp_cart_banner
+    label: PDP / Cart Banner
+    width: 4
+    height: 1
+
+  - id: logo_unit
+    label: Logo Unit
+    width: 1
+    height: 1
+
+  - id: app_theme
+    label: App Theme Skin
+    width: 4
+    height: 1
+    notes: Color/icon theme change, not a content tile
