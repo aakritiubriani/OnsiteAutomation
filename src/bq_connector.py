@@ -312,8 +312,13 @@ def get_new_activations(num_months: int = 6) -> dict:
             "new_brand_count": int, "skus_mom": float|None }, ...
       ],
       "rows": [
-          { "month": "YYYY-MM-01", "brand": str, "category": str, "gender": str,
-            "country": str, "new_skus": int, "is_new_brand": bool }, ...
+          { "month": "YYYY-MM-01", "brand": str, "country": str,
+            "new_skus": int (sum across all categories/genders),
+            "is_new_brand": bool, "is_top_brand": bool,
+            "categories": [ { "category": str, "gender": str, "new_skus": int }, ... ]
+              (sorted by new_skus desc — one brand x country x month row,
+               with the category/gender split rolled up instead of being
+               its own row) }, ...
       ]
     }
     """
@@ -454,19 +459,34 @@ def get_new_activations(num_months: int = 6) -> dict:
         top_brand_map = {(r["brand"], r["country"]): bool(r["is_top_brand"]) for r in raw_brand_rank}
         country_thresholds = {r["country"]: float(r["p80_gmv"] or 0) for r in raw_brand_rank}
 
-        # ── Step 6: assemble detail rows with is_new_brand / is_top_brand ───
-        result_rows = []
+        # ── Step 6: collapse to one row per brand x country x month, with the
+        #            category/gender breakdown rolled up into a single
+        #            "assortment" list on that row (e.g. "Apparel - Women (45)")
+        #            instead of a separate row per category/gender combo.
+        grouped: dict = {}
         for r in raw_detail:
-            result_rows.append({
-                "month":         r["month"],
-                "brand":         r["brand"],
-                "category":      r["category"],
-                "gender":        r["gender"],
-                "country":       r["country"],
-                "new_skus":      int(r["new_skus"] or 0),
-                "is_new_brand":  (r["brand"], r["month"]) in new_brand_months,
-                "is_top_brand":  top_brand_map.get((r["brand"], r["country"]), False),
+            key = (r["month"], r["brand"], r["country"])
+            grp = grouped.setdefault(key, {
+                "month":        r["month"],
+                "brand":        r["brand"],
+                "country":      r["country"],
+                "new_skus":     0,
+                "is_new_brand": (r["brand"], r["month"]) in new_brand_months,
+                "is_top_brand": top_brand_map.get((r["brand"], r["country"]), False),
+                "categories":   [],
             })
+            n = int(r["new_skus"] or 0)
+            grp["new_skus"] += n
+            grp["categories"].append({
+                "category": r["category"],
+                "gender":   r["gender"],
+                "new_skus": n,
+            })
+
+        result_rows = list(grouped.values())
+        for grp in result_rows:
+            grp["categories"].sort(key=lambda c: -c["new_skus"])
+
         # within month, surface top-tier brands first, then new-brand rows,
         # then by sku volume desc; months themselves newest-first (stable
         # multi-pass sort)

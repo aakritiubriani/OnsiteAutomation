@@ -1440,12 +1440,21 @@ const App = (() => {
 
     let rows = actData.rows;
     if (monthVal)    rows = rows.filter(r => r.month === monthVal);
-    if (catVal)      rows = rows.filter(r => r.category === catVal);
-    if (genderVal)   rows = rows.filter(r => r.gender === genderVal);
+    if (catVal)      rows = rows.filter(r => r.categories.some(c => c.category === catVal));
+    if (genderVal)   rows = rows.filter(r => r.categories.some(c => c.gender === genderVal));
     if (countryVal)  rows = rows.filter(r => r.country === countryVal);
     if (brandSearch) rows = rows.filter(r => r.brand.toLowerCase().includes(brandSearch));
     if (newOnly)      rows = rows.filter(r => r.is_new_brand);
     if (topOnly)      rows = rows.filter(r => r.is_top_brand);
+
+    // When a category/gender filter is active, only show the matching
+    // slice of each brand's assortment in the cell (not its full breakdown).
+    const catsForRow = (r) => {
+      let cats = r.categories;
+      if (catVal)    cats = cats.filter(c => c.category === catVal);
+      if (genderVal) cats = cats.filter(c => c.gender === genderVal);
+      return cats;
+    };
 
     const newBrandTotal = actData.rows.filter(r => r.is_new_brand).length;
     const topBrandTotal = actData.rows.filter(r => r.is_top_brand).length;
@@ -1464,9 +1473,8 @@ const App = (() => {
       <thead><tr>
         <th class="left">Month</th>
         <th class="left">Brand</th>
-        <th class="left">Category</th>
-        <th class="left">Gender</th>
         <th class="left">Country</th>
+        <th class="left" style="min-width:320px">Categories (assortment)</th>
         <th>New SKUs</th>
         <th class="left">Status</th>
       </tr></thead><tbody>`;
@@ -1479,12 +1487,17 @@ const App = (() => {
         r.is_new_brand ? '<span class="badge-new-brand">🆕 NEW</span>' : '',
         r.is_top_brand ? '<span class="badge-top-brand">🏆 TOP 20%</span>' : '',
       ].filter(Boolean).join(' ');
+      const cats = catsForRow(r);
+      const catsLbl = cats.map(c => {
+        const g = c.gender && c.gender !== '(unclassified)' ? ` - ${c.gender}` : '';
+        return `${c.category}${g} (${fmtNum(c.new_skus)})`;
+      }).join(', ');
+      const catCount = cats.length;
       html += `<tr style="${rowBg}">
         <td class="left">${monthLbl}</td>
         <td class="left cat-cell">${r.brand}</td>
-        <td class="left sub-cell">${r.category}</td>
-        <td class="left merch-cell">${r.gender}</td>
         <td class="left merch-cell">${r.country}</td>
+        <td class="left sub-cell" title="${catCount} categories">${catsLbl}</td>
         <td>${fmtNum(r.new_skus)}</td>
         <td class="left" style="white-space:nowrap">${badges}</td>
       </tr>`;
@@ -1521,8 +1534,10 @@ const App = (() => {
         const o = document.createElement('option'); o.value = m; o.textContent = lbl;
         monthSel.appendChild(o);
       });
-      fillSelect('actCategoryFilter', [...new Set(data.rows.map(r=>r.category))].sort(), 'All categories');
-      fillSelect('actGenderFilter',   [...new Set(data.rows.map(r=>r.gender))].sort(),   'All genders');
+      const allCats    = data.rows.flatMap(r => r.categories.map(c => c.category));
+      const allGenders = data.rows.flatMap(r => r.categories.map(c => c.gender));
+      fillSelect('actCategoryFilter', [...new Set(allCats)].sort(),    'All categories');
+      fillSelect('actGenderFilter',   [...new Set(allGenders)].sort(), 'All genders');
       fillSelect('actCountryFilter',  [...new Set(data.rows.map(r=>r.country))].sort(),  'All countries');
 
       // Threshold note (top-20% GMV cutoff per country)
