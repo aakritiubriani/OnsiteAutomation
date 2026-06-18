@@ -9,6 +9,7 @@ import calendar as cal_mod
 import io
 import json
 import logging
+import os
 import sys
 import traceback
 import urllib.parse
@@ -23,6 +24,17 @@ import openpyxl
 import yaml
 
 BASE = Path(__file__).resolve().parent
+
+# ── Load .env if present (so ANTHROPIC_API_KEY etc. don't need to be set
+#    manually in the shell every time) ─────────────────────────────────────────
+_env_file = BASE / ".env"
+if _env_file.exists():
+    with open(_env_file, encoding="utf-8") as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _v = _line.split("=", 1)
+                os.environ.setdefault(_k.strip(), _v.strip())
 sys.path.insert(0, str(BASE / "src"))
 
 from flask import Flask, jsonify, render_template, request, send_file
